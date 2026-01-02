@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="EDG6973 Getting Started tasks and orientation." />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="robots" content="index,follow" />
+
+  <meta property="og:title" content="EDG6973 - Getting Started" />
+  <meta property="og:description" content="Getting started tasks and course orientation for EDG6973." />
+  <meta property="og:type" content="website" />
+
+  <title>EDG6973 - Getting Started</title>
+
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">EDG</div>
+        <div class="brand-text">
+          <div class="brand-title">EDG 6973</div>
+          <div class="brand-subtitle">Capstone Project (Project in Lieu of Thesis)</div>
+        </div>
+      </div>
+
+      <nav class="topnav" aria-label="Primary">
+        <a class="topnav-link" href="index.html#milestones">Milestones</a>
+        <a class="topnav-link" href="index.html#modules">Modules</a>
+        <a class="topnav-link active" href="getting_started.html">Getting Started</a>
+        <button class="btn ghost" type="button" data-open-modal="advisorModal">Contact Your Advisor</button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container page">
+    <section class="hero card hero-compact">
+      <div class="hero-left">
+        <h1 class="hero-title">Getting Started</h1>
+        <p class="hero-lead">Welcome to your Capstone Project course</p>
+        <p class="muted">
+          Congratulations on reaching the final step in your Master’s journey. This capstone course provides a collaborative and supportive
+          environment for you to design, develop, and refine your individual project in Computer Science (CS) Education.
+        </p>
+      </div>
+
+      <div class="hero-right">
+        <div class="hero-banner" role="img" aria-label="Course banner"></div>
+      </div>
+    </section>
+
+    <section class="card section">
+      <header class="section-header">
+        <h2 class="section-title">Essential tasks</h2>
+        <p class="section-subtitle">Please complete the following tasks before we dive into the semester.</p>
+      </header>
+
+      <div class="section-body">
+        <div class="task-grid">
+          <article class="task-card">
+            <div class="task-header">
+              <h3 class="task-title">Fill Out the When2Meet Poll</h3>
+              <span class="badge">By Jan 17, 2025</span>
+            </div>
+            <p class="task-text">
+              We need to schedule bi-weekly synchronous meetings for our whole group. Please complete this
+              <a href="https://www.when2meet.com/?28279910-FE4r2" target="_blank" rel="noopener">When2Meet</a>
+              poll to indicate your availability. Please select all possible times, especially during the day.
+              I have unstable and limited availability during the evenings this semester due to other responsibilities.
+            </p>
+            <div class="task-actions">
+              <a class="btn" href="https://www.when2meet.com/?28279910-FE4r2" target="_blank" rel="noopener">Open When2Meet</a>
+            </div>
+          </article>
+
+          <article class="task-card">
+            <div class="task-header">
+              <h3 class="task-title">Register for Graduation</h3>
+              <span class="badge">By Jan 15, 2025</span>
+            </div>
+            <p class="task-text">
+              If you haven’t already, make sure to register for graduation. This is a critical step to ensure you’re on track to receive your degree.
+              You can find directions and the link to apply at
+              <a href="https://registrar.ufl.edu/services/degree-application" target="_blank" rel="noopener">
+                registrar.ufl.edu/services/degree-application
+              </a>.
+            </p>
+            <div class="task-actions">
+              <a class="btn" href="https://registrar.ufl.edu/services/degree-application" target="_blank" rel="noopener">Degree application</a>
+            </div>
+          </article>
+
+          <article class="task-card" id="introduce-yourself">
+              <div class="task-header">
+                <h3 class="task-title">Introduce Yourself</h3>
+                <span class="badge neutral">Complete this week</span>
+              </div>
+            
+              <p class="task-text">
+                Let’s get to know each other. Please record a short self-introduction video and share the link using the submission box below.
+              </p>
+            
+              <div class="callout">
+                <div class="callout-title">Video guidelines</div>
+                <ul class="task-list">
+                  <li>Length: 60 to 120 seconds</li>
+                  <li>Share a link that is viewable by the class (for example, YouTube unlisted, Panopto, OneDrive, or Google Drive with link access)</li>
+                  <li>Include: your name, pronouns and preferred name, your background in CS and Education, your goals for this course, and anything else you would like to share</li>
+                </ul>
+              </div>
+            
+              <div class="callout subtle">
+                <div class="callout-title">Submission (static for now)</div>
+                <p class="task-text" style="margin-top: 8px;">
+                  This form is a placeholder. When we add the Supabase backend, students will be able to submit their video links here and see a class gallery.
+                </p>
+            
+                <form class="form" id="introForm">
+                  <label class="field">
+                    <span>Your name</span>
+                    <input type="text" name="name" placeholder="First Last" autocomplete="name" />
+                  </label>
+            
+                  <label class="field">
+                    <span>Video link</span>
+                    <input type="url" name="videoUrl" placeholder="https://..." />
+                  </label>
+            
+                  <label class="field">
+                    <span>Short note (optional)</span>
+                    <textarea name="note" rows="3" placeholder="Anything you want classmates to know."></textarea>
+                  </label>
+            
+                  <div class="task-actions">
+                    <button class="btn" type="button" disabled>Submit link (coming soon)</button>
+                    <span class="hint">Supabase submission will be enabled in the final build.</span>
+                  </div>
+                </form>
+              </div>
+            
+              <div class="divider"></div>
+            
+              <div class="gallery">
+                <div class="gallery-header">
+                  <h4 class="gallery-title">Class introductions</h4>
+                  <p class="gallery-subtitle">This will populate automatically after we enable submissions.</p>
+                </div>
+            
+                <div class="gallery-grid" id="introGallery">
+                  <div class="empty-state">
+                    No videos yet. Once submissions are enabled, introductions will appear here.
+                  </div>
+                </div>
+              </div>
+          </article>
+
+          <article class="task-card">
+            <div class="task-header">
+              <h3 class="task-title">Start Thinking About Your Capstone Project</h3>
+              <span class="badge neutral">This week</span>
+            </div>
+            <p class="task-text">
+              Begin brainstorming potential topics or problems in CS Education related to your practical context that you’re passionate about addressing.
+            </p>
+
+            <div class="callout">
+              <div class="callout-title">Consider questions like:</div>
+              <ul class="task-list">
+                <li>What challenges have you encountered or observed in CS Education?</li>
+                <li>Are there gaps in tools, resources, or strategies that you’d like to explore?</li>
+                <li>What are you most passionate about in CS Education?</li>
+                <li>What ideas excite you and align with your professional goals?</li>
+                <li>What tangible tools or artifacts might you design, develop, or use within the semester scope?</li>
+              </ul>
+            </div>
+
+            <p class="task-text">
+              You do not need to have a solid project idea before our first synchronous meeting. We will talk more about it in our meetings,
+              and you will refine your ideas in the coming weeks.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <div>© <span id="year"></span> EDG6973</div>
+        <div><a href="index.html">Home</a></div>
+      </div>
+    </footer>
+  </main>
+
+  <dialog id="advisorModal" class="modal">
+    <form method="dialog" class="modal-card" aria-labelledby="advisorTitle">
+      <div class="modal-header">
+        <h3 id="advisorTitle" class="modal-title">Contact Your Advisor</h3>
+        <button class="btn icon ghost" value="cancel" aria-label="Close">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="advisor">
+          <img class="advisor-photo" src="images/advisor.jpg" alt="Rui Tammy Huang" width="150" height="150" />
+          <div class="advisor-info">
+            <div class="advisor-name"><strong>Rui Tammy Huang, Ph.D.</strong></div>
+
+            <div class="advisor-line">
+              <strong>Messages:</strong> Canvas Mail Tool or email to
+              <a href="mailto:rui.huang@coe.ufl.edu">rui.huang@coe.ufl.edu</a>
+            </div>
+
+            <div class="advisor-line">
+              <strong>Slack Channel:</strong>
+              <a href="https://join.slack.com/t/csedmaecapstoneteam/shared_invite/zt-2xk18kmaa-EXrc6R~QIerk0MbWhvx4dQ" target="_blank" rel="noopener">
+                CS Ed MAE Capstone Team
+              </a>
+            </div>
+
+            <div class="advisor-line">
+              <strong>Zoom:</strong>
+              <a href="https://ufl.zoom.us/my/tammyhuang" target="_blank" rel="noopener">ufl.zoom.us/my/tammyhuang</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn" value="cancel">Close</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <script defer src="assets/js/main.js"></script>
+</body>
+</html>
