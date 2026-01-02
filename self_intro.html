@@ -1,0 +1,455 @@
+<!-- self_intro.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="EDG6973 Self-Introductions" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="robots" content="noindex,nofollow" />
+
+  <title>EDG6973 - Self Introductions</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- ===================================================== -->
+<!-- AUTH GATE (reuses your existing auth UI + flow) -->
+<!-- ===================================================== -->
+<main id="authGate" class="container page" style="display:none;">
+  <section class="card section" style="max-width:720px; margin:40px auto;">
+    <header class="section-header">
+      <h1 class="section-title" style="color:#002657;">EDG 6973</h1>
+      <p class="section-subtitle">Self Introductions</p>
+    </header>
+
+    <h2 id="authTitle" class="section-title" style="display:none; margin-bottom:12px;"></h2>
+
+    <div id="authTabs" style="margin-top:16px; margin-bottom:16px;">
+      <button class="btn" id="tabSignin" type="button">Sign in</button>
+    </div>
+
+    <hr />
+
+    <div class="section-body">
+
+      <!-- SIGN UP (magic link) -->
+      <div id="panelSignup" style="display:none;">
+        <p class="muted">
+          If this is your first time here, use the email you received in your invitation to register.
+        </p>
+
+        <label class="field">
+          <span>Email</span>
+          <input id="signupEmail" type="email" placeholder="you@ufl.edu" autocomplete="email" />
+        </label>
+
+        <div class="task-actions" style="align-items:center;">
+          <button class="btn" id="signupSendLinkBtn" type="button">Send sign-up link</button>
+          <span class="hint" id="signupMsg"></span>
+        </div>
+      </div>
+
+      <!-- SIGN IN -->
+      <div id="panelSignin" style="display:none;">
+        <p class="muted">Sign in with your email and password.</p>
+
+        <label class="field">
+          <span>Email</span>
+          <input id="signinEmail" type="email" autocomplete="email" />
+        </label>
+
+        <label class="field">
+          <span>Password</span>
+          <input id="signinPassword" type="password" autocomplete="current-password" />
+        </label>
+
+        <div class="task-actions" style="align-items:center;">
+          <button class="btn" id="signinBtn" type="button">Sign in</button>
+          <button class="btn ghost" id="forgotBtn" type="button">Forgot password</button>
+          <span class="hint" id="signinMsg"></span>
+        </div>
+      </div>
+
+      <!-- COMPLETE USER INFO -->
+      <div id="panelUserInfo" style="display:none; margin-top:16px;">
+        <div class="callout">
+          <div class="callout-title">Complete your information</div>
+
+          <label class="field">
+            <span>Full name</span>
+            <input id="uiFullName" type="text" autocomplete="name" />
+          </label>
+
+          <label class="field">
+            <span>Affiliation</span>
+            <input id="uiAffiliation" type="text" autocomplete="organization" />
+          </label>
+
+          <div class="task-actions">
+            <button class="btn" id="uiSaveBtn" type="button">Save and continue</button>
+            <span class="hint" id="uiMsg"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SET PASSWORD -->
+      <div id="panelSetPassword" style="display:none; margin-top:16px;">
+        <div class="callout">
+          <div class="callout-title">Set your password</div>
+
+          <label class="field">
+            <span>New password</span>
+            <input id="newPassword" type="password" autocomplete="new-password" />
+          </label>
+
+          <label class="field">
+            <span>Confirm password</span>
+            <input id="confirmPassword" type="password" autocomplete="new-password" />
+          </label>
+
+          <div class="task-actions">
+            <button class="btn" id="setPasswordBtn" type="button">Save password</button>
+            <span class="hint" id="setPasswordMsg"></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<!-- ===================================================== -->
+<!-- SELF-INTRO APP (shown when authenticated/authorized) -->
+<!-- ===================================================== -->
+<div id="appShell" style="display:none;">
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <a href="index.html" style="color: inherit; text-decoration: none; display:flex; gap:12px; align-items:center;">
+          <div class="brand-mark" aria-hidden="true">CSEd</div>
+          <div class="brand-text">
+            <div class="brand-title">EDG 6973</div>
+            <div class="brand-subtitle">Self Introductions</div>
+          </div>
+        </a>
+      </div>
+
+      <nav class="topnav" aria-label="Primary">
+        <a class="topnav-link" href="index.html">Back to course hub</a>
+        <button class="btn ghost" type="button" id="signOutBtn">Sign out</button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container page">
+
+    <section class="card section" style="max-width: 980px; margin: 18px auto;">
+      <header class="section-header">
+        <h1 class="section-title">Post your self-introduction</h1>
+        <p class="section-subtitle">
+          You can submit text-only, video-only, or both. Your latest submission will appear at the top.
+        </p>
+      </header>
+
+      <div class="section-body">
+        <label class="field">
+          <span>Text introduction</span>
+          <textarea id="introText" rows="5" placeholder="Write a short introduction..." style="width:100%;"></textarea>
+        </label>
+
+        <label class="field">
+          <span>Video link (YouTube or Vimeo recommended)</span>
+          <input id="videoUrl" type="url" placeholder="https://www.youtube.com/watch?v=..." />
+          <div class="hint" id="videoHint"></div>
+        </label>
+
+        <div class="task-actions" style="align-items:center;">
+          <button class="btn" id="saveIntroBtn" type="button">Save introduction</button>
+          <button class="btn ghost" id="refreshBtn" type="button">Refresh list</button>
+          <span class="hint" id="saveMsg"></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section" style="max-width: 980px; margin: 18px auto;">
+      <header class="section-header">
+        <h2 class="section-title">Class introductions</h2>
+        <p class="section-subtitle">Sorted by latest updates.</p>
+      </header>
+
+      <div class="section-body">
+        <div id="introList" style="display:grid; gap:14px;"></div>
+        <div class="hint" id="listMsg" style="margin-top:10px;"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script type="module">
+  import { configureSupabase, getSupabase } from "./assets/js/supabaseClient.js";
+  import { initAuthGate } from "./assets/js/authGate.js";
+
+  // =========================
+  // CONFIG
+  // =========================
+  configureSupabase({
+    url: "https://fzuslwrmhgaveulfewel.supabase.co",
+    anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6dXNsd3JtaGdhdmV1bGZld2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNjM0NTQsImV4cCI6MjA4MjkzOTQ1NH0.SFZJsJ3SejZsNwVtW1CcyINrrPdsRtjoWKsgNK48pbM"
+  });
+
+  // IMPORTANT: set to your EDG6973 project row id
+  const PROJECT_ID = "9dc0a871-a9fd-4898-bf8e-2d3d8692fe6d";
+
+  const sb = getSupabase();
+
+  // =========================
+  // UI HELPERS
+  // =========================
+  const $ = (id) => document.getElementById(id);
+
+  function setMsg(id, msg, isError) {
+    const el = $(id);
+    if (!el) return;
+    el.textContent = msg || "";
+    el.style.color = isError ? "#b91c1c" : "";
+  }
+
+  function escapeHtml(s) {
+    return String(s || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  // Best-effort embed conversion (DB should also normalize)
+  function toEmbedUrl(raw) {
+    const url = (raw || "").trim();
+    if (!url) return "";
+
+    // YouTube
+    const ytWatch = url.match(/youtube\.com\/watch\?v=([A-Za-z0-9_-]{6,})/i);
+    if (ytWatch?.[1]) return `https://www.youtube.com/embed/${ytWatch[1]}`;
+
+    const ytShort = url.match(/youtu\.be\/([A-Za-z0-9_-]{6,})/i);
+    if (ytShort?.[1]) return `https://www.youtube.com/embed/${ytShort[1]}`;
+
+    // Vimeo
+    const vimeo = url.match(/vimeo\.com\/(\d{6,})/i);
+    if (vimeo?.[1]) return `https://player.vimeo.com/video/${vimeo[1]}`;
+
+    // If unknown, return empty (we will show link instead of embed)
+    return "";
+  }
+
+  function renderCard(row) {
+    const fullName = row?.users?.full_name || "Participant";
+    const affiliation = row?.users?.affiliation || "";
+    const introText = row?.intro_text || "";
+    const videoUrl = row?.video_url || "";
+    const embedUrl = row?.embed_url || toEmbedUrl(videoUrl);
+
+    const whoLine = affiliation ? `${escapeHtml(fullName)} · ${escapeHtml(affiliation)}` : escapeHtml(fullName);
+
+    const textHtml = introText
+      ? `<div class="muted" style="white-space:pre-wrap; margin-top:8px;">${escapeHtml(introText)}</div>`
+      : "";
+
+    const videoHtml = embedUrl
+      ? `
+        <div style="margin-top:12px;">
+          <div class="muted" style="margin-bottom:6px;">Video</div>
+          <div style="position:relative; width:100%; padding-top:56.25%; border-radius:12px; overflow:hidden; background:#f3f4f6;">
+            <iframe
+              src="${escapeHtml(embedUrl)}"
+              title="Introduction video"
+              style="position:absolute; inset:0; width:100%; height:100%; border:0;"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+            ></iframe>
+          </div>
+        </div>
+      `
+      : (videoUrl
+          ? `<div style="margin-top:10px;"><a target="_blank" rel="noopener" href="${escapeHtml(videoUrl)}">Watch video link</a></div>`
+          : "");
+
+    const when = row?.updated_at || row?.created_at || "";
+    const whenHtml = when ? `<div class="hint" style="margin-top:10px;">Updated: ${escapeHtml(new Date(when).toLocaleString())}</div>` : "";
+
+    return `
+      <article class="card" style="padding:16px;">
+        <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start;">
+          <div>
+            <div style="font-weight:700; color:#111827;">${whoLine}</div>
+          </div>
+        </div>
+        ${textHtml}
+        ${videoHtml}
+        ${whenHtml}
+      </article>
+    `;
+  }
+
+  // =========================
+  // DATA OPS
+  // =========================
+  async function ensureAuthed() {
+    const { data, error } = await sb.auth.getSession();
+    if (error) throw error;
+    const session = data?.session;
+    if (!session) throw new Error("Not signed in.");
+    return session;
+  }
+
+  async function loadMyExistingIntro(userId) {
+    // Assumes unique per (project_id, user_id)
+    const { data, error } = await sb
+      .from("project_introductions")
+      .select("intro_text, video_url")
+      .eq("project_id", PROJECT_ID)
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (error) throw error;
+    return data || null;
+  }
+
+  async function saveIntro() {
+    setMsg("saveMsg", "", false);
+
+    const session = await ensureAuthed();
+    const uid = session.user.id;
+
+    const intro_text = ($("introText")?.value || "").trim();
+    const video_url = ($("videoUrl")?.value || "").trim();
+
+    if (!intro_text && !video_url) {
+      setMsg("saveMsg", "Please enter text, a video link, or both.", true);
+      return;
+    }
+
+    const embed_url = toEmbedUrl(video_url);
+
+    const btn = $("saveIntroBtn");
+    btn.disabled = true;
+    btn.textContent = "Saving...";
+
+    try {
+      // One row per person per project (latest update stays on top)
+      const payload = {
+        project_id: PROJECT_ID,
+        user_id: uid,
+        intro_text: intro_text || null,
+        video_url: video_url || null,
+        // If your DB has generated embed_url, you can remove this.
+        embed_url: embed_url || null,
+        updated_at: new Date().toISOString()
+      };
+
+      const { error } = await sb
+        .from("project_introductions")
+        .upsert(payload, { onConflict: "project_id,user_id" });
+
+      if (error) throw error;
+
+      setMsg("saveMsg", "Saved.", false);
+      await loadIntroductions();
+    } catch (e) {
+      console.error(e);
+      setMsg("saveMsg", e?.message || "Failed to save.", true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Save introduction";
+    }
+  }
+
+  async function loadIntroductions() {
+    setMsg("listMsg", "Loading...", false);
+
+    try {
+      // Join to users table for name + affiliation
+      const { data, error } = await sb
+        .from("project_introductions")
+        .select(`
+          project_id,
+          user_id,
+          intro_text,
+          video_url,
+          embed_url,
+          created_at,
+          updated_at,
+          users:users (
+            full_name,
+            affiliation
+          )
+        `)
+        .eq("project_id", PROJECT_ID)
+        .order("updated_at", { ascending: false, nullsFirst: false })
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      const list = $("introList");
+      if (!list) return;
+
+      if (!data || data.length === 0) {
+        list.innerHTML = "";
+        setMsg("listMsg", "No introductions yet.", false);
+        return;
+      }
+
+      list.innerHTML = data.map(renderCard).join("");
+      setMsg("listMsg", "", false);
+    } catch (e) {
+      console.error(e);
+      setMsg("listMsg", e?.message || "Failed to load introductions.", true);
+    }
+  }
+
+  // =========================
+  // INIT
+  // =========================
+  $("saveIntroBtn")?.addEventListener("click", saveIntro);
+  $("refreshBtn")?.addEventListener("click", loadIntroductions);
+
+  $("videoUrl")?.addEventListener("input", () => {
+    const url = ($("videoUrl")?.value || "").trim();
+    const embed = toEmbedUrl(url);
+    if (!url) return setMsg("videoHint", "", false);
+    if (embed) setMsg("videoHint", "Looks good. This link should embed correctly.", false);
+    else setMsg("videoHint", "This platform may not embed. We will show it as a clickable link if embedding fails.", false);
+  });
+
+  await initAuthGate({
+    onAuthed: async () => {
+      // Once the user is authorized into the project, show the app UI and load data.
+      await loadIntroductions();
+
+      // Optionally prefill the editor with their current saved intro
+      try {
+        const session = await ensureAuthed();
+        const existing = await loadMyExistingIntro(session.user.id);
+        if (existing) {
+          if ($("introText")) $("introText").value = existing.intro_text || "";
+          if ($("videoUrl")) $("videoUrl").value = existing.video_url || "";
+        }
+      } catch (_) {
+        // ignore
+      }
+    }
+  });
+
+  document.getElementById("signOutBtn")?.addEventListener("click", async () => {
+    await sb.auth.signOut();
+  });
+
+</script>
+</body>
+</html>
