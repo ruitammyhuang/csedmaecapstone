@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="EDG6973 Admin Invite Panel" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="robots" content="noindex,nofollow" />
+
+  <meta property="og:title" content="EDG6973 - Admin Invites" />
+  <meta property="og:description" content="Invite management for EDG6973 project." />
+  <meta property="og:type" content="website" />
+
+  <title>EDG6973 - Admin Invites</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- ===================================================== -->
+<!-- AUTH GATE (reuses your existing auth UI) -->
+<!-- ===================================================== -->
+<main id="authGate" class="container page" style="display:none;">
+  <section class="card section" style="max-width:720px; margin:40px auto;">
+    <header class="section-header">
+      <h1 class="section-title" style="color:#002657;">EDG 6973</h1>
+      <p class="section-subtitle">Admin Invites</p>
+    </header>
+
+    <h2 id="authTitle" class="section-title" style="display:none; margin-bottom:12px;"></h2>
+
+    <div id="authTabs" class="task-actions" style="gap:8px; margin-bottom:12px;">
+      <button class="btn ghost" id="tabSignup" type="button">Sign up</button>
+      <button class="btn ghost" id="tabSignin" type="button">Sign in</button>
+    </div>
+
+    <div class="section-body">
+
+      <div id="panelSignup" style="display:none;">
+        <p class="muted">Enter your email to receive a sign-up link.</p>
+
+        <label class="field">
+          <span>Email</span>
+          <input id="signupEmail" type="email" placeholder="you@ufl.edu" autocomplete="email" />
+        </label>
+
+        <div class="task-actions" style="align-items:center;">
+          <button class="btn" id="signupSendLinkBtn" type="button">Send sign-up link</button>
+          <span class="hint" id="signupMsg"></span>
+        </div>
+      </div>
+
+      <div id="panelSignin" style="display:none;">
+        <p class="muted">Sign in with your email and password.</p>
+
+        <label class="field">
+          <span>Email</span>
+          <input id="signinEmail" type="email" autocomplete="email" />
+        </label>
+
+        <label class="field">
+          <span>Password</span>
+          <input id="signinPassword" type="password" autocomplete="current-password" />
+        </label>
+
+        <div class="task-actions" style="align-items:center;">
+          <button class="btn" id="signinBtn" type="button">Sign in</button>
+          <button class="btn ghost" id="forgotBtn" type="button">Forgot password</button>
+          <span class="hint" id="signinMsg"></span>
+        </div>
+      </div>
+
+      <div id="panelUserInfo" style="display:none; margin-top:16px;">
+        <div class="callout">
+          <div class="callout-title">Complete your information</div>
+
+          <label class="field">
+            <span>Full name</span>
+            <input id="uiFullName" type="text" autocomplete="name" />
+          </label>
+
+          <label class="field">
+            <span>Affiliation</span>
+            <input id="uiAffiliation" type="text" autocomplete="organization" />
+          </label>
+
+          <div class="task-actions">
+            <button class="btn" id="uiSaveBtn" type="button">Save and continue</button>
+            <span class="hint" id="uiMsg"></span>
+          </div>
+        </div>
+      </div>
+
+      <div id="panelSetPassword" style="display:none; margin-top:16px;">
+        <div class="callout">
+          <div class="callout-title">Set your password</div>
+
+          <label class="field">
+            <span>New password</span>
+            <input id="newPassword" type="password" autocomplete="new-password" />
+          </label>
+
+          <label class="field">
+            <span>Confirm password</span>
+            <input id="confirmPassword" type="password" autocomplete="new-password" />
+          </label>
+
+          <div class="task-actions">
+            <button class="btn" id="setPasswordBtn" type="button">Save password</button>
+            <span class="hint" id="setPasswordMsg"></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<!-- ===================================================== -->
+<!-- ADMIN INVITE APP (shown only when authorized admin/instructor) -->
+<!-- ===================================================== -->
+<div id="adminShell" style="display:none;">
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <a href="index.html" style="color: inherit; text-decoration: none; display:flex; gap:12px; align-items:center;">
+          <div class="brand-mark" aria-hidden="true">CSEd</div>
+          <div class="brand-text">
+            <div class="brand-title">EDG 6973</div>
+            <div class="brand-subtitle">Admin Invites</div>
+          </div>
+        </a>
+      </div>
+
+      <nav class="topnav" aria-label="Primary">
+        <a class="topnav-link" href="index.html">Back to course hub</a>
+        <button class="btn ghost" type="button" id="signOutBtn">Sign out</button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container page">
+    <section class="card section" style="max-width: 920px; margin: 18px auto;">
+      <header class="section-header">
+        <h1 class="section-title">Invite participants</h1>
+        <p class="section-subtitle">
+          Only admins/instructors can send invitations for this project.
+        </p>
+      </header>
+
+      <div class="section-body">
+        <div class="grid" style="display:grid; gap:12px; grid-template-columns: 1fr 220px;">
+          <label class="field">
+            <span>Email</span>
+            <input id="inviteEmail" type="email" placeholder="someone@ufl.edu" autocomplete="email" />
+          </label>
+
+          <label class="field">
+            <span>Role</span>
+            <select id="inviteRole">
+              <option value="student">student</option>
+              <option value="ta">ta</option>
+              <option value="instructor">instructor</option>
+              <option value="researcher">researcher</option>
+              <option value="collaborator">collaborator</option>
+              <option value="admin">admin</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="task-actions" style="align-items:center; margin-top: 10px;">
+          <button class="btn" id="sendInviteBtn" type="button">Send invitation</button>
+          <span class="hint" id="inviteMsg"></span>
+        </div>
+
+        <p class="muted" style="margin-top: 10px;">
+          Invited users will receive an email link to complete sign-up, then set a password.
+        </p>
+      </div>
+    </section>
+
+    <section id="notAuthorized" class="card section" style="display:none; max-width: 920px; margin: 18px auto;">
+      <header class="section-header">
+        <h2 class="section-title">Not authorized</h2>
+        <p class="section-subtitle">
+          Your account is signed in, but you do not have admin or instructor access to manage invites for this project.
+        </p>
+      </header>
+      <div class="section-body">
+        <p class="muted">
+          If you believe this is an error, contact the course owner to update your project role.
+        </p>
+        <div class="task-actions">
+          <a class="btn" href="index.html">Back to course hub</a>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script type="module">
+  import { configureSupabase, getSupabase } from "./assets/js/supabaseClient.js";
+  import { initAuthGate } from "./assets/js/authGate.js";
+  import { initInviteAdmin } from "./assets/js/inviteAdmin.js";
+
+  configureSupabase({
+    url: "https://fzuslwrmhgaveulfewel.supabase.co",
+    anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6dXNsd3JtaGdhdmV1bGZld2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNjM0NTQsImV4cCI6MjA4MjkzOTQ1NH0.SFZJsJ3SejZsNwVtW1CcyINrrPdsRtjoWKsgNK48pbM"
+  });
+
+  const EDG6973_PROJECT_ID = "9dc0a871-a9fd-4898-bf8e-2d3d8692fe6d";
+
+  function show(elId, isShown) {
+    const el = document.getElementById(elId);
+    if (el) el.style.display = isShown ? "block" : "none";
+  }
+
+  async function isAdminOrInstructor(projectId) {
+    const sb = getSupabase();
+    const { data: sess } = await sb.auth.getSession();
+    const uid = sess?.session?.user?.id;
+    if (!uid) return false;
+
+    const { data, error } = await sb
+      .from("project_memberships")
+      .select("project_role, is_active")
+      .eq("project_id", projectId)
+      .eq("user_id", uid)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) return false;
+    if (data.is_active === false) return false;
+
+    return data.project_role === "admin" || data.project_role === "instructor";
+  }
+
+  async function initAuthedAdminPage() {
+    // If we got here, authGate thinks user is allowed into the project generally.
+    // Now we add a stricter check for invite permissions.
+    show("adminShell", true);
+    show("notAuthorized", false);
+
+    try {
+      const ok = await isAdminOrInstructor(EDG6973_PROJECT_ID);
+      if (!ok) {
+        show("notAuthorized", true);
+        // Hide invite UI elements (keep the page shell)
+        const inviteButton = document.getElementById("sendInviteBtn");
+        const inviteEmail = document.getElementById("inviteEmail");
+        const inviteRole = document.getElementById("inviteRole");
+        const inviteMsg = document.getElementById("inviteMsg");
+        if (inviteButton) inviteButton.style.display = "none";
+        if (inviteEmail) inviteEmail.disabled = true;
+        if (inviteRole) inviteRole.disabled = true;
+        if (inviteMsg) inviteMsg.textContent = "";
+        return;
+      }
+
+      await initInviteAdmin({ projectId: EDG6973_PROJECT_ID });
+    } catch (e) {
+      console.error(e);
+      show("notAuthorized", true);
+    }
+  }
+
+  // Gate access with your existing auth flow.
+  // IMPORTANT: authGate.js should only decide whether user can enter the project at all.
+  // Then this page decides whether they can send invites.
+  await initAuthGate({
+    onAuthed: () => {
+      // Hide auth gate and show admin shell
+      show("authGate", false);
+      initAuthedAdminPage();
+    }
+  });
+
+  const sb = getSupabase();
+  document.getElementById("signOutBtn")?.addEventListener("click", async () => {
+    await sb.auth.signOut();
+    // authGate.js listener should bring the gate back
+    show("adminShell", false);
+    show("authGate", true);
+  });
+</script>
+
+</body>
+</html>
