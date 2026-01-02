@@ -26,7 +26,7 @@ async function isInstructorOrAdmin(projectId) {
 
   const { data, error } = await sb
     .from("project_memberships")
-    .select("project_role, is_active")
+    .select("role, is_active")
     .eq("project_id", projectId)
     .eq("user_id", uid)
     .maybeSingle();
@@ -34,7 +34,7 @@ async function isInstructorOrAdmin(projectId) {
   if (error || !data) return false;
   if (data.is_active === false) return false;
 
-  return data.project_role === "admin" || data.project_role === "instructor";
+  return data.role === "admin" || data.role === "instructor";
 }
 
 function requireEls(ids) {
