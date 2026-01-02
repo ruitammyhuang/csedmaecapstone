@@ -145,45 +145,15 @@
     </footer>
   </main>
 
-  <dialog id="advisorModal" class="modal">
-    <form method="dialog" class="modal-card" aria-labelledby="advisorTitle">
-      <div class="modal-header">
-        <h3 id="advisorTitle" class="modal-title">Contact Your Advisor</h3>
-        <button class="btn icon ghost" value="cancel" aria-label="Close">✕</button>
-      </div>
+  <div id="shared-modals"></div>
 
-      <div class="modal-body">
-        <div class="advisor">
-          <img class="advisor-photo" src="images/advisor.jpg" alt="Rui Tammy Huang" width="150" height="150" />
-          <div class="advisor-info">
-            <div class="advisor-name"><strong>Rui Tammy Huang, Ph.D.</strong></div>
+  <script type="module">
+    import { loadTopNav } from "./assets/js/loadTopNav.js";
+    import { loadSharedModals } from "./assets/js/loadSharedModals.js";
+  
+    await loadTopNav({ active: "getting_started" });
+    await loadSharedModals();
+  </script>
 
-            <div class="advisor-line">
-              <strong>Messages:</strong> Canvas Mail Tool or email to
-              <a href="mailto:rui.huang@coe.ufl.edu">rui.huang@coe.ufl.edu</a>
-            </div>
-
-            <div class="advisor-line">
-              <strong>Slack Channel:</strong>
-              <a href="https://join.slack.com/t/csedmaecapstoneteam/shared_invite/zt-2xk18kmaa-EXrc6R~QIerk0MbWhvx4dQ" target="_blank" rel="noopener">
-                CS Ed MAE Capstone Team
-              </a>
-            </div>
-
-            <div class="advisor-line">
-              <strong>Zoom:</strong>
-              <a href="https://ufl.zoom.us/my/tammyhuang" target="_blank" rel="noopener">ufl.zoom.us/my/tammyhuang</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="modal-actions">
-          <button class="btn" value="cancel">Close</button>
-        </div>
-      </div>
-    </form>
-  </dialog>
-
-  <script defer src="assets/js/main.js"></script>
 </body>
 </html>
