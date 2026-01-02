@@ -130,13 +130,24 @@ a:hover{ text-decoration:underline; }
 .hero-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top: 14px; }
 
 .hero-banner{
-  border-radius: 14px;
+  position: relative;
+  width: 100%;
+  height: 180px;              /* controls banner height */
+  border-radius: 14px;        /* rounded frame */
+  overflow: hidden;           /* THIS is the key fix */
   border: 1px solid var(--border);
-  height: 170px;
-  background:
-    linear-gradient(135deg, rgba(0,38,87,0.06), rgba(250,70,22,0.08)),
-    radial-gradient(circle at 20% 20%, rgba(0,38,87,0.10), transparent 55%),
-    radial-gradient(circle at 80% 30%, rgba(250,70,22,0.12), transparent 55%);
+  background: #f9fafb;        /* fallback if image fails */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-banner img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;          /* prevents stretching */
+  object-position: center;
+  display: block;
 }
 
 .hero-badges{ display:flex; gap:8px; flex-wrap:wrap; margin-top: 10px; }
