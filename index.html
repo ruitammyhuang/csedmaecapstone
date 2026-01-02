@@ -31,9 +31,6 @@
     </header>
 
     <!-- Dynamic auth title -->
-    <h2 id="authTitle" class="section-title" style="display:none; margin-bottom:12px;"> </h2>
-
-    
     <div class="section-body">
 
       <div id="authTabs" style="margin-top:16px; margin-bottom:16px;">
@@ -304,10 +301,12 @@
   import { initAuthGate } from "./assets/js/authGate.js";
   import { bootstrapApp } from "./assets/js/bootstrap.js";
 
-  // Auth gate decides whether to show auth UI or appShell.
-  // When user is authorized, we load shared UI (top nav, sub nav, modals) and shared helpers (year, etc.).
+  let bootstrapped = false;
+
   await initAuthGate({
     onAuthed: async () => {
+      if (bootstrapped) return;
+      bootstrapped = true;
       await bootstrapApp();
     }
   });
