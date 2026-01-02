@@ -305,88 +305,36 @@
 
   <script type="module">
     import { configureSupabase, getSupabase } from "./assets/js/supabaseClient.js";
-
-    // Configure Supabase for this site
+    import { initAuthGate } from "./assets/js/authGate.js";
+  
+    // 1) Configure Supabase (project-specific)
     configureSupabase({
-      url: "https://fzuslwrmhgaveulfewel.supabase.co",
-      anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6dXNsd3JtaGdhdmV1bGZld2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNjM0NTQsImV4cCI6MjA4MjkzOTQ1NH0.SFZJsJ3SejZsNwVtW1CcyINrrPdsRtjoWKsgNK48pbM"
+        url: "https://fzuslwrmhgaveulfewel.supabase.co",
+        anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6dXNsd3JtaGdhdmV1bGZld2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNjM0NTQsImV4cCI6MjA4MjkzOTQ1NH0.SFZJsJ3SejZsNwVtW1CcyINrrPdsRtjoWKsgNK48pbM"
     });
-
-    const sb = getSupabase();
-
+  
+    // 2) Tiny UI helpers that belong to the page
     function setYear() {
       const el = document.getElementById("year");
       if (el) el.textContent = String(new Date().getFullYear());
     }
-
-    function showAuthedUI() {
-      document.getElementById("authGate").style.display = "none";
-      document.getElementById("appShell").style.display = "block";
-      setYear();
-    }
-
-    function showGateUI() {
-      document.getElementById("appShell").style.display = "none";
-      document.getElementById("authGate").style.display = "block";
-      setYear();
-    }
-
-    function setAuthMessage(msg, isError) {
-      const el = document.getElementById("authMsg");
-      if (!el) return;
-      el.textContent = msg || "";
-      el.style.color = isError ? "#b91c1c" : "";
-    }
-
-    async function refreshAuthState() {
-      const { data } = await sb.auth.getSession();
-      if (data?.session) showAuthedUI();
-      else showGateUI();
-    }
-
-    async function sendMagicLink() {
-      const email = (document.getElementById("authEmail").value || "").trim();
-      if (!email) return setAuthMessage("Please enter an email address.", true);
-
-      const btn = document.getElementById("sendLinkBtn");
-      btn.disabled = true;
-      btn.textContent = "Sending...";
-      setAuthMessage("");
-
-      try {
-        const redirectTo = window.location.origin + window.location.pathname;
-        const { error } = await sb.auth.signInWithOtp({
-          email,
-          options: { emailRedirectTo: redirectTo }
-        });
-        if (error) throw error;
-
-        setAuthMessage("Magic link sent. Check your email.", false);
-      } catch (e) {
-        console.error("Magic link error:", e);
-        setAuthMessage(e?.message || "Failed to send link.", true);
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "Send magic link";
+    setYear();
+  
+    // 3) Initialize auth gating
+    // authGate.js will decide whether to show #authGate or #appShell
+    await initAuthGate({
+      onAuthed: () => {
+        setYear();
       }
-    }
-
-    async function signOut() {
-      await sb.auth.signOut();
-      await refreshAuthState();
-    }
-
-    // Wire up events
-    document.getElementById("sendLinkBtn")?.addEventListener("click", sendMagicLink);
-    document.getElementById("signOutBtn")?.addEventListener("click", signOut);
-
-    // Listen for auth changes
-    sb.auth.onAuthStateChange(() => {
-      refreshAuthState();
     });
-
-    // Initial render
-    refreshAuthState();
+  
+    // 4) Sign out button for the authenticated shell
+    const sb = getSupabase();
+    document.getElementById("signOutBtn")?.addEventListener("click", async () => {
+      await sb.auth.signOut();
+      // No need to manually toggle UI here; authGate.js listens to auth changes.
+    });
   </script>
+
 </body>
 </html>
