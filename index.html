@@ -13,6 +13,7 @@
 
   <title>EDG6973 - Capstone Project</title>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="assets/css/styles.css" />
 </head>
 
@@ -34,6 +35,7 @@
       <nav class="topnav" aria-label="Primary">
         <a class="topnav-link" href="#milestones">Milestones</a>
         <a class="topnav-link" href="#modules">Modules</a>
+        <button class="btn ghost" type="button" data-open-modal="authModal">Sign in</button>
         <button class="btn ghost" type="button" data-open-modal="advisorModal">Contact Your Advisor</button>
       </nav>
     </div>
@@ -186,6 +188,35 @@
     </footer>
   </main>
 
+  
+  <dialog id="authModal" class="modal">
+    <form method="dialog" class="modal-card" aria-labelledby="authTitle">
+      <div class="modal-header">
+        <h3 id="authTitle" class="modal-title">Sign in</h3>
+        <button class="btn icon ghost" value="cancel" aria-label="Close">✕</button>
+      </div>
+  
+      <div class="modal-body">
+        <p class="muted">
+          Enter your email and we will send you a magic sign-in link.
+        </p>
+  
+        <form class="form" id="authForm">
+          <label class="field">
+            <span>Email</span>
+            <input id="authEmail" type="email" placeholder="you@ufl.edu" autocomplete="email" required />
+          </label>
+  
+          <div class="task-actions">
+            <button class="btn" id="sendLinkBtn" type="button">Send magic link</button>
+            <span class="hint" id="authMsg"></span>
+          </div>
+        </form>
+      </div>
+    </form>
+  </dialog>
+  
+  
   <dialog id="advisorModal" class="modal">
     <form method="dialog" class="modal-card" aria-labelledby="advisorTitle">
       <div class="modal-header">
