@@ -24,14 +24,31 @@ function setActiveTab(tab) {
   // panelSetPassword is controlled by auth state
 }
 
-async function ensureUserRow(session) {
-  // Create (or update) your directory row after auth exists
-  // This works well with your "users" table model.
+async function isInvitedEmail(email) {
+  const sb = getSupabase();
+  const { data, error } = await sb
+    .from("project_invites")
+    .select("email, is_active")
+    .eq("email", email)
+    .maybeSingle();
+
+  if (error) throw error;
+  return Boolean(data && data.is_active);
+}
+
+async function ensureAuthorizedUserRow(session) {
   const sb = getSupabase();
   const uid = session.user.id;
   const email = session.user.email;
 
-  // Upsert is safe; you can expand fields later (name, affiliation, etc.)
+  if (!email) throw new Error("No email found for this account.");
+
+  const invited = await isInvitedEmail(email);
+  if (!invited) {
+    throw new Error("Access not granted. Please contact the instructor.");
+  }
+
+  // Now provision the directory row (invite-only)
   const { error } = await sb
     .from("users")
     .upsert(
@@ -39,11 +56,7 @@ async function ensureUserRow(session) {
       { onConflict: "user_id" }
     );
 
-  if (error) {
-    // If your RLS prevents this upsert, you can instead create the row via an admin workflow later.
-    // For now, surface the error.
-    throw error;
-  }
+  if (error) throw error;
 }
 
 async function getDirectoryStatus(session) {
@@ -220,7 +233,7 @@ export async function initAuthGate({ onAuthed }) {
 
     // Signed in: ensure directory row exists and check active status
     try {
-      await ensureUserRow(session);
+      await ensureAuthorizedUserRow(session);
 
       const status = await getDirectoryStatus(session);
       if (!status) {
@@ -252,6 +265,7 @@ export async function initAuthGate({ onAuthed }) {
       if (typeof onAuthed === "function") onAuthed();
     } catch (e) {
       console.error(e);
+      await sb.auth.signOut(); // important: remove session if not authorized
       show("authGate", true);
       show("appShell", false);
       setMsg("signupMsg", e?.message || "Authorization check failed.", true);
