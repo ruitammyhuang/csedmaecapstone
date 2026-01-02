@@ -1,21 +1,24 @@
 // assets/js/bootstrap.js
-// Configures Supabase once for all pages that import this module.
 
-import { configureSupabase, getSupabase } from "./supabaseClient.js";
-import { SUPABASE_URL, SUPABASE_ANON_KEY, EDG6973_PROJECT_ID } from "./config.js";
+import { configureSupabase } from "./supabaseClient.js";
+import { SUPABASE_CONFIG } from "./config.js";
+import { loadTopNav } from "./loadTopNav.js";
+import { loadModulesSubNav } from "./loadModulesSubNav.js";
+import { loadSharedModals } from "./loadSharedModals.js";
 
-let _bootstrapped = false;
-
-export function bootstrapSupabase() {
-  if (_bootstrapped) return getSupabase();
-
-  configureSupabase({
-    url: SUPABASE_URL,
-    anonKey: SUPABASE_ANON_KEY
-  });
-
-  _bootstrapped = true;
-  return getSupabase();
+function setYear() {
+  const el = document.getElementById("year");
+  if (el) el.textContent = String(new Date().getFullYear());
 }
 
-export { EDG6973_PROJECT_ID };
+export async function bootstrapApp() {
+  // Configure Supabase ONCE
+  configureSupabase(SUPABASE_CONFIG);
+
+  // Shared UI
+  await loadTopNav();
+  await loadModulesSubNav();
+  await loadSharedModals();
+
+  setYear();
+}
