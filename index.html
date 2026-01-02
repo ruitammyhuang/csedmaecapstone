@@ -94,6 +94,33 @@
             </div>
           </div>
         </div>
+
+        <!-- COMPLETE USER INFO: shown after first sign-up OR if info incomplete -->
+        <div id="panelUserInfo" style="display:none; margin-top: 16px;">
+          <div class="callout">
+            <div class="callout-title">Complete your information</div>
+            <p class="muted" style="margin-top: 8px;">
+              Please complete the information below. After you submit, you will be taken to the course hub.
+            </p>
+        
+            <label class="field">
+              <span>Full name</span>
+              <input id="uiFullName" type="text" placeholder="First Last" autocomplete="name" />
+            </label>
+        
+            <label class="field">
+              <span>Affiliation</span>
+              <input id="uiAffiliation" type="text" placeholder="University of Florida" autocomplete="organization" />
+            </label>
+        
+            <div class="task-actions" style="align-items:center;">
+              <button class="btn" id="uiSaveBtn" type="button">Save and continue</button>
+              <span class="hint" id="uiMsg"></span>
+            </div>
+          </div>
+        </div>
+
+        
       </div>
     </section>
   </main>
