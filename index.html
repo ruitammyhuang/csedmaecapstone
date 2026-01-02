@@ -388,6 +388,7 @@
   </dialog>
 </div>
 
+
 <script type="module">
   import { configureSupabase, getSupabase } from "./assets/js/supabaseClient.js";
   import { initAuthGate } from "./assets/js/authGate.js";
@@ -405,22 +406,31 @@
     if (el) el.textContent = String(new Date().getFullYear());
   }
 
-  // Auth gate decides whether to show #authGate or #appShell
-  await initAuthGate({
-    onAuthed: async () => {
-      setYear();
+  async function initAuthedFeatures() {
+    setYear();
+    await initInviteAdmin({ projectId: EDG6973_PROJECT_ID });
+  }
 
-      // Instructor/admin-only invite panel
-      // This will stay hidden for non-instructor/admin users
-      await initInviteAdmin({ projectId: EDG6973_PROJECT_ID });
+  await initAuthGate({
+    onAuthed: () => {
+      initAuthedFeatures();
     }
   });
 
   const sb = getSupabase();
+
+  // If the page reloads with an existing session, onAuthed should fire,
+  // but this is an extra safety net:
+  sb.auth.onAuthStateChange((_event, session) => {
+    if (session) initAuthedFeatures();
+  });
+
   document.getElementById("signOutBtn")?.addEventListener("click", async () => {
     await sb.auth.signOut();
   });
 </script>
+
+
 
 </body>
 </html>
