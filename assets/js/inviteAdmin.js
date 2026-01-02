@@ -158,9 +158,21 @@ export async function initInviteAdmin({ projectId }) {
         const { data, error } = await sb.functions.invoke("send-project-invite", {
           body: { project_id: projectId, email, project_role }
         });
-
-        if (error) throw new Error(error.message || "Edge Function call failed.");
-        if (!data || data.ok !== true) throw new Error(data?.message || "Invite failed.");
+        
+        if (error) {
+          // Supabase puts useful details here
+          const status = error.status ?? "unknown";
+          const msg =
+            error.context?.body?.message ||
+            error.context?.body?.error ||
+            error.message ||
+            "Edge Function error";
+          throw new Error(`Invite failed (${status}): ${msg}`);
+        }
+        
+        if (data?.ok !== true) {
+          throw new Error(data?.message || "Invite failed (no ok:true returned).");
+        }
 
         setMsg("Invitation sent.", false);
         emailEl.value = "";
