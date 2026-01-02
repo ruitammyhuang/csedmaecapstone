@@ -27,30 +27,71 @@
         <h1 class="section-title" style="font-size: 26px; color:#002657;">EDG 6973</h1>
         <p class="section-subtitle">Capstone Project (Project in Lieu of Thesis)</p>
       </header>
-
+  
       <div class="section-body">
-        <p class="muted">
-          Sign in with your email to access the course hub.
-        </p>
-
-        <div class="form" id="authForm">
+        <div class="task-actions" style="gap:8px; margin-bottom: 12px;">
+          <button class="btn ghost" id="tabSignup" type="button">Sign up</button>
+          <button class="btn ghost" id="tabSignin" type="button">Sign in</button>
+        </div>
+  
+        <!-- SIGN UP: magic link -->
+        <div id="panelSignup" style="display:none;">
+          <p class="muted">First time here? Enter your email to receive a sign-up link.</p>
+  
           <label class="field">
             <span>Email</span>
-            <input id="authEmail" type="email" placeholder="you@ufl.edu" autocomplete="email" required />
+            <input id="signupEmail" type="email" placeholder="you@ufl.edu" autocomplete="email" />
           </label>
-
+  
           <div class="task-actions" style="align-items:center;">
-            <button class="btn" id="sendLinkBtn" type="button">Send magic link</button>
-            <span class="hint" id="authMsg"></span>
+            <button class="btn" id="signupSendLinkBtn" type="button">Send sign-up link</button>
+            <span class="hint" id="signupMsg"></span>
           </div>
-
-          <div class="callout" style="margin-top: 14px;">
-            <div class="callout-title">Having trouble?</div>
-            <ul class="task-list">
-              <li>Use the same browser for requesting and opening the magic link.</li>
-              <li>Check spam or quarantine folders.</li>
-              <li>If you see a redirect error, contact the instructor.</li>
-            </ul>
+        </div>
+  
+        <!-- SIGN IN: email + password -->
+        <div id="panelSignin" style="display:none;">
+          <p class="muted">Use your email and password to sign in.</p>
+  
+          <label class="field">
+            <span>Email</span>
+            <input id="signinEmail" type="email" placeholder="you@ufl.edu" autocomplete="email" />
+          </label>
+  
+          <label class="field">
+            <span>Password</span>
+            <input id="signinPassword" type="password" placeholder="Your password" autocomplete="current-password" />
+          </label>
+  
+          <div class="task-actions" style="align-items:center;">
+            <button class="btn" id="signinBtn" type="button">Sign in</button>
+            <button class="btn ghost" id="forgotBtn" type="button">Forgot password</button>
+            <span class="hint" id="signinMsg"></span>
+          </div>
+        </div>
+  
+        <!-- SET PASSWORD: shown after magic link sign-up -->
+        <div id="panelSetPassword" style="display:none; margin-top: 16px;">
+          <div class="callout">
+            <div class="callout-title">Set your password</div>
+            <p class="muted" style="margin-top: 8px;">
+              You are signed in. Set a password once so next time you can sign in without requesting a link.
+            </p>
+  
+            <label class="field">
+              <span>New password</span>
+              <input id="newPassword" type="password" placeholder="Choose a password" autocomplete="new-password" />
+            </label>
+  
+            <label class="field">
+              <span>Confirm password</span>
+              <input id="confirmPassword" type="password" placeholder="Re-enter password" autocomplete="new-password" />
+            </label>
+  
+            <div class="task-actions" style="align-items:center;">
+              <button class="btn" id="setPasswordBtn" type="button">Save password</button>
+              <span class="hint" id="setPasswordMsg"></span>
+            </div>
           </div>
         </div>
       </div>
