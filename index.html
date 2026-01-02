@@ -149,48 +149,6 @@
   <main id="main" class="container page">
 
     <!-- ===================================================== -->
-    <!-- Instructor/Admin Invitation Panel (hidden for students) -->
-    <!-- ===================================================== -->
-    <section id="inviteAdminPanel" class="card section" style="display:none;">
-      <header class="section-header">
-        <h2 class="section-title">Invite participants</h2>
-        <p class="section-subtitle">
-          Send a direct invitation email. Only instructors/admins can access this panel.
-        </p>
-      </header>
-
-      <div class="section-body">
-        <div class="grid" style="display:grid; gap:12px; grid-template-columns: 1fr 220px;">
-          <label class="field">
-            <span>Email</span>
-            <input id="inviteEmail" type="email" placeholder="someone@ufl.edu" autocomplete="email" />
-          </label>
-
-          <label class="field">
-            <span>Role</span>
-            <select id="inviteRole">
-              <option value="student">student</option>
-              <option value="ta">ta</option>
-              <option value="instructor">instructor</option>
-              <option value="researcher">researcher</option>
-              <option value="collaborator">collaborator</option>
-              <option value="admin">admin</option>
-            </select>
-          </label>
-        </div>
-
-        <div class="task-actions" style="align-items:center; margin-top: 10px;">
-          <button class="btn" id="sendInviteBtn" type="button">Send invitation</button>
-          <span class="hint" id="inviteMsg"></span>
-        </div>
-
-        <p class="muted" style="margin-top: 10px;">
-          Invited users will receive an email link to complete sign-up, then set a password.
-        </p>
-      </div>
-    </section>
-
-    <!-- ===================================================== -->
     <!-- Your original course hub content starts here -->
     <!-- ===================================================== -->
     <section class="hero card">
@@ -343,64 +301,16 @@
 </div>
 
 <script type="module">
-  import { getSupabase } from "./assets/js/supabaseClient.js";
-  import { bootstrapSupabase, EDG6973_PROJECT_ID } from "./assets/js/bootstrap.js";
   import { initAuthGate } from "./assets/js/authGate.js";
-  import { initInviteAdmin } from "./assets/js/inviteAdmin.js";
-  import { loadTopNav } from "./assets/js/loadTopNav.js";
+  import { bootstrapApp } from "./assets/js/bootstrap.js";
 
-  // CENTRALIZED Supabase setup (once)
-  bootstrapSupabase();
-
-  function setYear() {
-    const el = document.getElementById("year");
-    if (el) el.textContent = String(new Date().getFullYear());
-  }
-
-  function initModals() {
-    document.querySelectorAll("[data-open-modal]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const id = btn.getAttribute("data-open-modal");
-        const dialog = document.getElementById(id);
-        if (dialog && typeof dialog.showModal === "function") dialog.showModal();
-      });
-    });
-
-    document.querySelectorAll("dialog.modal").forEach((dialog) => {
-      dialog.addEventListener("click", (e) => {
-        if (e.target === dialog) dialog.close();
-      });
-    });
-  }
-
-  async function initAuthedFeatures() {
-    setYear();
-    initModals();
-
-    // LOAD SHARED TOP NAV HERE
-    await loadTopNav(); // index page has no active nav item
-    
-    await initInviteAdmin({ projectId: EDG6973_PROJECT_ID });
-  }
-
+  // Auth gate decides whether to show auth UI or appShell.
+  // When user is authorized, we load shared UI (top nav, sub nav, modals) and shared helpers (year, etc.).
   await initAuthGate({
-    onAuthed: () => {
-      initAuthedFeatures();
+    onAuthed: async () => {
+      await bootstrapApp();
     }
   });
-
-  const sb = getSupabase();
-
-  sb.auth.onAuthStateChange((_event, session) => {
-    if (session) initAuthedFeatures();
-  });
-
-  document.getElementById("signOutBtn")?.addEventListener("click", async () => {
-    await sb.auth.signOut();
-  });
-
-  // Set year even when signed out (footer might be hidden, but safe)
-  setYear();
 </script>
 
 </body>
