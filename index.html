@@ -388,7 +388,6 @@
   </dialog>
 </div>
 
-
 <script type="module">
   import { configureSupabase, getSupabase } from "./assets/js/supabaseClient.js";
   import { initAuthGate } from "./assets/js/authGate.js";
@@ -406,8 +405,25 @@
     if (el) el.textContent = String(new Date().getFullYear());
   }
 
+  function initModals() {
+    document.querySelectorAll("[data-open-modal]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-open-modal");
+        const dialog = document.getElementById(id);
+        if (dialog && typeof dialog.showModal === "function") dialog.showModal();
+      });
+    });
+
+    document.querySelectorAll("dialog.modal").forEach((dialog) => {
+      dialog.addEventListener("click", (e) => {
+        if (e.target === dialog) dialog.close();
+      });
+    });
+  }
+
   async function initAuthedFeatures() {
     setYear();
+    initModals();
     await initInviteAdmin({ projectId: EDG6973_PROJECT_ID });
   }
 
@@ -419,8 +435,6 @@
 
   const sb = getSupabase();
 
-  // If the page reloads with an existing session, onAuthed should fire,
-  // but this is an extra safety net:
   sb.auth.onAuthStateChange((_event, session) => {
     if (session) initAuthedFeatures();
   });
@@ -428,9 +442,10 @@
   document.getElementById("signOutBtn")?.addEventListener("click", async () => {
     await sb.auth.signOut();
   });
+
+  // Set year even when signed out (footer might be hidden, but safe)
+  setYear();
 </script>
-
-
 
 </body>
 </html>
