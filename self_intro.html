@@ -378,20 +378,19 @@
       const { data, error } = await sb
         .from("project_introductions")
         .select(`
+          id,
           project_id,
           user_id,
           intro_text,
           video_url,
-          embed_url,
           created_at,
-          updated_at,
-          users:users (
+          users (
+            user_id,
             full_name,
             affiliation
           )
         `)
         .eq("project_id", PROJECT_ID)
-        .order("updated_at", { ascending: false, nullsFirst: false })
         .order("created_at", { ascending: false });
 
       if (error) throw error;
