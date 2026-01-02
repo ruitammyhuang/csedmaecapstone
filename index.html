@@ -374,17 +374,14 @@
 </div>
 
 <script type="module">
-  import { configureSupabase, getSupabase } from "./assets/js/supabaseClient.js";
+  import { getSupabase } from "./assets/js/supabaseClient.js";
+  import { bootstrapSupabase, EDG6973_PROJECT_ID } from "./assets/js/bootstrap.js";
   import { initAuthGate } from "./assets/js/authGate.js";
   import { initInviteAdmin } from "./assets/js/inviteAdmin.js";
   import { loadTopNav } from "./assets/js/loadTopNav.js";
 
-  configureSupabase({
-    url: "https://fzuslwrmhgaveulfewel.supabase.co",
-    anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6dXNsd3JtaGdhdmV1bGZld2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNjM0NTQsImV4cCI6MjA4MjkzOTQ1NH0.SFZJsJ3SejZsNwVtW1CcyINrrPdsRtjoWKsgNK48pbM"
-  });
-
-  const EDG6973_PROJECT_ID = "9dc0a871-a9fd-4898-bf8e-2d3d8692fe6d";
+  // CENTRALIZED Supabase setup (once)
+  bootstrapSupabase();
 
   function setYear() {
     const el = document.getElementById("year");
