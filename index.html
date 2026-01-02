@@ -300,6 +300,11 @@
 <script type="module">
   import { initAuthGate } from "./assets/js/authGate.js";
   import { bootstrapApp } from "./assets/js/bootstrap.js";
+  import { configureSupabase } from "./assets/js/supabaseClient.js";
+  import { SUPABASE_CONFIG } from "./assets/js/config.js";
+
+  // Supabase must be configured BEFORE authGate runs.
+  configureSupabase(SUPABASE_CONFIG);
 
   let bootstrapped = false;
 
