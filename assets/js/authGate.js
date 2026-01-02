@@ -32,8 +32,18 @@ function hideAllPanels() {
 
 function setActiveTab(tab) {
   hideAllPanels();
-  show("panelSignup", tab === "signup");
-  show("panelSignin", tab === "signin");
+
+  // Only show panels that actually exist on this page
+  if (tab === "signup") {
+    if ($("panelSignup")) show("panelSignup", true);
+    else if ($("panelSignin")) show("panelSignin", true); // fallback
+    return;
+  }
+
+  if (tab === "signin") {
+    if ($("panelSignin")) show("panelSignin", true);
+    else if ($("panelSignup")) show("panelSignup", true); // fallback
+  }
 }
 
 function showUserInfoPanel(prefill) {
@@ -55,17 +65,10 @@ function showSetPasswordPanel() {
   setMsg("setPasswordMsg", "", false);
 }
 
-function showGate(tab = "signup") {
+function showGate(tab = "signin") {
   show("authGate", true);
   show("appShell", false);
   setActiveTab(tab);
-}
-
-function showAppShell(onAuthed) {
-  show("authGate", false);
-  show("appShell", true);
-  hideAllPanels();
-  if (typeof onAuthed === "function") onAuthed();
 }
 
 function getRedirectTo() {
@@ -102,15 +105,7 @@ async function upsertUserInfo(sb, session, { full_name, affiliation }) {
     user_info_completed: true
   };
 
-  // Note: we do NOT set is_active=true here.
-  // That value should be controlled by you (admin) if you want strict governance.
-  // If you prefer auto-activate on completion, uncomment the next line:
-  // payload.is_active = true;
-
-  const { error } = await sb
-    .from("users")
-    .upsert(payload, { onConflict: "user_id" });
-
+  const { error } = await sb.from("users").upsert(payload, { onConflict: "user_id" });
   if (error) throw error;
 }
 
@@ -120,25 +115,35 @@ async function setPassword(sb, newPassword) {
 }
 
 async function markPasswordSet(sb, uid) {
-  const { error } = await sb
-    .from("users")
-    .update({ password_set: true })
-    .eq("user_id", uid);
-
+  const { error } = await sb.from("users").update({ password_set: true }).eq("user_id", uid);
   if (error) throw error;
 }
 
 export async function initAuthGate({ onAuthed } = {}) {
   const sb = getSupabase();
 
-  // Default view if signed out
-  showGate("signup");
+  // Guard so onAuthed doesn't run multiple times during repeated applyAuthState calls
+  let authedInitialized = false;
 
-  // Tabs
+  function showAppShellOnce() {
+    show("authGate", false);
+    show("appShell", true);
+    hideAllPanels();
+
+    if (!authedInitialized && typeof onAuthed === "function") {
+      authedInitialized = true;
+      onAuthed();
+    }
+  }
+
+  // Default view if signed out (use signin as default; matches your current UI)
+  showGate("signin");
+
+  // Tabs (may not exist on pages that hide signup)
   $("tabSignup")?.addEventListener("click", () => showGate("signup"));
   $("tabSignin")?.addEventListener("click", () => showGate("signin"));
 
-  // Sign up (magic link)
+  // Sign up (magic link) - only binds if the button exists on the page
   $("signupSendLinkBtn")?.addEventListener("click", async () => {
     try {
       setMsg("signupMsg", "", false);
@@ -146,8 +151,10 @@ export async function initAuthGate({ onAuthed } = {}) {
       if (!email) return setMsg("signupMsg", "Please enter an email address.", true);
 
       const btn = $("signupSendLinkBtn");
-      btn.disabled = true;
-      btn.textContent = "Sending...";
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "Sending...";
+      }
 
       const { error } = await sb.auth.signInWithOtp({
         email,
@@ -177,14 +184,16 @@ export async function initAuthGate({ onAuthed } = {}) {
       if (!email || !password) return setMsg("signinMsg", "Enter email and password.", true);
 
       const btn = $("signinBtn");
-      btn.disabled = true;
-      btn.textContent = "Signing in...";
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "Signing in...";
+      }
 
       const { error } = await sb.auth.signInWithPassword({ email, password });
       if (error) throw error;
 
       setMsg("signinMsg", "", false);
-      // UI will update via auth state listener
+      // UI updates via auth state listener
     } catch (e) {
       console.error(e);
       setMsg("signinMsg", e?.message || "Sign-in failed.", true);
@@ -231,14 +240,14 @@ export async function initAuthGate({ onAuthed } = {}) {
       if (!session) throw new Error("No active session. Please sign in again.");
 
       const btn = $("uiSaveBtn");
-      btn.disabled = true;
-      btn.textContent = "Saving...";
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "Saving...";
+      }
 
       await upsertUserInfo(sb, session, { full_name, affiliation });
 
       setMsg("uiMsg", "Saved. Continuing...", false);
-
-      // Re-evaluate routing after saving
       await applyAuthState();
     } catch (e) {
       console.error(e);
@@ -268,14 +277,15 @@ export async function initAuthGate({ onAuthed } = {}) {
       if (!session) throw new Error("No active session. Please sign in again.");
 
       const btn = $("setPasswordBtn");
-      btn.disabled = true;
-      btn.textContent = "Saving...";
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "Saving...";
+      }
 
       await setPassword(sb, p1);
       await markPasswordSet(sb, session.user.id);
 
       setMsg("setPasswordMsg", "Password saved. You can now sign in with email and password next time.", false);
-
       await applyAuthState();
     } catch (e) {
       console.error(e);
@@ -294,7 +304,8 @@ export async function initAuthGate({ onAuthed } = {}) {
       const session = await getSessionOrNull(sb);
 
       if (!session) {
-        showGate("signup");
+        authedInitialized = false; // allow onAuthed again after a future sign-in
+        showGate("signin");
         return;
       }
 
@@ -309,19 +320,17 @@ export async function initAuthGate({ onAuthed } = {}) {
         return;
       }
 
-      // If you want admin to activate users, keep this check.
-      // If you want completion to auto-activate, you can set is_active=true in upsertUserInfo above.
+      // Enforce activation gate
       if (row.is_active === false) {
         show("authGate", true);
         show("appShell", false);
         hideAllPanels();
-        setActiveTab("signup");
-        setMsg("signupMsg", "Access pending or deactivated. Contact the instructor.", true);
+        setActiveTab("signin");
+        setMsg("signinMsg", "Access pending or deactivated. Contact the instructor.", true);
         return;
       }
 
       // Optional: enforce password setup before allowing entry
-      // If you do NOT want this step, comment out this block.
       if (row.password_set === false) {
         show("authGate", true);
         show("appShell", false);
@@ -329,19 +338,20 @@ export async function initAuthGate({ onAuthed } = {}) {
         return;
       }
 
-      // Authorized and completed -> show landing page
-      showAppShell(onAuthed);
+      // Authorized and completed
+      showAppShellOnce();
     } catch (e) {
       console.error(e);
+      authedInitialized = false;
       show("authGate", true);
       show("appShell", false);
       hideAllPanels();
-      setActiveTab("signup");
-      setMsg("signupMsg", e?.message || "Authorization check failed.", true);
+      setActiveTab("signin");
+      setMsg("signinMsg", e?.message || "Authorization check failed.", true);
     }
   }
 
-  // React to auth changes (magic link return, sign-in, sign-out)
+  // React to auth changes
   sb.auth.onAuthStateChange(() => {
     applyAuthState();
   });
