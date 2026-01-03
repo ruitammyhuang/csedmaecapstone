@@ -1,5 +1,6 @@
 // assets/js/loadTopNav.js
 import { getSupabase } from "./supabaseClient.js";
+import { siteUrl, returnToParam } from "./config.js";
 
 function getCurrentFileName() {
   const path = (window.location.pathname || "").toLowerCase();
@@ -78,7 +79,8 @@ export async function loadTopNav() {
         const sb = getSupabase();
         await sb.auth.signOut();
       } finally {
-        window.location.href = "index.html";
+        // Redirect to the correct hub URL under /csedmaecapstone/
+        window.location.href = `${siteUrl("index.html")}?returnTo=${returnToParam()}`;
       }
     });
   }
