@@ -40,7 +40,7 @@ export async function loadSharedModals() {
   // If already loaded, stop here
   if (container.dataset.loaded === "1") return;
 
-  const partialUrl = new URL("../partials/shared-modals.html", import.meta.url);
+  const partialUrl = new URL("../../partials/shared-modals.html", import.meta.url);
 
   try {
     const res = await fetch(partialUrl.toString(), { cache: "no-cache" });
