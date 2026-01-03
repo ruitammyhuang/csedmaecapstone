@@ -114,7 +114,7 @@ export async function loadTopNav() {
         console.warn("Sign out: Supabase not ready or signOut failed. Redirecting anyway.", err);
         clearSupabaseTokensBestEffort();
       } finally {
-        window.location.replace(siteUrl("signup_signin.html"));
+        window.location.replace(redirectUrl);
       }
     });
   }
