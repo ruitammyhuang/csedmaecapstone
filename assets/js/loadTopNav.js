@@ -1,19 +1,54 @@
 // assets/js/loadTopNav.js
 import { getSupabase } from "./supabaseClient.js";
 
-function setActiveNav(activeKey) {
-  if (!activeKey) return;
+function getCurrentFileName() {
+  const path = (window.location.pathname || "").toLowerCase();
+  const parts = path.split("/");
+  return parts[parts.length - 1] || "";
+}
+
+function detectActiveTopNavKey() {
+  const file = getCurrentFileName();
+  const hash = (window.location.hash || "").toLowerCase();
+
+  // 1) Hash-based highlighting on index.html
+  // If user is on index and jumps to #milestones or #modules, highlight accordingly.
+  if (file === "" || file === "index.html") {
+    if (hash.includes("milestones")) return "milestones";
+    if (hash.includes("modules")) return "modules";
+    // default on index (no hash): don't force an active state
+    return null;
+  }
+
+  // 2) Page-based highlighting
+  if (file === "self_intro.html" || file === "self-intro.html") return "self-intro";
+
+  // Any module/sprint pages should highlight Modules
+  const modulePages = new Set([
+    "getting_started.html",
+    "sprint1.html",
+    "sprint2.html",
+    "sprint3.html",
+    "sprint4.html",
+    "sprint5.html",
+    "wrap_up.html"
+  ]);
+  if (modulePages.has(file)) return "modules";
+
+  return null;
+}
+
+function applyActiveNav(activeKey) {
   document.querySelectorAll(".topnav-link").forEach((el) => {
-    if (el.dataset.nav === activeKey) el.classList.add("active");
+    el.classList.toggle("active", el.dataset.nav === activeKey);
   });
 }
 
-export async function loadTopNav(activeKey) {
+export async function loadTopNav() {
   const container = document.getElementById("topnav-container");
   if (!container) return;
 
-  // IMPORTANT: go up two levels from /assets/js/ to reach /partials/
-  const partialUrl = new URL("../../partials/topnav.html", import.meta.url);
+  const partialUrl = new URL("../partials/topnav.html", import.meta.url);
 
   try {
     const res = await fetch(partialUrl.toString(), { cache: "no-cache" });
@@ -25,8 +60,18 @@ export async function loadTopNav(activeKey) {
     return;
   }
 
-  setActiveNav(activeKey);
+  // Initial highlight
+  applyActiveNav(detectActiveTopNavKey());
 
+  // Update highlight on hash changes (index anchors)
+  if (!window.__topnavHashListenerBound) {
+    window.__topnavHashListenerBound = true;
+    window.addEventListener("hashchange", () => {
+      applyActiveNav(detectActiveTopNavKey());
+    });
+  }
+
+  // Sign out behavior (avoid double-binding)
   const signOutBtn = document.getElementById("signOutBtn");
   if (signOutBtn && signOutBtn.dataset.bound !== "1") {
     signOutBtn.dataset.bound = "1";
