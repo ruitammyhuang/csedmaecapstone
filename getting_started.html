@@ -1,17 +1,14 @@
+<!-- self_intro.html -->
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="EDG6973 Getting Started tasks and orientation." />
+  <meta name="description" content="EDG6973 Self-Introductions" />
   <meta name="theme-color" content="#ffffff" />
-  <meta name="robots" content="index,follow" />
+  <meta name="robots" content="noindex,nofollow" />
 
-  <meta property="og:title" content="EDG6973 - Getting Started" />
-  <meta property="og:description" content="Getting started tasks and course orientation for EDG6973." />
-  <meta property="og:type" content="website" />
-
-  <title>EDG6973 - Getting Started</title>
+  <title>EDG6973 - Self Introductions</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="assets/css/styles.css" />
@@ -20,153 +17,290 @@
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
-  <div id="topnav-container"></div>
+  <!-- Shared shell mounts here (page-shell.html should include #appShell and <main id="main">...) -->
+  <div id="page-shell-container"></div>
 
-  <main id="main" class="container page">
-    <section class="hero card hero-compact">
-      <div class="hero-left">
-        <h1 class="hero-title">Getting Started</h1>
-        <p class="hero-lead">Welcome to your Capstone Project course</p>
-        <p class="muted">
-          Congratulations on reaching the final step in your Master’s journey. This capstone course provides a collaborative and supportive
-          environment for you to design, develop, and refine your individual project in Computer Science (CS) Education.
-        </p>
-      </div>
+  <!-- Page content stays editable as HTML; preload script will move it into #main -->
+  <div id="page-content" style="display:none;">
 
-      <div class="hero-right">
-        <div class="hero-banner" role="img" aria-label="Course banner"></div>
-      </div>
-    </section>
-
-    <section class="card section">
+    <section class="card section" style="max-width: 980px; margin: 18px auto;">
       <header class="section-header">
-        <h2 class="section-title">Essential tasks</h2>
-        <p class="section-subtitle">Please complete the following tasks before we dive into the semester.</p>
+        <h1 class="section-title">Post your self-introduction</h1>
+        <p class="section-subtitle">
+          You can submit text-only, video-only, or both. If you submit again, your post will be updated (no duplicates).
+        </p>
       </header>
 
       <div class="section-body">
-        <div class="task-grid">
-          <article class="task-card">
-            <div class="task-header">
-              <h3 class="task-title">Fill Out the When2Meet Poll</h3>
-              <span class="badge">By Jan 15, 2026</span>
-            </div>
-            <p class="task-text">
-              We need to schedule bi-weekly synchronous meetings for our whole group. Please complete this
-              <a href="https://www.when2meet.com/?34119167-af7cc" target="_blank" rel="noopener">When2Meet</a>
-              poll to indicate your availability. Please select all possible times, especially during the day.
-              I have unstable and limited availability during the evenings this semester due to other responsibilities.
-            </p>
-            <div class="task-actions">
-              <a class="btn" href="https://www.when2meet.com/?34119167-af7cc" target="_blank" rel="noopener">Open When2Meet</a>
-            </div>
-          </article>
+        <label class="field">
+          <span>Text introduction</span>
+          <textarea id="introText" rows="5" placeholder="Write a short introduction..."></textarea>
+        </label>
 
-          <article class="task-card">
-            <div class="task-header">
-              <h3 class="task-title">Register for Graduation</h3>
-              <span class="badge">By Jan 15, 2026</span>
-            </div>
-            <p class="task-text">
-              If you haven’t already, make sure to register for graduation. This is a critical step to ensure you’re on track to receive your degree.
-              You can find directions and the link to apply at
-              <a href="https://registrar.ufl.edu/services/degree-application" target="_blank" rel="noopener">
-                registrar.ufl.edu/services/degree-application
-              </a>.
-            </p>
-            <div class="task-actions">
-              <a class="btn" href="https://registrar.ufl.edu/services/degree-application" target="_blank" rel="noopener">Degree application</a>
-            </div>
-          </article>
+        <label class="field">
+          <span>Video link (YouTube recommended; others may show as a link)</span>
+          <input id="videoUrl" type="url" placeholder="https://www.youtube.com/watch?v=..." />
+          <div class="hint" id="videoHint"></div>
+        </label>
 
-          <article class="task-card" id="introduce-yourself">
-            <div class="task-header">
-              <h3 class="task-title">Self Introduction (Assignment)</h3>
-              <span class="badge neutral">Complete this week</span>
-            </div>
-          
-            <p class="task-text">
-              Post a short self-introduction so we can get to know each other. You can submit text, a video link, or both.
-              You will also be able to view everyone’s introductions in the same place.
-            </p>
-          
-            <div class="callout">
-              <div class="callout-title">Recommended video guidelines</div>
-              <ul class="task-list">
-                <li>Length: 60 to 120 seconds</li>
-                <li>Use a shareable link (YouTube unlisted is recommended; other platforms may display as a link)</li>
-                <li>Include: your name, pronouns and preferred name, your background in CS and Education, your goals for this course, and anything else you want to share</li>
-              </ul>
-            </div>
-          
-            <div class="task-actions">
-              <a class="btn" href="self_intro.html">Go to Self Introduction page</a>
-            </div>
-          
-            <p class="hint" style="margin-top:10px;">
-              On the Self Introduction page, you can submit your post and see classmates’ posts for this course project.
-            </p>
-          </article>
-
-          <article class="task-card">
-            <div class="task-header">
-              <h3 class="task-title">Start Thinking About Your Capstone Project</h3>
-              <span class="badge neutral">This week</span>
-            </div>
-            <p class="task-text">
-              Begin brainstorming potential topics or problems in CS Education related to your practical context that you’re passionate about addressing.
-            </p>
-
-            <div class="callout">
-              <div class="callout-title">Consider questions like:</div>
-              <ul class="task-list">
-                <li>What challenges have you encountered or observed in CS Education?</li>
-                <li>Are there gaps in tools, resources, or strategies that you’d like to explore?</li>
-                <li>What are you most passionate about in CS Education?</li>
-                <li>What ideas excite you and align with your professional goals?</li>
-                <li>What tangible tools or artifacts might you design, develop, or use within the semester scope?</li>
-              </ul>
-            </div>
-
-            <p class="task-text">
-              You do not need to have a solid project idea before our first synchronous meeting. We will talk more about it in our meetings,
-              and you will refine your ideas in the coming weeks.
-            </p>
-          </article>
+        <div class="task-actions" style="align-items:center;">
+          <button class="btn" id="saveIntroBtn" type="button">Save introduction</button>
+          <button class="btn ghost" id="refreshBtn" type="button">Refresh list</button>
+          <span class="hint" id="saveMsg"></span>
         </div>
       </div>
     </section>
 
-    <div id="footer-container"></div>
-  </main>
+    <section class="card section" style="max-width: 980px; margin: 18px auto;">
+      <header class="section-header">
+        <h2 class="section-title">Class introductions</h2>
+        <p class="section-subtitle">Sorted by latest updates.</p>
+      </header>
 
-  <div id="shared-modals"></div>
+      <div class="section-body">
+        <div id="introList" class="intro-grid"></div>
+        <div class="hint" id="listMsg" style="margin-top:10px;"></div>
+      </div>
+    </section>
+
+  </div>
 
   <script type="module">
-    import { configureSupabase, getSupabase } from "./assets/js/supabaseClient.js";
-    import { SUPABASE_CONFIG } from "./assets/js/config.js";
-    import { bootstrapApp } from "./assets/js/bootstrap.js";
-  
-    // 1) Configure Supabase first so any shared modules can safely call getSupabase()
-    configureSupabase(SUPABASE_CONFIG);
-  
-    // 2) If not signed in, redirect to the dedicated auth page
+    import { preloadProtectedPage } from "./assets/js/preloadProtectedPage.js";
+    import { getSupabase } from "./assets/js/supabaseClient.js";
+    import { EDG6973_PROJECT_ID as PROJECT_ID } from "./assets/js/config.js";
+
+    // 1) Standard preload (same pattern as index.html)
+    await preloadProtectedPage({
+      contentSelector: "#page-content",
+      redirectTo: "signup_signin.html"
+    });
+
+    // 2) Page-specific logic starts AFTER preload has mounted shell + verified session
     const sb = getSupabase();
-    const { data, error } = await sb.auth.getSession();
-    if (error) console.warn(error);
-  
-    if (!data?.session) {
-      const url = new URL("signup_signin.html", window.location.href);
-      url.searchParams.set(
-        "returnTo",
-        window.location.pathname + window.location.search + window.location.hash
-      );
-      window.location.replace(url.toString());
-    } else {
-      // 3) Signed in, load shared UI (topnav, modals, footer, year, global bindings)
-      await bootstrapApp();
+    const $ = (id) => document.getElementById(id);
+
+    function setMsg(id, msg, isError) {
+      const el = $(id);
+      if (!el) return;
+      el.textContent = msg || "";
+      el.style.color = isError ? "#b91c1c" : "";
+    }
+
+    function escapeHtml(s) {
+      return String(s ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function toEmbedUrl(raw) {
+      const url = (raw || "").trim();
+      if (!url) return "";
+
+      const ytWatch = url.match(/youtube\.com\/watch\?v=([A-Za-z0-9_-]{6,})/i);
+      if (ytWatch?.[1]) return `https://www.youtube.com/embed/${ytWatch[1]}`;
+
+      const ytShort = url.match(/youtu\.be\/([A-Za-z0-9_-]{6,})/i);
+      if (ytShort?.[1]) return `https://www.youtube.com/embed/${ytShort[1]}`;
+
+      const vimeo = url.match(/vimeo\.com\/(\d{6,})/i);
+      if (vimeo?.[1]) return `https://player.vimeo.com/video/${vimeo[1]}`;
+
+      return "";
+    }
+
+    function renderCard(row) {
+      const fullName = row?.users?.full_name || "Participant";
+      const affiliation = row?.users?.affiliation || "";
+      const introText = row?.intro_text || "";
+      const videoUrl = row?.video_url || "";
+      const embedUrl = row?.embed_url || toEmbedUrl(videoUrl);
+
+      const whoLine = affiliation
+        ? `${escapeHtml(fullName)} · ${escapeHtml(affiliation)}`
+        : escapeHtml(fullName);
+
+      const textHtml = introText
+        ? `<div class="muted" style="white-space:pre-wrap; margin-top:8px;">${escapeHtml(introText)}</div>`
+        : "";
+
+      const videoHtml = embedUrl
+        ? `
+          <div class="intro-video">
+            <div class="muted" style="margin-bottom:6px;">Video</div>
+            <div class="intro-video-frame">
+              <iframe
+                src="${escapeHtml(embedUrl)}"
+                title="Introduction video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+              ></iframe>
+            </div>
+          </div>
+        `
+        : (videoUrl
+            ? `<div style="margin-top:10px;"><a target="_blank" rel="noopener" href="${escapeHtml(videoUrl)}">Watch video link</a></div>`
+            : "");
+
+      const when = row?.updated_at || row?.created_at || "";
+      const whenHtml = when
+        ? `<div class="hint" style="margin-top:10px;">Updated: ${escapeHtml(new Date(when).toLocaleString())}</div>`
+        : "";
+
+      return `
+        <article class="card" style="padding:16px;">
+          <div style="font-weight:700; color:#111827;">${whoLine}</div>
+          ${textHtml}
+          ${videoHtml}
+          ${whenHtml}
+        </article>
+      `;
+    }
+
+    async function ensureSession() {
+      const { data, error } = await sb.auth.getSession();
+      if (error) throw error;
+      if (!data?.session) throw new Error("Not signed in.");
+      return data.session;
+    }
+
+    async function loadMyIntro(uid) {
+      const { data, error } = await sb
+        .from("project_introductions")
+        .select("project_id, user_id, intro_text, video_url, embed_url, created_at, updated_at")
+        .eq("project_id", PROJECT_ID)
+        .eq("user_id", uid)
+        .maybeSingle();
+
+      if (error) throw error;
+      return data || null;
+    }
+
+    async function loadIntroductions() {
+      setMsg("listMsg", "Loading...", false);
+
+      try {
+        const { data, error } = await sb
+          .from("project_introductions")
+          .select(`
+            project_id,
+            user_id,
+            intro_text,
+            video_url,
+            embed_url,
+            created_at,
+            updated_at,
+            users (
+              user_id,
+              full_name,
+              affiliation
+            )
+          `)
+          .eq("project_id", PROJECT_ID)
+          .order("updated_at", { ascending: false })
+          .order("created_at", { ascending: false });
+
+        if (error) throw error;
+
+        const list = $("introList");
+        if (!list) return;
+
+        if (!data || data.length === 0) {
+          list.innerHTML = "";
+          setMsg("listMsg", "No introductions yet.", false);
+          return;
+        }
+
+        list.innerHTML = data.map(renderCard).join("");
+        setMsg("listMsg", "", false);
+      } catch (e) {
+        console.error(e);
+        setMsg("listMsg", e?.message || "Failed to load introductions.", true);
+      }
+    }
+
+    async function saveIntro() {
+      setMsg("saveMsg", "", false);
+
+      const session = await ensureSession();
+      const uid = session.user.id;
+
+      const intro_text = ($("introText")?.value || "").trim();
+      const video_url = ($("videoUrl")?.value || "").trim();
+
+      if (!intro_text && !video_url) {
+        setMsg("saveMsg", "Please enter text, a video link, or both.", true);
+        return;
+      }
+
+      const embed_url = toEmbedUrl(video_url);
+
+      const btn = $("saveIntroBtn");
+      if (!btn) return;
+
+      btn.disabled = true;
+      btn.textContent = "Saving...";
+
+      try {
+        const { error } = await sb
+          .from("project_introductions")
+          .upsert(
+            {
+              project_id: PROJECT_ID,
+              user_id: uid,
+              intro_text: intro_text || null,
+              video_url: video_url || null,
+              embed_url: embed_url || null,
+              updated_at: new Date().toISOString()
+            },
+            { onConflict: "project_id,user_id" }
+          );
+
+        if (error) throw error;
+
+        setMsg("saveMsg", "Saved.", false);
+        await loadIntroductions();
+      } catch (e) {
+        console.error(e);
+        setMsg("saveMsg", e?.message || "Failed to save.", true);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Save introduction";
+      }
+    }
+
+    function bindPageEvents() {
+      $("saveIntroBtn")?.addEventListener("click", saveIntro);
+      $("refreshBtn")?.addEventListener("click", loadIntroductions);
+
+      $("videoUrl")?.addEventListener("input", () => {
+        const url = ($("videoUrl")?.value || "").trim();
+        const embed = toEmbedUrl(url);
+
+        if (!url) return setMsg("videoHint", "", false);
+        if (embed) setMsg("videoHint", "Looks good. This link should embed correctly.", false);
+        else setMsg("videoHint", "This platform may not embed. We will show it as a clickable link if embedding fails.", false);
+      });
+    }
+
+    // 3) Bind events and load data
+    bindPageEvents();
+    await loadIntroductions();
+
+    // 4) Prefill editor with their existing intro (if any)
+    try {
+      const session = await ensureSession();
+      const existing = await loadMyIntro(session.user.id);
+      if (existing) {
+        if ($("introText")) $("introText").value = existing.intro_text || "";
+        if ($("videoUrl")) $("videoUrl").value = existing.video_url || "";
+      }
+    } catch (_) {
+      // ignore
     }
   </script>
-
 </body>
 </html>
