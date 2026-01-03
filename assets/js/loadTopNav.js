@@ -1,6 +1,5 @@
 // assets/js/loadTopNav.js
 import { getSupabase } from "./supabaseClient.js";
-import { siteUrl, returnToParam } from "./config.js";
 
 function getCurrentFileName() {
   const path = (window.location.pathname || "").toLowerCase();
@@ -12,14 +11,13 @@ function detectActiveTopNavKey() {
   const file = getCurrentFileName();
   const hash = (window.location.hash || "").toLowerCase();
 
-  // 1) Hash-based highlighting on index.html
-  // If user is on index and jumps to #milestones or #modules, highlight accordingly.
+  // Hash-based highlighting on index.html
   if (file === "" || file === "index.html") {
     if (hash.includes("modules")) return "modules";
     return null;
   }
 
-  // 2) Page-based highlighting
+  // Page-based highlighting
   if (file === "self_intro.html" || file === "self-intro.html") return "self-intro";
 
   // Any module/sprint pages should highlight Modules
@@ -43,10 +41,18 @@ function applyActiveNav(activeKey) {
   });
 }
 
+function hubUrl() {
+  // Always go to the hub inside the same repo base path
+  // Example: /csedmaecapstone/index.html
+  const basePath = window.location.pathname.split("/").slice(0, -1).join("/");
+  return `${window.location.origin}${basePath}/index.html`;
+}
+
 export async function loadTopNav() {
   const container = document.getElementById("topnav-container");
   if (!container) return;
 
+  // Keep your known-good partial path (you already debugged the ../ issue)
   const partialUrl = new URL("../../partials/topnav.html", import.meta.url);
 
   try {
@@ -79,8 +85,8 @@ export async function loadTopNav() {
         const sb = getSupabase();
         await sb.auth.signOut();
       } finally {
-        // Redirect to the correct hub URL under /csedmaecapstone/
-        window.location.href = `${siteUrl("index.html")}?returnTo=${returnToParam()}`;
+        // No returnTo query string. Just go to hub.
+        window.location.href = hubUrl();
       }
     });
   }
