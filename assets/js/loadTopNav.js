@@ -17,10 +17,8 @@ function detectActiveTopNavKey() {
     return null;
   }
 
-  // Page-based highlighting
   if (file === "self_intro.html" || file === "self-intro.html") return "self-intro";
 
-  // Any module/sprint pages should highlight Modules
   const modulePages = new Set([
     "getting_started.html",
     "sprint1.html",
@@ -41,27 +39,39 @@ function applyActiveNav(activeKey) {
   });
 }
 
-/**
- * GitHub Pages project site:
- * https://username.github.io/<repo>/(pages...)
- * We want the stable base "/<repo>/".
- */
-function repoBasePath() {
-  const parts = window.location.pathname.split("/").filter(Boolean);
-  // For a GitHub Pages project site, parts[0] is the repo name (e.g., "csedmaecapstone")
-  const repo = parts[0] || "";
-  return `/${repo}/`;
+// /csedmaecapstone/signup_signin.html?returnTo=...
+function authPageUrl() {
+  const url = new URL("signup_signin.html", window.location.href);
+  const returnTo =
+    window.location.pathname +
+    window.location.search +
+    window.location.hash;
+
+  url.searchParams.set("returnTo", returnTo);
+  return url.toString();
 }
 
-function urlFromRepoRoot(file) {
-  return `${window.location.origin}${repoBasePath()}${file}`;
+// Best-effort cleanup if Supabase isn't configured on this page yet
+function clearSupabaseTokensBestEffort() {
+  try {
+    // Supabase v2 stores auth under keys that start with "sb-"
+    // This is safe to run even if nothing exists.
+    const keys = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith("sb-")) keys.push(k);
+    }
+    keys.forEach((k) => localStorage.removeItem(k));
+  } catch (e) {
+    // ignore
+  }
 }
 
 export async function loadTopNav() {
   const container = document.getElementById("topnav-container");
   if (!container) return;
 
-  // Keep your known-good partial path
+  // Use your known-good path pattern
   const partialUrl = new URL("../../partials/topnav.html", import.meta.url);
 
   try {
@@ -74,9 +84,10 @@ export async function loadTopNav() {
     return;
   }
 
-  // Highlight now and on hash changes
+  // Initial highlight
   applyActiveNav(detectActiveTopNavKey());
 
+  // Update highlight on hash changes (index anchors)
   if (!window.__topnavHashListenerBound) {
     window.__topnavHashListenerBound = true;
     window.addEventListener("hashchange", () => {
@@ -84,24 +95,26 @@ export async function loadTopNav() {
     });
   }
 
-  // Sign out
+  // Sign out behavior (avoid double-binding)
   const signOutBtn = document.getElementById("signOutBtn");
   if (signOutBtn && signOutBtn.dataset.bound !== "1") {
     signOutBtn.dataset.bound = "1";
 
-    signOutBtn.addEventListener("click", async () => {
-      const sb = getSupabase();
+    signOutBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+
+      // Always redirect to the dedicated auth page
+      const redirectUrl = authPageUrl();
 
       try {
+        // This will throw if Supabase isn't configured on this page
+        const sb = getSupabase();
         await sb.auth.signOut({ scope: "local" });
-      } catch (e) {
-        console.error("Sign out error:", e);
+      } catch (err) {
+        console.warn("Sign out: Supabase not ready or signOut failed. Redirecting anyway.", err);
+        clearSupabaseTokensBestEffort();
       } finally {
-        // Recommended: send users to your dedicated auth page
-        // If you have not created it yet, temporarily switch to index.html
-        const target = urlFromRepoRoot("signup_signin.html"); // preferred
-        // const target = urlFromRepoRoot("index.html"); // temporary fallback
-        window.location.replace(target);
+        window.location.replace(redirectUrl);
       }
     });
   }
