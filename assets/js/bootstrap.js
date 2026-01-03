@@ -3,7 +3,6 @@
 import { configureSupabase } from "./supabaseClient.js";
 import { SUPABASE_CONFIG } from "./config.js";
 import { loadTopNav } from "./loadTopNav.js";
-import { loadModulesSubNav } from "./loadModulesSubNav.js";
 import { loadSharedModals } from "./loadSharedModals.js";
 
 function setYear() {
@@ -18,7 +17,6 @@ export async function bootstrapApp() {
   try {
     // Shared UI
     await loadTopNav();          // top bar
-    await loadModulesSubNav();   // modules hover/subnav
     await loadSharedModals();    // advisor dialog + bindings
     setYear();
   } catch (e) {
