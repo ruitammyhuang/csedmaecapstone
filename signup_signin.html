@@ -19,54 +19,42 @@
 
 <script type="module">
   import { configureSupabase, getSupabase } from "./assets/js/supabaseClient.js";
-  import { SUPABASE_CONFIG } from "./assets/js/config.js";
+  import { SUPABASE_CONFIG, siteUrl } from "./assets/js/config.js";
   import { loadAuthGate } from "./assets/js/loadAuthGate.js";
   import { initAuthGate } from "./assets/js/authGate.js";
 
+  // 1) Configure + load auth UI
   configureSupabase(SUPABASE_CONFIG);
   await loadAuthGate();
 
   const sb = getSupabase();
 
-  function repoBasePath() {
-    const parts = window.location.pathname.split("/").filter(Boolean);
-    const repo = parts[0] || "";
-    return `/${repo}/`;
+  // 2) Always go to the landing page after auth
+  function goLanding() {
+    window.location.replace(siteUrl("index.html"));
   }
 
-  function urlFromRepoRoot(file) {
-    return `${window.location.origin}${repoBasePath()}${file}`;
-  }
+  // 3) If already authed (including returning from email confirmation), go landing
+  try {
+    const { data, error } = await sb.auth.getSession();
+    if (error) console.warn(error);
 
-  function resolveReturnTo() {
-    const params = new URLSearchParams(window.location.search);
-    const raw = params.get("returnTo");
-
-    if (!raw) return urlFromRepoRoot("index.html");
-
-    let decoded = "";
-    try {
-      decoded = decodeURIComponent(raw);
-    } catch {
-      return urlFromRepoRoot("index.html");
+    if (data?.session) {
+      goLanding();
+    } else {
+      // Show auth UI
+      await initAuthGate({
+        onAuthed: () => {
+          // IMPORTANT: ignore any ?returnTo=... and always go to index
+          goLanding();
+        }
+      });
     }
-
-    const base = repoBasePath();
-    if (!decoded.startsWith(base)) return urlFromRepoRoot("index.html");
-
-    return `${window.location.origin}${decoded}`;
-  }
-
-  const targetUrl = resolveReturnTo();
-
-  const { data, error } = await sb.auth.getSession();
-  if (error) console.error(error);
-
-  if (data?.session) {
-    window.location.replace(targetUrl);
-  } else {
+  } catch (e) {
+    console.error(e);
+    // If something odd happens, still allow auth UI to show
     await initAuthGate({
-      onAuthed: () => window.location.replace(targetUrl)
+      onAuthed: () => goLanding()
     });
   }
 </script>
