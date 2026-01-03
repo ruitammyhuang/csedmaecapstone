@@ -81,6 +81,69 @@ a:hover{ text-decoration:underline; }
   gap:12px;
   flex-wrap:wrap;
 }
+
+.nav-dropdown {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.nav-dropdown-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-caret {
+  font-size: 20px;        /* bigger arrow */
+  line-height: 1;
+  margin-top: 1px;
+  color: var(--uf-blue);
+  transition: transform 160ms ease;
+}
+
+.nav-dropdown-panel {
+  position: absolute;
+  top: calc(100% + 6px);  /* SMALL controlled spacing */
+  left: 0;
+  min-width: 260px;
+
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+
+  padding: 8px;
+  display: none;
+  z-index: 20;
+}
+
+.nav-dropdown-panel a {
+  display: block;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.nav-dropdown-panel a:hover {
+  background: #f3f4f6;
+}
+
+/* Keep dropdown open while hovering trigger OR panel */
+.nav-dropdown:hover .nav-dropdown-panel,
+.nav-dropdown:focus-within .nav-dropdown-panel {
+  display: block;
+}
+
+/* Rotate arrow when open */
+.nav-dropdown:hover .nav-caret,
+.nav-dropdown:focus-within .nav-caret {
+  transform: rotate(180deg);
+}
+
+
 .topnav-link{
   color:var(--text);
   padding:8px 10px;
