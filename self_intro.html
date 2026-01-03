@@ -15,13 +15,14 @@
 </head>
 
 <body>
-<!-- ===================================================== -->
-<!-- SELF-INTRO APP (shown when authenticated/authorized) -->
-<!-- ===================================================== -->
-<div id="appShell" style="display:none;">
-  <div id="topnav-container"></div>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-  <main id="main" class="container page">
+  <!-- Shared shell mounts here (page-shell.html should include #appShell and <main id="main">...) -->
+  <div id="page-shell-container"></div>
+
+  <!-- Page content stays editable as HTML; preload script will move it into #main -->
+  <div id="page-content" style="display:none;">
+
     <section class="card section" style="max-width: 980px; margin: 18px auto;">
       <header class="section-header">
         <h1 class="section-title">Post your self-introduction</h1>
@@ -62,313 +63,244 @@
       </div>
     </section>
 
-    <div id="footer-container"></div>
-  </main>
+  </div>
 
-  <div id="shared-modals"></div>
-</div>
+  <script type="module">
+    import { preloadProtectedPage } from "./assets/js/preloadProtectedPage.js";
+    import { getSupabase } from "./assets/js/supabaseClient.js";
+    import { EDG6973_PROJECT_ID as PROJECT_ID } from "./assets/js/config.js";
 
-<script type="module">
-  import { configureSupabase, getSupabase } from "./assets/js/supabaseClient.js";
-  import { SUPABASE_CONFIG, EDG6973_PROJECT_ID as PROJECT_ID } from "./assets/js/config.js";
-  import { bootstrapApp } from "./assets/js/bootstrap.js";
-  import { loadAuthGate } from "./assets/js/loadAuthGate.js";
-  import { initAuthGate } from "./assets/js/authGate.js";
+    // 1) Standard preload (same pattern as index.html)
+    await preloadProtectedPage({
+      contentSelector: "#page-content",
+      redirectTo: "signup_signin.html"
+    });
 
-  // 1) Configure Supabase first
-  configureSupabase(SUPABASE_CONFIG);
+    // 2) Page-specific logic starts AFTER preload has mounted shell + verified session
+    const sb = getSupabase();
+    const $ = (id) => document.getElementById(id);
 
-  // 2) Load auth gate markup (needed if we ever show it)
-  await loadAuthGate();
-
-  const sb = getSupabase();
-  const $ = (id) => document.getElementById(id);
-
-  function setMsg(id, msg, isError) {
-    const el = $(id);
-    if (!el) return;
-    el.textContent = msg || "";
-    el.style.color = isError ? "#b91c1c" : "";
-  }
-
-  function escapeHtml(s) {
-    return String(s ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  function toEmbedUrl(raw) {
-    const url = (raw || "").trim();
-    if (!url) return "";
-
-    const ytWatch = url.match(/youtube\.com\/watch\?v=([A-Za-z0-9_-]{6,})/i);
-    if (ytWatch?.[1]) return `https://www.youtube.com/embed/${ytWatch[1]}`;
-
-    const ytShort = url.match(/youtu\.be\/([A-Za-z0-9_-]{6,})/i);
-    if (ytShort?.[1]) return `https://www.youtube.com/embed/${ytShort[1]}`;
-
-    const vimeo = url.match(/vimeo\.com\/(\d{6,})/i);
-    if (vimeo?.[1]) return `https://player.vimeo.com/video/${vimeo[1]}`;
-
-    return "";
-  }
-
-  // Build repo-safe URL: /csedmaecapstone/signup_signin.html?returnTo=...
-  function authPageUrl() {
-    const url = new URL("signup_signin.html", window.location.href);
-
-    const returnTo =
-      window.location.pathname +
-      window.location.search +
-      window.location.hash;
-
-    url.searchParams.set("returnTo", returnTo);
-    return url.toString();
-  }
-
-  async function ensureAuthedOrRedirect() {
-    const { data, error } = await sb.auth.getSession();
-    if (error) throw error;
-    if (!data?.session) {
-      window.location.replace(authPageUrl());
-      return null; // stop further execution
+    function setMsg(id, msg, isError) {
+      const el = $(id);
+      if (!el) return;
+      el.textContent = msg || "";
+      el.style.color = isError ? "#b91c1c" : "";
     }
-    return data.session;
-  }
 
-  // IMPORTANT: if user hits self_intro.html while signed out, redirect to signup_signin.html
-  const initialSession = await ensureAuthedOrRedirect();
-  if (!initialSession) {
-    // redirected
-    throw new Error("Redirecting to sign-in.");
-  }
+    function escapeHtml(s) {
+      return String(s ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
 
-  function renderCard(row) {
-    const fullName = row?.users?.full_name || "Participant";
-    const affiliation = row?.users?.affiliation || "";
-    const introText = row?.intro_text || "";
-    const videoUrl = row?.video_url || "";
-    const embedUrl = row?.embed_url || toEmbedUrl(videoUrl);
+    function toEmbedUrl(raw) {
+      const url = (raw || "").trim();
+      if (!url) return "";
 
-    const whoLine = affiliation
-      ? `${escapeHtml(fullName)} · ${escapeHtml(affiliation)}`
-      : escapeHtml(fullName);
+      const ytWatch = url.match(/youtube\.com\/watch\?v=([A-Za-z0-9_-]{6,})/i);
+      if (ytWatch?.[1]) return `https://www.youtube.com/embed/${ytWatch[1]}`;
 
-    const textHtml = introText
-      ? `<div class="muted" style="white-space:pre-wrap; margin-top:8px;">${escapeHtml(introText)}</div>`
-      : "";
+      const ytShort = url.match(/youtu\.be\/([A-Za-z0-9_-]{6,})/i);
+      if (ytShort?.[1]) return `https://www.youtube.com/embed/${ytShort[1]}`;
 
-    const videoHtml = embedUrl
-      ? `
-        <div class="intro-video">
-          <div class="muted" style="margin-bottom:6px;">Video</div>
-          <div class="intro-video-frame">
-            <iframe
-              src="${escapeHtml(embedUrl)}"
-              title="Introduction video"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowfullscreen
-            ></iframe>
+      const vimeo = url.match(/vimeo\.com\/(\d{6,})/i);
+      if (vimeo?.[1]) return `https://player.vimeo.com/video/${vimeo[1]}`;
+
+      return "";
+    }
+
+    function renderCard(row) {
+      const fullName = row?.users?.full_name || "Participant";
+      const affiliation = row?.users?.affiliation || "";
+      const introText = row?.intro_text || "";
+      const videoUrl = row?.video_url || "";
+      const embedUrl = row?.embed_url || toEmbedUrl(videoUrl);
+
+      const whoLine = affiliation
+        ? `${escapeHtml(fullName)} · ${escapeHtml(affiliation)}`
+        : escapeHtml(fullName);
+
+      const textHtml = introText
+        ? `<div class="muted" style="white-space:pre-wrap; margin-top:8px;">${escapeHtml(introText)}</div>`
+        : "";
+
+      const videoHtml = embedUrl
+        ? `
+          <div class="intro-video">
+            <div class="muted" style="margin-bottom:6px;">Video</div>
+            <div class="intro-video-frame">
+              <iframe
+                src="${escapeHtml(embedUrl)}"
+                title="Introduction video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+              ></iframe>
+            </div>
           </div>
-        </div>
-      `
-      : (videoUrl
-          ? `<div style="margin-top:10px;"><a target="_blank" rel="noopener" href="${escapeHtml(videoUrl)}">Watch video link</a></div>`
-          : "");
+        `
+        : (videoUrl
+            ? `<div style="margin-top:10px;"><a target="_blank" rel="noopener" href="${escapeHtml(videoUrl)}">Watch video link</a></div>`
+            : "");
 
-    const when = row?.updated_at || row?.created_at || "";
-    const whenHtml = when
-      ? `<div class="hint" style="margin-top:10px;">Updated: ${escapeHtml(new Date(when).toLocaleString())}</div>`
-      : "";
+      const when = row?.updated_at || row?.created_at || "";
+      const whenHtml = when
+        ? `<div class="hint" style="margin-top:10px;">Updated: ${escapeHtml(new Date(when).toLocaleString())}</div>`
+        : "";
 
-    return `
-      <article class="card" style="padding:16px;">
-        <div style="font-weight:700; color:#111827;">${whoLine}</div>
-        ${textHtml}
-        ${videoHtml}
-        ${whenHtml}
-      </article>
-    `;
-  }
-
-  async function ensureAuthed() {
-    const { data, error } = await sb.auth.getSession();
-    if (error) throw error;
-    const session = data?.session;
-    if (!session) throw new Error("Not signed in.");
-    return session;
-  }
-
-  async function loadMyIntro(uid) {
-    const { data, error } = await sb
-      .from("project_introductions")
-      .select("project_id, user_id, intro_text, video_url, embed_url, created_at, updated_at")
-      .eq("project_id", PROJECT_ID)
-      .eq("user_id", uid)
-      .maybeSingle();
-
-    if (error) throw error;
-    return data || null;
-  }
-
-  async function saveIntro() {
-    setMsg("saveMsg", "", false);
-
-    const session = await ensureAuthed();
-    const uid = session.user.id;
-
-    const intro_text = ($("introText")?.value || "").trim();
-    const video_url = ($("videoUrl")?.value || "").trim();
-
-    if (!intro_text && !video_url) {
-      setMsg("saveMsg", "Please enter text, a video link, or both.", true);
-      return;
+      return `
+        <article class="card" style="padding:16px;">
+          <div style="font-weight:700; color:#111827;">${whoLine}</div>
+          ${textHtml}
+          ${videoHtml}
+          ${whenHtml}
+        </article>
+      `;
     }
 
-    const embed_url = toEmbedUrl(video_url);
-
-    const btn = $("saveIntroBtn");
-    if (!btn) return;
-
-    btn.disabled = true;
-    btn.textContent = "Saving...";
-
-    try {
-      const { error } = await sb
-        .from("project_introductions")
-        .upsert(
-          {
-            project_id: PROJECT_ID,
-            user_id: uid,
-            intro_text: intro_text || null,
-            video_url: video_url || null,
-            embed_url: embed_url || null,
-            updated_at: new Date().toISOString()
-          },
-          { onConflict: "project_id,user_id" }
-        );
-
+    async function ensureSession() {
+      const { data, error } = await sb.auth.getSession();
       if (error) throw error;
-
-      setMsg("saveMsg", "Saved.", false);
-      await loadIntroductions();
-    } catch (e) {
-      console.error(e);
-      setMsg("saveMsg", e?.message || "Failed to save.", true);
-    } finally {
-      btn.disabled = false;
-      btn.textContent = "Save introduction";
+      if (!data?.session) throw new Error("Not signed in.");
+      return data.session;
     }
-  }
 
-  async function loadIntroductions() {
-    setMsg("listMsg", "Loading...", false);
-
-    try {
+    async function loadMyIntro(uid) {
       const { data, error } = await sb
         .from("project_introductions")
-        .select(`
-          project_id,
-          user_id,
-          intro_text,
-          video_url,
-          embed_url,
-          created_at,
-          updated_at,
-          users (
-            user_id,
-            full_name,
-            affiliation
-          )
-        `)
+        .select("project_id, user_id, intro_text, video_url, embed_url, created_at, updated_at")
         .eq("project_id", PROJECT_ID)
-        .order("updated_at", { ascending: false })
-        .order("created_at", { ascending: false });
+        .eq("user_id", uid)
+        .maybeSingle();
 
       if (error) throw error;
+      return data || null;
+    }
 
-      const list = $("introList");
-      if (!list) return;
+    async function loadIntroductions() {
+      setMsg("listMsg", "Loading...", false);
 
-      if (!data || data.length === 0) {
-        list.innerHTML = "";
-        setMsg("listMsg", "No introductions yet.", false);
+      try {
+        const { data, error } = await sb
+          .from("project_introductions")
+          .select(`
+            project_id,
+            user_id,
+            intro_text,
+            video_url,
+            embed_url,
+            created_at,
+            updated_at,
+            users (
+              user_id,
+              full_name,
+              affiliation
+            )
+          `)
+          .eq("project_id", PROJECT_ID)
+          .order("updated_at", { ascending: false })
+          .order("created_at", { ascending: false });
+
+        if (error) throw error;
+
+        const list = $("introList");
+        if (!list) return;
+
+        if (!data || data.length === 0) {
+          list.innerHTML = "";
+          setMsg("listMsg", "No introductions yet.", false);
+          return;
+        }
+
+        list.innerHTML = data.map(renderCard).join("");
+        setMsg("listMsg", "", false);
+      } catch (e) {
+        console.error(e);
+        setMsg("listMsg", e?.message || "Failed to load introductions.", true);
+      }
+    }
+
+    async function saveIntro() {
+      setMsg("saveMsg", "", false);
+
+      const session = await ensureSession();
+      const uid = session.user.id;
+
+      const intro_text = ($("introText")?.value || "").trim();
+      const video_url = ($("videoUrl")?.value || "").trim();
+
+      if (!intro_text && !video_url) {
+        setMsg("saveMsg", "Please enter text, a video link, or both.", true);
         return;
       }
 
-      list.innerHTML = data.map(renderCard).join("");
-      setMsg("listMsg", "", false);
-    } catch (e) {
-      console.error(e);
-      setMsg("listMsg", e?.message || "Failed to load introductions.", true);
-    }
-  }
+      const embed_url = toEmbedUrl(video_url);
 
-  function bindPageEvents() {
-    $("saveIntroBtn")?.addEventListener("click", saveIntro);
-    $("refreshBtn")?.addEventListener("click", loadIntroductions);
+      const btn = $("saveIntroBtn");
+      if (!btn) return;
 
-    $("videoUrl")?.addEventListener("input", () => {
-      const url = ($("videoUrl")?.value || "").trim();
-      const embed = toEmbedUrl(url);
-
-      if (!url) return setMsg("videoHint", "", false);
-      if (embed) setMsg("videoHint", "Looks good. This link should embed correctly.", false);
-      else setMsg("videoHint", "This platform may not embed. We will show it as a clickable link if embedding fails.", false);
-    });
-  }
-
-  // 3) Now load shared UI (topnav/footer/modals)
-  await bootstrapApp();
-
-  // 4) OVERRIDE Sign out on this page (capture phase) to stop the old handler
-  //    and always go to signup_signin.html?returnTo=...
-  const signOutBtn = document.getElementById("signOutBtn");
-  if (signOutBtn) {
-    signOutBtn.addEventListener(
-      "click",
-      async (e) => {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-
-        try {
-          await sb.auth.signOut({ scope: "local" });
-        } catch (err) {
-          console.error("Sign out error:", err);
-        } finally {
-          window.location.replace(authPageUrl());
-        }
-      },
-      true // capture: run before the handler added by loadTopNav.js
-    );
-  }
-
-  // 5) At this point user is signed in; run your auth gating logic for activation/password/etc.
-  let started = false;
-  await initAuthGate({
-    onAuthed: async () => {
-      if (started) return;
-      started = true;
-
-      bindPageEvents();
-      await loadIntroductions();
+      btn.disabled = true;
+      btn.textContent = "Saving...";
 
       try {
-        const session = await ensureAuthed();
-        const existing = await loadMyIntro(session.user.id);
-        if (existing) {
-          if ($("introText")) $("introText").value = existing.intro_text || "";
-          if ($("videoUrl")) $("videoUrl").value = existing.video_url || "";
-        }
-      } catch (_) {
-        // ignore
+        const { error } = await sb
+          .from("project_introductions")
+          .upsert(
+            {
+              project_id: PROJECT_ID,
+              user_id: uid,
+              intro_text: intro_text || null,
+              video_url: video_url || null,
+              embed_url: embed_url || null,
+              updated_at: new Date().toISOString()
+            },
+            { onConflict: "project_id,user_id" }
+          );
+
+        if (error) throw error;
+
+        setMsg("saveMsg", "Saved.", false);
+        await loadIntroductions();
+      } catch (e) {
+        console.error(e);
+        setMsg("saveMsg", e?.message || "Failed to save.", true);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Save introduction";
       }
     }
-  });
-</script>
 
+    function bindPageEvents() {
+      $("saveIntroBtn")?.addEventListener("click", saveIntro);
+      $("refreshBtn")?.addEventListener("click", loadIntroductions);
+
+      $("videoUrl")?.addEventListener("input", () => {
+        const url = ($("videoUrl")?.value || "").trim();
+        const embed = toEmbedUrl(url);
+
+        if (!url) return setMsg("videoHint", "", false);
+        if (embed) setMsg("videoHint", "Looks good. This link should embed correctly.", false);
+        else setMsg("videoHint", "This platform may not embed. We will show it as a clickable link if embedding fails.", false);
+      });
+    }
+
+    // 3) Bind events and load data
+    bindPageEvents();
+    await loadIntroductions();
+
+    // 4) Prefill editor with their existing intro (if any)
+    try {
+      const session = await ensureSession();
+      const existing = await loadMyIntro(session.user.id);
+      if (existing) {
+        if ($("introText")) $("introText").value = existing.intro_text || "";
+        if ($("videoUrl")) $("videoUrl").value = existing.video_url || "";
+      }
+    } catch (_) {
+      // ignore
+    }
+  </script>
 </body>
 </html>
