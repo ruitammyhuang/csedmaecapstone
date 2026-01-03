@@ -1,29 +1,32 @@
 // assets/js/loadSharedModals.js
-// Loads shared modal HTML (advisor modal) into #shared-modals and binds open/close behavior.
+// Loads shared modal HTML into #shared-modals and uses event delegation
+// so buttons injected later (topnav) still work.
 
-function bindModalTriggers() {
-  // Open buttons (can live anywhere, including injected topnav)
-  document.querySelectorAll("[data-open-modal]").forEach((btn) => {
-    if (btn.dataset.bound === "1") return;
-    btn.dataset.bound = "1";
+function bindDelegatedModalEventsOnce() {
+  if (document.body.dataset.modalDelegationBound === "1") return;
+  document.body.dataset.modalDelegationBound = "1";
 
-    btn.addEventListener("click", () => {
-      const id = btn.getAttribute("data-open-modal");
-      if (!id) return;
+  // Open modal (delegated)
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-open-modal]");
+    if (!btn) return;
 
-      const dialog = document.getElementById(id);
-      if (dialog && typeof dialog.showModal === "function") dialog.showModal();
-    });
+    const id = btn.getAttribute("data-open-modal");
+    if (!id) return;
+
+    const dialog = document.getElementById(id);
+    if (dialog && typeof dialog.showModal === "function") {
+      dialog.showModal();
+    }
   });
 
-  // Click on backdrop to close
-  document.querySelectorAll("dialog.modal").forEach((dialog) => {
-    if (dialog.dataset.bound === "1") return;
-    dialog.dataset.bound = "1";
+  // Backdrop click to close (delegated)
+  document.addEventListener("click", (e) => {
+    const dialog = e.target;
+    if (!(dialog instanceof HTMLDialogElement)) return;
+    if (!dialog.classList.contains("modal")) return;
 
-    dialog.addEventListener("click", (e) => {
-      if (e.target === dialog) dialog.close();
-    });
+    if (e.target === dialog) dialog.close();
   });
 }
 
@@ -31,13 +34,12 @@ export async function loadSharedModals() {
   const container = document.getElementById("shared-modals");
   if (!container) return;
 
-  // If already loaded once, just (re)bind triggers safely.
-  if (container.dataset.loaded === "1") {
-    bindModalTriggers();
-    return;
-  }
+  // Always ensure delegation is bound
+  bindDelegatedModalEventsOnce();
 
-  // Resolve partial path robustly from any page
+  // If already loaded, stop here
+  if (container.dataset.loaded === "1") return;
+
   const partialUrl = new URL("../partials/shared-modals.html", import.meta.url);
 
   try {
@@ -46,9 +48,6 @@ export async function loadSharedModals() {
 
     container.innerHTML = await res.text();
     container.dataset.loaded = "1";
-
-    // Now that HTML exists in DOM, bind behaviors
-    bindModalTriggers();
   } catch (e) {
     console.error(e);
     container.innerHTML = "";
