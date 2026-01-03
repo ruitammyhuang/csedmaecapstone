@@ -4,11 +4,7 @@ import { configureSupabase } from "./supabaseClient.js";
 import { SUPABASE_CONFIG } from "./config.js";
 import { loadTopNav } from "./loadTopNav.js";
 import { loadSharedModals } from "./loadSharedModals.js";
-
-function setYear() {
-  const el = document.getElementById("year");
-  if (el) el.textContent = String(new Date().getFullYear());
-}
+import { loadFooter } from "./loadFooter.js";
 
 export async function bootstrapApp() {
   // Configure Supabase ONCE
@@ -18,7 +14,7 @@ export async function bootstrapApp() {
     // Shared UI
     await loadTopNav();          // top bar
     await loadSharedModals();    // advisor dialog + bindings
-    setYear();
+    await loadFooter();
   } catch (e) {
     console.error("bootstrapApp failed:", e);
   }
