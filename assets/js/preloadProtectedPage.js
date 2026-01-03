@@ -20,41 +20,6 @@ function returnToParam() {
   );
 }
 
-async function isAuthorized(sb) {
-  const { data: sessData } = await sb.auth.getSession();
-  const uid = sessData?.session?.user?.id;
-  if (!uid) return false;
-
-  // Check users table flags (keep this if you use it)
-  const { data: userRow, error: userErr } = await sb
-    .from("users")
-    .select("is_active")
-    .eq("user_id", uid)
-    .maybeSingle();
-
-  if (userErr) return false;
-  if (!userRow || userRow.is_active === false) return false;
-
-  // Require at least one approved + active membership
-  const { data: memberships, error: memErr } = await sb
-    .from("project_memberships")
-    .select("project_id, role, is_active, approved_at")
-    .eq("user_id", uid);
-
-  if (memErr) return false;
-  if (!Array.isArray(memberships) || memberships.length === 0) return false;
-
-  return memberships.some((m) => {
-    const role = String(m.role || "").toLowerCase();
-    const isAdmin = role === "admin";
-    const approved = Boolean(m.approved_at);      // approved_at is not null
-    const active = m.is_active === true;
-
-    // Admins can pass if active; students must be active + approved
-    return (isAdmin && active) || (active && approved);
-  });
-}
-
 async function fetchInto(containerId, relativeFromRepoRoot) {
   const el = document.getElementById(containerId);
   if (!el) throw new Error(`Missing container #${containerId}`);
@@ -91,13 +56,6 @@ export async function preloadProtectedPage({
   if (!session) {
     // Signed out -> redirect to centralized auth page
     window.location.replace(`${urlFromRepoRoot(redirectTo)}?returnTo=${returnToParam()}`);
-    return;
-  }
-
-  // authorization check
-  const ok = await isAuthorized(sb);
-  if (!ok) {
-    window.location.replace(`${urlFromRepoRoot("signup_signin.html")}?step=not_authorized`);
     return;
   }
 

@@ -100,6 +100,11 @@ function isIndexPage() {
   return path.endsWith("/") || path.endsWith("/index.html") || path.endsWith("index.html");
 }
 
+function isAuthPage() {
+  const path = (window.location.pathname || "").toLowerCase();
+  return path.endsWith("/signup_signin.html") || path.endsWith("signup_signin.html");
+}
+
 function getGateStep() {
   const params = new URLSearchParams(window.location.search);
 
@@ -172,10 +177,7 @@ async function getDirectoryRow(sb, uid) {
   return data; // null if no row
 }
 
-async function hasApprovedMembership(sb, uid) {
-  // Support both schemas:
-  // - Newer: project_memberships.member_status (pending/accepted/revoked/expired)
-  // - Older: is_active + approved_at
+async function getMembershipStatus(sb, uid) {
   const { data, error } = await sb
     .from("project_memberships")
     .select("role, is_active, approved_at, member_status")
@@ -184,28 +186,19 @@ async function hasApprovedMembership(sb, uid) {
     .maybeSingle();
 
   if (error) throw error;
-  if (!data) return false;
-
-  const role = String(data.role || "").toLowerCase();
-  const isAdmin = role === "admin";
+  if (!data) return "none";
 
   // Prefer member_status if present
-  const statusRaw = data.member_status;
-  const status = String(statusRaw || "").toLowerCase();
+  const status = String(data.member_status || "").toLowerCase();
+  if (status) return status;
 
-  if (status) {
-    // Admin: allow if accepted (or if you later add an admin status)
-    // Student: must be accepted
-    const accepted = status === "accepted";
-    return isAdmin ? accepted : accepted;
-  }
-
-  // Fallback to legacy columns
+  // Fallback legacy columns -> map into a status-like outcome
   const active = data.is_active === true;
   const approved = Boolean(data.approved_at);
 
-  // Admin: active is enough. Student: must be active + approved.
-  return (isAdmin && active) || (active && approved);
+  if (!active) return "revoked";
+  if (approved) return "accepted";
+  return "pending";
 }
 
 async function isInvitedEmail(sb, email) {
@@ -267,6 +260,7 @@ export async function initAuthGate({
   redirectTo = "index.html"
 } = {}) {
   const sb = getSupabase();
+  const NOT_AUTH_MSG = "This course site is invite-only. Your account is not authorized. Please contact the instructor for access.";
 
   // Guard so onAuthed doesn't run multiple times
   let authedInitialized = false;
@@ -299,19 +293,27 @@ export async function initAuthGate({
   }
 
   async function blockUnauthorizedAndSignOut(message) {
+    const msg = message || NOT_AUTH_MSG;
+
     try {
       // Clear any onboarding flags so refresh doesn't re-enter the completion flow.
       clearGateStepFromUrl();
 
       // Best effort: ensure the user is signed out locally.
       await sb.auth.signOut({ scope: "local" });
-    } catch (e) {
+    } catch (_) {
       // ignore
     }
 
-    // Keep the user on this page (typically signup_signin.html) and show a clear message.
+    // If we are NOT already on the centralized auth page, redirect there with a step.
+    if (!isAuthPage()) {
+      window.location.replace(siteUrl("signup_signin.html?step=not_authorized"));
+      return;
+    }
+
+    // If we are on the auth page, show a clear message.
     showGate("signin");
-    setMsg("signinMsg", message || "This site is invite-only. Please contact the instructor for access.", true);
+    setMsg("signinMsg", msg, true);
   }
 
   // Default view if signed out
@@ -511,6 +513,14 @@ export async function initAuthGate({
       if (!session) {
         authedInitialized = false;
 
+        // If we intentionally landed here to show a not-authorized message, do that.
+        const step = getGateStep();
+        if (step === "not_authorized") {
+          showGate("signin");
+          setMsg("signinMsg", NOT_AUTH_MSG, true);
+          return;
+        }
+
         if (requireRedirect) {
           redirectToIndex();
           return;
@@ -570,23 +580,21 @@ export async function initAuthGate({
         }
 
         // After user info exists, enforce membership approval.
-        const authorized = await hasApprovedMembership(sb, uid);
-        if (!authorized) {
-          // Do NOT let them proceed to password or app.
-          hideAllPanels();
-          setActiveTab("signin");
-          setMsg(
-            "signinMsg",
-            "Thanks. Your registration is received, but access is pending instructor approval.",
-            true
+        const status = await getMembershipStatus(sb, uid);
+
+        // If explicitly revoked/expired, stop them here.
+        // If pending/accepted/none, allow them to finish registration.
+        // (Membership row may not exist yet until acceptInvites runs.)
+        if (status === "revoked" || status === "expired") {
+          await blockUnauthorizedAndSignOut(
+            "Your access to this course site has been revoked or expired. Please contact the instructor."
           );
+          return;
+        }
 
-          // Optional safety: keep them signed out so the protected pages never load.
-          try {
-            clearGateStepFromUrl();
-            await sb.auth.signOut({ scope: "local" });
-          } catch (_) {}
-
+        // If they still need to set a password, do it now.
+        if (row.password_set === false) {
+          showSetPasswordPanel();
           return;
         }
 
@@ -630,17 +638,7 @@ export async function initAuthGate({
       // Enforce activation gate
       if (row.is_active === false) {
         authedInitialized = false;
-
-        if (requireRedirect && !isIndexPage()) {
-          redirectToIndex();
-          return;
-        }
-
-        show("authGate", true);
-        show("appShell", false);
-        hideAllPanels();
-        setActiveTab("signin");
-        setMsg("signinMsg", "Access pending or deactivated. Contact the instructor.", true);
+        await blockUnauthorizedAndSignOut("Access pending or deactivated. Contact the instructor.");
         return;
       }
 
@@ -661,23 +659,15 @@ export async function initAuthGate({
       }
 
       // Membership approval gate (course/project-level authorization)
-      const authorized = await hasApprovedMembership(sb, uid);
-      if (!authorized) {
+      const status = await getMembershipStatus(sb, uid);
+
+      // Allow accepted and pending to load pages.
+      // RLS will prevent pending users from reading/writing project data tables.
+      // Block only revoked/expired/none (none = not enrolled / no membership row).
+      if (status === "revoked" || status === "expired" || status === "none") {
         authedInitialized = false;
-
-        if (requireRedirect && !isIndexPage()) {
-          redirectToIndex();
-          return;
-        }
-
-        show("authGate", true);
-        show("appShell", false);
-        hideAllPanels();
-        setActiveTab("signin");
-        setMsg(
-          "signinMsg",
-          "Your access is pending instructor approval (or you are not enrolled in this course site).",
-          true
+        await blockUnauthorizedAndSignOut(
+          "You are not enrolled in this course site (or your access was revoked/expired). Please contact the instructor."
         );
         return;
       }

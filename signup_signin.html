@@ -25,14 +25,27 @@
   import { loadAuthGate } from "./assets/js/loadAuthGate.js";
   import { initAuthGate } from "./assets/js/authGate.js";
 
-  // 1) Configure + load auth UI
+  // Configure Supabase + load shared auth UI markup.
   configureSupabase(SUPABASE_CONFIG);
   await loadAuthGate();
 
-  // 2) Always go to the landing page after successful auth
+  // Centralized auth page behavior:
+  // - Always redirect to the course landing page after the user is fully authorized.
+  // - Ignore returnTo on purpose (your stated requirement).
+  // - If the page is opened with ?step=not_authorized, keep the user here and let authGate show the message.
+  const params = new URLSearchParams(window.location.search);
+  const step = (params.get("step") || "").toLowerCase();
+
+  const landingUrl = siteUrl ? siteUrl("index.html") : new URL("index.html", window.location.href).toString();
+
   await initAuthGate({
     onAuthed: () => {
-      window.location.replace(siteUrl("index.html"));
+      // If the user got here because they are not authorized, do not bounce them back and forth.
+      // Stay on this page; authGate should show the appropriate message.
+      if (step === "not_authorized") return;
+
+      // Always go to the landing page after successful auth.
+      window.location.replace(landingUrl);
     }
   });
 </script>
