@@ -21,12 +21,6 @@
 <a class="skip-link" href="#main">Skip to content</a>
 
 <!-- ===================================================== -->
-<!-- AUTH GATE (shown when NOT authorized) -->
-<!-- ===================================================== -->
-<div id="auth-gate-container"></div>
-
-
-<!-- ===================================================== -->
 <!-- COURSE HUB (shown when authenticated/authorized) -->
 <!-- ===================================================== -->
 <div id="appShell" style="display:none;">
@@ -182,29 +176,55 @@
 </div>
 
 <script type="module">
-  import { configureSupabase } from "./assets/js/supabaseClient.js";
-  import { SUPABASE_CONFIG } from "./assets/js/config.js";
-  import { initAuthGate } from "./assets/js/authGate.js";
   import { bootstrapApp } from "./assets/js/bootstrap.js";
-  import { loadAuthGate } from "./assets/js/loadAuthGate.js";
+  import { configureSupabase, getSupabase } from "./assets/js/supabaseClient.js";
+  import { SUPABASE_CONFIG } from "./assets/js/config.js";
 
-  // 1) Configure Supabase first (required)
+  // Configure Supabase first (bootstrapApp also configures, but calling twice is safe in your setup;
+  // you can remove this line IF you keep bootstrapApp doing configuration reliably).
   configureSupabase(SUPABASE_CONFIG);
 
-  // 2) If you are using the shared auth gate partial on index:
-  //    (If index.html already contains the auth gate markup, you can remove this line.)
-  await loadAuthGate();
+  function repoBasePath() {
+    const parts = window.location.pathname.split("/").filter(Boolean);
+    const repo = parts[0] || "";
+    return `/${repo}/`;
+  }
 
-  // 3) Run auth gate. Only bootstrap shared UI after authorization.
-  let bootstrapped = false;
+  function urlFromRepoRoot(file) {
+    return `${window.location.origin}${repoBasePath()}${file}`;
+  }
 
-  await initAuthGate({
-    onAuthed: async () => {
-      if (bootstrapped) return;
-      bootstrapped = true;
-      await bootstrapApp();
+  function returnToParam() {
+    // Preserve path + query + hash so we can come back exactly here
+    return encodeURIComponent(
+      window.location.pathname + window.location.search + window.location.hash
+    );
+  }
+
+  async function requireAuthOrRedirect() {
+    const sb = getSupabase();
+
+    const { data, error } = await sb.auth.getSession();
+    if (error) {
+      console.error(error);
+      // Treat errors as signed-out and redirect to be safe
+      window.location.replace(`${urlFromRepoRoot("signup_signin.html")}?returnTo=${returnToParam()}`);
+      return;
     }
-  });
+
+    const session = data?.session;
+    if (!session) {
+      // Signed out -> go to the dedicated auth page
+      window.location.replace(`${urlFromRepoRoot("signup_signin.html")}?returnTo=${returnToParam()}`);
+      return;
+    }
+
+    // Signed in -> show the hub and load shared UI partials
+    document.getElementById("appShell").style.display = "block";
+    await bootstrapApp();
+  }
+
+  await requireAuthOrRedirect();
 </script>
 
 </body>
