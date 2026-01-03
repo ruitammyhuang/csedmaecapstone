@@ -173,9 +173,12 @@ async function getDirectoryRow(sb, uid) {
 }
 
 async function hasApprovedMembership(sb, uid) {
+  // Support both schemas:
+  // - Newer: project_memberships.member_status (pending/accepted/revoked/expired)
+  // - Older: is_active + approved_at
   const { data, error } = await sb
     .from("project_memberships")
-    .select("role, is_active, approved_at")
+    .select("role, is_active, approved_at, member_status")
     .eq("project_id", PROJECT_ID)
     .eq("user_id", uid)
     .maybeSingle();
@@ -186,6 +189,18 @@ async function hasApprovedMembership(sb, uid) {
   const role = String(data.role || "").toLowerCase();
   const isAdmin = role === "admin";
 
+  // Prefer member_status if present
+  const statusRaw = data.member_status;
+  const status = String(statusRaw || "").toLowerCase();
+
+  if (status) {
+    // Admin: allow if accepted (or if you later add an admin status)
+    // Student: must be accepted
+    const accepted = status === "accepted";
+    return isAdmin ? accepted : accepted;
+  }
+
+  // Fallback to legacy columns
   const active = data.is_active === true;
   const approved = Boolean(data.approved_at);
 
@@ -281,6 +296,22 @@ export async function initAuthGate({
     // If redirecting somewhere else, preserve returnTo.
     const returnTo = window.location.pathname + window.location.search + window.location.hash;
     window.location.href = buildRedirectUrl(redirectTo, returnTo);
+  }
+
+  async function blockUnauthorizedAndSignOut(message) {
+    try {
+      // Clear any onboarding flags so refresh doesn't re-enter the completion flow.
+      clearGateStepFromUrl();
+
+      // Best effort: ensure the user is signed out locally.
+      await sb.auth.signOut({ scope: "local" });
+    } catch (e) {
+      // ignore
+    }
+
+    // Keep the user on this page (typically signup_signin.html) and show a clear message.
+    showGate("signin");
+    setMsg("signinMsg", message || "This site is invite-only. Please contact the instructor for access.", true);
   }
 
   // Default view if signed out
@@ -513,26 +544,35 @@ export async function initAuthGate({
       }
 
       // Complete-registration flow after email verification.
-      // IMPORTANT: if user info is already completed, skip directly to password step.
+      // IMPORTANT: block uninvited users BEFORE showing any registration forms.
       if (completingRegistration) {
-        if (requireRedirect && !isIndexPage()) {
-          redirectToIndex();
-          return;
-        }
-
+        // Keep completion on the auth page (signup_signin.html). Do not bounce to index.
         show("authGate", true);
         show("appShell", false);
 
+        const email = (session.user.email || "").trim().toLowerCase();
+        const invited = email ? await isInvitedEmail(sb, email) : false;
+
+        if (!invited) {
+          await blockUnauthorizedAndSignOut(
+            "This course site is invite-only. Your email is not on the invitation list. Please contact the instructor for access."
+          );
+          return;
+        }
+
+        // Best effort: accept any pending invites once we know they're invited.
+        await acceptInvites(sb);
+
+        // If no directory row yet OR info not completed -> require user info
         if (!row || row.user_info_completed === false) {
           showUserInfoPanel(row || null);
           return;
         }
 
-        // Extra safety: accept invites even if user info was already completed
-        await acceptInvites(sb);
-
+        // After user info exists, enforce membership approval.
         const authorized = await hasApprovedMembership(sb, uid);
         if (!authorized) {
+          // Do NOT let them proceed to password or app.
           hideAllPanels();
           setActiveTab("signin");
           setMsg(
@@ -540,9 +580,17 @@ export async function initAuthGate({
             "Thanks. Your registration is received, but access is pending instructor approval.",
             true
           );
+
+          // Optional safety: keep them signed out so the protected pages never load.
+          try {
+            clearGateStepFromUrl();
+            await sb.auth.signOut({ scope: "local" });
+          } catch (_) {}
+
           return;
         }
 
+        // If they still need to set a password, do it now.
         if (row.password_set === false) {
           showSetPasswordPanel();
           return;
@@ -564,6 +612,17 @@ export async function initAuthGate({
 
         show("authGate", true);
         show("appShell", false);
+
+        // If they're not invited, do not show onboarding forms.
+        const email = (session.user.email || "").trim().toLowerCase();
+        const invited = email ? await isInvitedEmail(sb, email) : false;
+        if (!invited) {
+          await blockUnauthorizedAndSignOut(
+            "This course site is invite-only. Your email is not on the invitation list. Please contact the instructor for access."
+          );
+          return;
+        }
+
         showUserInfoPanel(row || null);
         return;
       }
