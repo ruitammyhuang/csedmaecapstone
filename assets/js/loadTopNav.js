@@ -98,6 +98,9 @@ export async function loadTopNav() {
   const container = document.getElementById("topnav-container");
   if (!container) return;
 
+  // Bind once (delegation survives DOM replacement)
+  bindDelegatedSignOutOnce();
+
   // Use your known-good path pattern
   const partialUrl = new URL("../../partials/topnav.html", import.meta.url);
 
