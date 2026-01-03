@@ -20,104 +20,7 @@
 <!-- ===================================================== -->
 <!-- AUTH GATE (same auth UI ids expected by authGate.js) -->
 <!-- ===================================================== -->
-<main id="authGate" class="container page" style="display:none;">
-  <section class="card section" style="max-width:720px; margin:40px auto;">
-    <header class="section-header">
-      <h1 class="section-title" style="color:#002657;">EDG 6973</h1>
-      <p class="section-subtitle">Self Introductions</p>
-    </header>
-
-    <div class="section-body">
-      <div id="authTabs" style="margin-top:16px; margin-bottom:16px;">
-        <button class="btn" id="tabSignin" type="button">Sign in</button>
-      </div>
-
-      <hr />
-
-      <!-- SIGN UP (magic link) -->
-      <div id="panelSignup" style="display:none;">
-        <p class="muted">
-          If this is your first time here, use the email you received in your invitation to register.
-        </p>
-
-        <label class="field">
-          <span>Email</span>
-          <input id="signupEmail" type="email" placeholder="you@ufl.edu" autocomplete="email" />
-        </label>
-
-        <div class="task-actions" style="align-items:center;">
-          <button class="btn" id="signupSendLinkBtn" type="button">Send sign-up link</button>
-          <span class="hint" id="signupMsg"></span>
-        </div>
-      </div>
-
-      <!-- SIGN IN -->
-      <div id="panelSignin" style="display:none;">
-        <p class="muted">Sign in with your email and password.</p>
-
-        <label class="field">
-          <span>Email</span>
-          <input id="signinEmail" type="email" autocomplete="email" />
-        </label>
-
-        <label class="field">
-          <span>Password</span>
-          <input id="signinPassword" type="password" autocomplete="current-password" />
-        </label>
-
-        <div class="task-actions" style="align-items:center;">
-          <button class="btn" id="signinBtn" type="button">Sign in</button>
-          <button class="btn ghost" id="forgotBtn" type="button">Forgot password</button>
-          <span class="hint" id="signinMsg"></span>
-        </div>
-      </div>
-
-      <!-- COMPLETE USER INFO -->
-      <div id="panelUserInfo" style="display:none; margin-top:16px;">
-        <div class="callout">
-          <div class="callout-title">Complete your information</div>
-
-          <label class="field">
-            <span>Full name</span>
-            <input id="uiFullName" type="text" autocomplete="name" />
-          </label>
-
-          <label class="field">
-            <span>Affiliation</span>
-            <input id="uiAffiliation" type="text" autocomplete="organization" />
-          </label>
-
-          <div class="task-actions">
-            <button class="btn" id="uiSaveBtn" type="button">Save and continue</button>
-            <span class="hint" id="uiMsg"></span>
-          </div>
-        </div>
-      </div>
-
-      <!-- SET PASSWORD -->
-      <div id="panelSetPassword" style="display:none; margin-top:16px;">
-        <div class="callout">
-          <div class="callout-title">Set your password</div>
-
-          <label class="field">
-            <span>New password</span>
-            <input id="newPassword" type="password" autocomplete="new-password" />
-          </label>
-
-          <label class="field">
-            <span>Confirm password</span>
-            <input id="confirmPassword" type="password" autocomplete="new-password" />
-          </label>
-
-          <div class="task-actions">
-            <button class="btn" id="setPasswordBtn" type="button">Save password</button>
-            <span class="hint" id="setPasswordMsg"></span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-</main>
+<div id="auth-gate-container"></div>
 
 <!-- ===================================================== -->
 <!-- SELF-INTRO APP (shown when authenticated/authorized) -->
@@ -174,14 +77,16 @@
 
 <script type="module">
   import { bootstrapApp } from "./assets/js/bootstrap.js";
+  import { loadAuthGate } from "./assets/js/loadAuthGate.js";
   import { initAuthGate } from "./assets/js/authGate.js";
   import { getSupabase } from "./assets/js/supabaseClient.js";
   import { EDG6973_PROJECT_ID as PROJECT_ID } from "./assets/js/config.js";
 
-  // IMPORTANT:
-  // bootstrapApp configures Supabase (so authGate can use getSupabase safely)
-  // and loads shared partials (topnav, modals, footer).
+  // Load shared UI + configure Supabase
   await bootstrapApp();
+
+  // Load the shared auth gate markup into #auth-gate-container
+  await loadAuthGate();
 
   const sb = getSupabase();
   const $ = (id) => document.getElementById(id);
@@ -206,15 +111,12 @@
     const url = (raw || "").trim();
     if (!url) return "";
 
-    // YouTube watch
     const ytWatch = url.match(/youtube\.com\/watch\?v=([A-Za-z0-9_-]{6,})/i);
     if (ytWatch?.[1]) return `https://www.youtube.com/embed/${ytWatch[1]}`;
 
-    // YouTube short
     const ytShort = url.match(/youtu\.be\/([A-Za-z0-9_-]{6,})/i);
     if (ytShort?.[1]) return `https://www.youtube.com/embed/${ytShort[1]}`;
 
-    // Vimeo
     const vimeo = url.match(/vimeo\.com\/(\d{6,})/i);
     if (vimeo?.[1]) return `https://player.vimeo.com/video/${vimeo[1]}`;
 
@@ -311,17 +213,19 @@
     btn.textContent = "Saving...";
 
     try {
-      // Composite PK: (project_id, user_id)
       const { error } = await sb
         .from("project_introductions")
-        .upsert({
-          project_id: PROJECT_ID,
-          user_id: uid,
-          intro_text: intro_text || null,
-          video_url: video_url || null,
-          embed_url: embed_url || null,
-          updated_at: new Date().toISOString()
-        });
+        .upsert(
+          {
+            project_id: PROJECT_ID,
+            user_id: uid,
+            intro_text: intro_text || null,
+            video_url: video_url || null,
+            embed_url: embed_url || null,
+            updated_at: new Date().toISOString()
+          },
+          { onConflict: "project_id,user_id" }
+        );
 
       if (error) throw error;
 
@@ -340,7 +244,6 @@
     setMsg("listMsg", "Loading...", false);
 
     try {
-      // IMPORTANT: no "id" column exists in your table, so do not select it.
       const { data, error } = await sb
         .from("project_introductions")
         .select(`
@@ -380,7 +283,6 @@
     }
   }
 
-  // UI events
   $("saveIntroBtn")?.addEventListener("click", saveIntro);
   $("refreshBtn")?.addEventListener("click", loadIntroductions);
 
@@ -393,12 +295,10 @@
     else setMsg("videoHint", "This platform may not embed. We will show it as a clickable link if embedding fails.", false);
   });
 
-  // Auth gate controls visibility of authGate vs appShell.
   await initAuthGate({
     onAuthed: async () => {
       await loadIntroductions();
 
-      // Prefill editor with their existing intro (if any)
       try {
         const session = await ensureAuthed();
         const existing = await loadMyIntro(session.user.id);
