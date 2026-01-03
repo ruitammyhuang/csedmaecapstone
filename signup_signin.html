@@ -1,53 +1,64 @@
-import { configureSupabase, getSupabase } from "./assets/js/supabaseClient.js";
-import { SUPABASE_CONFIG } from "./assets/js/config.js";
-import { loadAuthGate } from "./assets/js/loadAuthGate.js";
-import { initAuthGate } from "./assets/js/authGate.js";
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="EDG6973 Sign in" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>EDG6973 - Sign in</title>
 
-configureSupabase(SUPABASE_CONFIG);
-await loadAuthGate();
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
 
-const sb = getSupabase();
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
 
-function repoBasePath() {
-  // For GitHub Pages: /<repo>/...
-  // Example: /csedmaecapstone/signup_signin.html -> "/csedmaecapstone/"
-  const parts = window.location.pathname.split("/").filter(Boolean);
-  const repo = parts[0] || "";
-  return `/${repo}/`;
-}
+<div id="auth-gate-container"></div>
 
-function urlFromRepoRoot(file) {
-  return `${window.location.origin}${repoBasePath()}${file}`;
-}
+<script type="module">
+  import { configureSupabase, getSupabase } from "./assets/js/supabaseClient.js";
+  import { SUPABASE_CONFIG } from "./assets/js/config.js";
+  import { loadAuthGate } from "./assets/js/loadAuthGate.js";
+  import { initAuthGate } from "./assets/js/authGate.js";
 
-function resolveReturnTo() {
-  const params = new URLSearchParams(window.location.search);
-  const raw = params.get("returnTo");
+  configureSupabase(SUPABASE_CONFIG);
+  await loadAuthGate();
 
-  // If missing, go to hub
-  if (!raw) return urlFromRepoRoot("index.html");
+  const sb = getSupabase();
 
-  // returnTo is expected to be an encoded path like:
-  // %2Fcsedmaecapstone%2Fself_intro.html
-  // We only allow same-origin paths to prevent open redirects.
-  let decoded = "";
-  try {
-    decoded = decodeURIComponent(raw);
-  } catch {
-    return urlFromRepoRoot("index.html");
+  function repoBasePath() {
+    const parts = window.location.pathname.split("/").filter(Boolean);
+    const repo = parts[0] || "";
+    return `/${repo}/`;
   }
 
-  // Must start with "/" and must stay within this repo base path
-  const base = repoBasePath(); // e.g., "/csedmaecapstone/"
-  if (!decoded.startsWith(base)) return urlFromRepoRoot("index.html");
+  function urlFromRepoRoot(file) {
+    return `${window.location.origin}${repoBasePath()}${file}`;
+  }
 
-  return `${window.location.origin}${decoded}`;
-}
+  function resolveReturnTo() {
+    const params = new URLSearchParams(window.location.search);
+    const raw = params.get("returnTo");
 
-const targetUrl = resolveReturnTo();
+    if (!raw) return urlFromRepoRoot("index.html");
 
-// If already signed in, skip UI and go where they wanted
-{
+    let decoded = "";
+    try {
+      decoded = decodeURIComponent(raw);
+    } catch {
+      return urlFromRepoRoot("index.html");
+    }
+
+    const base = repoBasePath();
+    if (!decoded.startsWith(base)) return urlFromRepoRoot("index.html");
+
+    return `${window.location.origin}${decoded}`;
+  }
+
+  const targetUrl = resolveReturnTo();
+
   const { data, error } = await sb.auth.getSession();
   if (error) console.error(error);
 
@@ -55,9 +66,10 @@ const targetUrl = resolveReturnTo();
     window.location.replace(targetUrl);
   } else {
     await initAuthGate({
-      onAuthed: () => {
-        window.location.replace(targetUrl);
-      }
+      onAuthed: () => window.location.replace(targetUrl)
     });
   }
-}
+</script>
+
+</body>
+</html>
