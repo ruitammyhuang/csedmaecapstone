@@ -341,7 +341,7 @@ export async function initAuthGate({
   $("signupSendLinkBtn")?.addEventListener("click", async () => {
     try {
       setMsg("signupMsg", "", false);
-      const email = ($("signupEmail")?.value || "").trim();
+      const email = ($("signupEmail")?.value || "").trim().toLowerCase();
       if (!email) return setMsg("signupMsg", "Please enter an email address.", true);
 
       // invite-only gate
