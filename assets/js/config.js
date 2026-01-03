@@ -22,8 +22,16 @@ export function siteUrl(page = "index.html") {
   return new URL(SITE_BASE_PATH + page, window.location.origin).toString();
 }
 
+// Constrain returnTo to inside SITE_BASE_PATH.
 export function returnToParam() {
-  // keep the path+query inside your project site
-  const full = window.location.pathname + window.location.search;
-  return encodeURIComponent(full);
+  const { pathname, search, hash } = window.location;
+
+  // Strip everything before SITE_BASE_PATH
+  const idx = pathname.indexOf(SITE_BASE_PATH);
+  const safePath =
+    idx >= 0
+      ? pathname.slice(idx + SITE_BASE_PATH.length)
+      : "index.html";
+
+  return encodeURIComponent(safePath + search + hash);
 }
