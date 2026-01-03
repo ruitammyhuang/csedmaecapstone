@@ -4,7 +4,7 @@
 // 2) Redirect gate: if signed out, redirect to redirectTo with ?returnTo=...
 
 import { getSupabase } from "./supabaseClient.js";
-import { siteUrl } from "./config.js";
+import { siteUrl, EDG6973_PROJECT_ID as PROJECT_ID } from "./config.js";
 
 function $(id) {
   return document.getElementById(id);
@@ -172,6 +172,45 @@ async function getDirectoryRow(sb, uid) {
   return data; // null if no row
 }
 
+async function hasApprovedMembership(sb, uid) {
+  const { data, error } = await sb
+    .from("project_memberships")
+    .select("role, is_active, approved_at")
+    .eq("project_id", PROJECT_ID)
+    .eq("user_id", uid)
+    .maybeSingle();
+
+  if (error) throw error;
+  if (!data) return false;
+
+  const role = String(data.role || "").toLowerCase();
+  const isAdmin = role === "admin";
+
+  const active = data.is_active === true;
+  const approved = Boolean(data.approved_at);
+
+  // Admin: active is enough. Student: must be active + approved.
+  return (isAdmin && active) || (active && approved);
+}
+
+async function isInvitedEmail(sb, email) {
+  const { data, error } = await sb
+    .from("project_invites")
+    .select("invite_status, is_active")
+    .eq("project_id", PROJECT_ID)
+    .eq("email", email)
+    .maybeSingle();
+
+  if (error) throw error;
+  if (!data) return false;
+  if (data.is_active === false) return false;
+
+  // These EXACTLY match the member_status enum values
+  const s = String(data.invite_status || "").toLowerCase();
+  const okStatuses = new Set(["pending", "accepted"]);
+  return okStatuses.has(s);
+}
+
 async function acceptInvites(sb) {
   try {
     await sb.rpc("accept_my_project_invites");
@@ -257,6 +296,16 @@ export async function initAuthGate({
       setMsg("signupMsg", "", false);
       const email = ($("signupEmail")?.value || "").trim();
       if (!email) return setMsg("signupMsg", "Please enter an email address.", true);
+
+      // invite-only gate
+      const invited = await isInvitedEmail(sb, email);
+      if (!invited) {
+        return setMsg(
+          "signupMsg",
+          "This course site is invite-only. Please contact the instructor for access.",
+          true
+        );
+      }
 
       const btn = $("signupSendLinkBtn");
       if (btn) {
@@ -443,6 +492,9 @@ export async function initAuthGate({
       const uid = session.user.id;
       const row = await getDirectoryRow(sb, uid);
 
+      // Best effort: if there are pending invites for this user, accept them
+      await acceptInvites(sb);
+
       const step = getGateStep();
       const completingRegistration = step === "complete_signup";
       const resettingPassword = step === "reset_password";
@@ -478,6 +530,18 @@ export async function initAuthGate({
 
         // Extra safety: accept invites even if user info was already completed
         await acceptInvites(sb);
+
+        const authorized = await hasApprovedMembership(sb, uid);
+        if (!authorized) {
+          hideAllPanels();
+          setActiveTab("signin");
+          setMsg(
+            "signinMsg",
+            "Thanks. Your registration is received, but access is pending instructor approval.",
+            true
+          );
+          return;
+        }
 
         if (row.password_set === false) {
           showSetPasswordPanel();
@@ -537,8 +601,27 @@ export async function initAuthGate({
         return;
       }
 
-      // NOTE: We intentionally do not auto-redirect to returnTo here.
-      // After sign-in, users land on the hub (index) by default.
+      // Membership approval gate (course/project-level authorization)
+      const authorized = await hasApprovedMembership(sb, uid);
+      if (!authorized) {
+        authedInitialized = false;
+
+        if (requireRedirect && !isIndexPage()) {
+          redirectToIndex();
+          return;
+        }
+
+        show("authGate", true);
+        show("appShell", false);
+        hideAllPanels();
+        setActiveTab("signin");
+        setMsg(
+          "signinMsg",
+          "Your access is pending instructor approval (or you are not enrolled in this course site).",
+          true
+        );
+        return;
+      }
 
       // Authorized and completed
       showAppShellOnce();
