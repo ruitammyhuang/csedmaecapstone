@@ -48,7 +48,7 @@ export async function loadTopNav() {
   const container = document.getElementById("topnav-container");
   if (!container) return;
 
-  const partialUrl = new URL("../partials/topnav.html", import.meta.url);
+  const partialUrl = new URL("../../partials/topnav.html", import.meta.url);
 
   try {
     const res = await fetch(partialUrl.toString(), { cache: "no-cache" });
