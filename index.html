@@ -187,14 +187,11 @@
 
   let bootstrapped = false;
 
-  await bootstrapApp();
-
   await initAuthGate({
     onAuthed: async () => {
       if (bootstrapped) return;
       bootstrapped = true;
-
-      // index page has no extra per-page init right now
+      await bootstrapApp();
     }
   });
 </script>
