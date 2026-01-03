@@ -76,16 +76,16 @@
 </div>
 
 <script type="module">
+  import { configureSupabase, getSupabase } from "./assets/js/supabaseClient.js";
+  import { SUPABASE_CONFIG, EDG6973_PROJECT_ID as PROJECT_ID } from "./assets/js/config.js";
+  import { initAuthGate } from "./assets/js/authGate.js";
   import { bootstrapApp } from "./assets/js/bootstrap.js";
   import { loadAuthGate } from "./assets/js/loadAuthGate.js";
-  import { initAuthGate } from "./assets/js/authGate.js";
-  import { getSupabase } from "./assets/js/supabaseClient.js";
-  import { EDG6973_PROJECT_ID as PROJECT_ID } from "./assets/js/config.js";
 
-  // Load shared UI + configure Supabase
-  await bootstrapApp();
+  // 1) Configure Supabase ONLY (do not load shared UI yet)
+  configureSupabase(SUPABASE_CONFIG);
 
-  // Load the shared auth gate markup into #auth-gate-container
+  // 2) Load the shared auth gate markup so authGate.js can find the expected IDs
   await loadAuthGate();
 
   const sb = getSupabase();
@@ -209,6 +209,8 @@
     const embed_url = toEmbedUrl(video_url);
 
     const btn = $("saveIntroBtn");
+    if (!btn) return;
+
     btn.disabled = true;
     btn.textContent = "Saving...";
 
@@ -283,22 +285,39 @@
     }
   }
 
-  $("saveIntroBtn")?.addEventListener("click", saveIntro);
-  $("refreshBtn")?.addEventListener("click", loadIntroductions);
+  function bindPageEvents() {
+    $("saveIntroBtn")?.addEventListener("click", saveIntro);
+    $("refreshBtn")?.addEventListener("click", loadIntroductions);
 
-  $("videoUrl")?.addEventListener("input", () => {
-    const url = ($("videoUrl")?.value || "").trim();
-    const embed = toEmbedUrl(url);
+    $("videoUrl")?.addEventListener("input", () => {
+      const url = ($("videoUrl")?.value || "").trim();
+      const embed = toEmbedUrl(url);
 
-    if (!url) return setMsg("videoHint", "", false);
-    if (embed) setMsg("videoHint", "Looks good. This link should embed correctly.", false);
-    else setMsg("videoHint", "This platform may not embed. We will show it as a clickable link if embedding fails.", false);
-  });
+      if (!url) return setMsg("videoHint", "", false);
+      if (embed) setMsg("videoHint", "Looks good. This link should embed correctly.", false);
+      else setMsg("videoHint", "This platform may not embed. We will show it as a clickable link if embedding fails.", false);
+    });
+  }
+
+  // 3) Enforce redirect-to-index behavior when signed out
+  let bootstrapped = false;
 
   await initAuthGate({
+    requireRedirect: true,
+    redirectTo: "index.html",
     onAuthed: async () => {
+      // Only run once per page load
+      if (bootstrapped) return;
+      bootstrapped = true;
+
+      // Now load shared UI (topnav/modals/footer/year) and bind global handlers
+      await bootstrapApp();
+
+      // Bind self-intro page events and load data
+      bindPageEvents();
       await loadIntroductions();
 
+      // Prefill editor with their existing intro (if any)
       try {
         const session = await ensureAuthed();
         const existing = await loadMyIntro(session.user.id);
