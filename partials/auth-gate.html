@@ -1,0 +1,115 @@
+<!-- ===================================================== -->
+<!-- AUTH GATE (shown when NOT authorized) -->
+<!-- ===================================================== -->
+<main id="authGate" class="container page" style="display:none;">
+  <section class="card section" style="max-width:720px; margin:40px auto;">
+    <header class="section-header">
+      <h1 class="section-title" style="color:#002657;">EDG 6973</h1>
+      <p class="section-subtitle">Capstone Project (Project in Lieu of Thesis)</p>
+    </header>
+
+    <!-- Dynamic auth title -->
+    <div class="section-body">
+
+      <div id="authTabs" style="margin-top:16px; margin-bottom:16px;">
+        <button class="btn" id="tabSignin" type="button">Sign in</button>
+      </div>
+  
+      <hr>
+      
+      <!-- SIGN UP: magic link -->
+      <div id="panelSignup" style="display:none;">
+        <p class="muted">
+          If this is the first time you access this website, you should use the email your received invitation to register.
+        </p>
+
+        <label class="field">
+          <span>Email</span>
+          <input id="signupEmail" type="email" placeholder="you@ufl.edu" autocomplete="email" />
+          <p></p>
+        </label>
+
+        <div class="task-actions" style="align-items:center;">
+          <button class="btn" id="signupSendLinkBtn" type="button">
+            Send sign-up link
+          </button>
+          <span class="hint" id="signupMsg"></span>
+        </div>
+      </div>
+
+      <!-- SIGN IN -->
+      <div id="panelSignin" style="display:none;">
+        <p class="muted">
+          Sign in with your email and password.
+        </p>
+
+        <label class="field">
+          <span>Email</span>
+          <input id="signinEmail" type="email" autocomplete="email" />
+        </label>
+
+        <label class="field">
+          <span>Password</span>
+          <input id="signinPassword" type="password" autocomplete="current-password" />
+        </label>
+        
+        <p></p>
+        
+        <div class="task-actions" style="align-items:center;">
+          <button class="btn" id="signinBtn" type="button">Sign in</button>
+          <button class="btn ghost" id="forgotBtn" type="button">Forgot password</button>
+          <span class="hint" id="signinMsg"></span>
+        </div>
+      </div>
+
+      <!-- COMPLETE USER INFO -->
+      <div id="panelUserInfo" style="display:none; margin-top:16px;">
+        <div class="callout">
+          <div class="callout-title">Complete your information</div>
+
+          <label class="field">
+            <span>Full name</span>
+            <input id="uiFullName" type="text" autocomplete="name" />
+          </label>
+
+          <label class="field">
+            <span>Affiliation</span>
+            <input id="uiAffiliation" type="text" autocomplete="organization" />
+          </label>
+
+          <div class="task-actions">
+            <button class="btn" id="uiSaveBtn" type="button">
+              Save and continue
+            </button>
+            <span class="hint" id="uiMsg"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SET PASSWORD -->
+      <div id="panelSetPassword" style="display:none; margin-top:16px;">
+        <div class="callout">
+          <div class="callout-title">Set your password</div>
+
+          <label class="field">
+            <span>New password</span>
+            <input id="newPassword" type="password" autocomplete="new-password" />
+          </label>
+
+          <label class="field">
+            <span>Confirm password</span>
+            <input id="confirmPassword" type="password" autocomplete="new-password" />
+          </label>
+
+          <div class="task-actions">
+            <button class="btn" id="setPasswordBtn" type="button">
+              Save password
+            </button>
+            <span class="hint" id="setPasswordMsg"></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
