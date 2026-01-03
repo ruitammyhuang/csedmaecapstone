@@ -1,0 +1,21 @@
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Shared shell mounts here -->
+  <div id="page-shell-container"></div>
+
+  <!-- Page content stays editable as HTML -->
+  <div id="page-content" style="display:none;">
+    <!-- Put ALL your Sprint 1 content here -->
+    <!-- including the <h1> and the whole panels block -->
+  </div>
+
+  <script type="module">
+    import { preloadProtectedPage } from "./assets/js/preloadProtectedPage.js";
+
+    await preloadProtectedPage({
+      contentSelector: "#page-content",
+      redirectTo: "signup_signin.html"
+    });
+  </script>
+</body>

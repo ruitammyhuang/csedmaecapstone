@@ -4,6 +4,7 @@
 // 2) Redirect gate: if signed out, redirect to redirectTo with ?returnTo=...
 
 import { getSupabase } from "./supabaseClient.js";
+import { siteUrl } from "./config.js";
 
 function $(id) {
   return document.getElementById(id);
@@ -83,10 +84,10 @@ function getRedirectToForEmails(mode) {
   return u.toString();
 }
 
-function getReturnToFromUrl() {
-  const u = new URL(window.location.href);
-  return u.searchParams.get("returnTo");
-}
+// function getReturnToFromUrl() {
+//   const u = new URL(window.location.href);
+//   return u.searchParams.get("returnTo");
+// }
 
 function buildRedirectUrl(redirectTo, returnTo) {
   const u = new URL(redirectTo, window.location.origin);
@@ -125,10 +126,39 @@ function clearGateStepFromUrl() {
   }
 }
 
+
 async function getSessionOrNull(sb) {
   const { data, error } = await sb.auth.getSession();
   if (error) throw error;
   return data?.session || null;
+}
+
+// If the user arrives from a Supabase email link (PKCE flow), the URL may contain a `code`.
+// In that case we must exchange it for a session before normal gating logic runs.
+async function getSessionOrExchangeFromUrl(sb) {
+  // First, try the normal session lookup
+  const { data, error } = await sb.auth.getSession();
+  if (error) throw error;
+  if (data?.session) return data.session;
+
+  // If no session yet, try exchanging an auth code from the URL (PKCE)
+  try {
+    const u = new URL(window.location.href);
+    const code = u.searchParams.get("code");
+    if (!code) return null;
+
+    const { data: exData, error: exErr } = await sb.auth.exchangeCodeForSession(window.location.href);
+    if (exErr) throw exErr;
+
+    // Clean up the URL so refresh/back doesn't re-run the exchange
+    u.searchParams.delete("code");
+    window.history.replaceState({}, "", u.toString());
+
+    return exData?.session || null;
+  } catch (e) {
+    console.warn("exchangeCodeForSession failed:", e?.message || e);
+    return null;
+  }
 }
 
 async function getDirectoryRow(sb, uid) {
@@ -140,6 +170,15 @@ async function getDirectoryRow(sb, uid) {
 
   if (error) throw error;
   return data; // null if no row
+}
+
+async function acceptInvites(sb) {
+  try {
+    await sb.rpc("accept_my_project_invites");
+  } catch (e) {
+    // Non-fatal: user can still proceed if already a member, etc.
+    console.warn("accept_my_project_invites failed:", e?.message || e);
+  }
 }
 
 async function upsertUserInfo(sb, session, { full_name, affiliation }) {
@@ -230,7 +269,7 @@ export async function initAuthGate({
         options: {
           // After the user clicks the verification link, we want to land back here
           // and immediately start the "complete registration" flow.
-          emailRedirectTo: getRedirectToForEmails("complete"),
+          emailRedirectTo: siteUrl("signup_signin.html?step=complete_signup"),
           shouldCreateUser: true
         }
       });
@@ -265,6 +304,8 @@ export async function initAuthGate({
 
       const { error } = await sb.auth.signInWithPassword({ email, password });
       if (error) throw error;
+
+      await acceptInvites(sb);
 
       setMsg("signinMsg", "", false);
     } catch (e) {
@@ -319,6 +360,9 @@ export async function initAuthGate({
       }
 
       await upsertUserInfo(sb, session, { full_name, affiliation });
+
+      // Make sure any pending invites are accepted right after profile completion
+      await acceptInvites(sb);
 
       setMsg("uiMsg", "Saved. Now set your password.", false);
       showSetPasswordPanel();
@@ -382,7 +426,7 @@ export async function initAuthGate({
 
   async function applyAuthState() {
     try {
-      const session = await getSessionOrNull(sb);
+      const session = await getSessionOrExchangeFromUrl(sb);
 
       if (!session) {
         authedInitialized = false;
@@ -431,6 +475,9 @@ export async function initAuthGate({
           showUserInfoPanel(row || null);
           return;
         }
+
+        // Extra safety: accept invites even if user info was already completed
+        await acceptInvites(sb);
 
         if (row.password_set === false) {
           showSetPasswordPanel();

@@ -294,6 +294,58 @@ a:hover{ text-decoration:underline; }
 }
 .pill.neutral{ color: var(--muted); }
 
+/* Due date badge component */
+.due-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin: 8px 0 0;
+}
+
+.due-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #fff;
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 650;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.due-badge::before{
+  content: "\1F4C5"; /* calendar */
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* Visual emphasis levels */
+.due-badge.neutral{
+  color: var(--muted);
+}
+
+.due-badge.warn{
+  border-color: rgba(250, 70, 22, 0.35);
+  background: rgba(250, 70, 22, 0.06);
+  color: #7c2d12;
+}
+
+.due-badge.strong{
+  border-color: rgba(0, 38, 87, 0.35);
+  background: rgba(0, 38, 87, 0.06);
+  color: var(--uf-blue);
+}
+
+/* Optional helper when you want the due badge to sit under a callout title */
+.callout .due-row{
+  margin-top: 6px;
+}
+
 .btn{
   border: 1px solid var(--uf-blue);
   background: var(--uf-blue);
@@ -458,6 +510,96 @@ a:hover{ text-decoration:underline; }
   border-color: #d1d5db;
   box-shadow: 0 0 0 3px rgba(0, 38, 87, 0.08);
 }
+
+/* ===========================
+   Sprint: Tasks & Deliverables emphasis
+   =========================== */
+
+/* Stronger visual anchor for section subtitles like "Tasks" and "Deliverables" */
+.callout-title {
+  font-size: 1.1rem;          /* Slightly larger than body */
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;  /* Makes it scan-friendly */
+  color: #002657;             /* Matches your brand blue */
+  margin-bottom: 10px;
+}
+
+/* Add a subtle divider under the title */
+.callout-title::after {
+  content: "";
+  display: block;
+  width: 48px;
+  height: 3px;
+  margin-top: 6px;
+  background-color: #002657;
+  border-radius: 2px;
+}
+
+/* Give Tasks vs Deliverables breathing room */
+.callout {
+  padding: 18px 20px;
+}
+
+/* Slightly tighten task list spacing for readability */
+.callout .task-list > li {
+  margin-bottom: 10px;
+}
+
+/* Emphasize due-date callouts inside Deliverables */
+.callout p.callout {
+  background-color: #f8fafc;
+  border-left: 4px solid #002657;
+  padding: 10px 14px;
+  margin: 0 0 14px 0;
+  font-size: 0.95rem;
+}
+
+
+/* =========================
+   Sprint page emphasis
+   ========================= */
+
+.callout-title--subsection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.callout-subtitle {
+  margin: 6px 0 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.due-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.2;
+  border: 1px solid rgba(17, 24, 39, 0.12);
+  background: rgba(17, 24, 39, 0.04);
+  white-space: nowrap;
+}
+
+.due-badge--friday {
+  background: rgba(2, 38, 87, 0.08);
+  border-color: rgba(2, 38, 87, 0.18);
+}
+
+.due-badge--sunday {
+  background: rgba(185, 28, 28, 0.06);
+  border-color: rgba(185, 28, 28, 0.16);
+}
+
 
 .callout.subtle{
   background: #ffffff;
