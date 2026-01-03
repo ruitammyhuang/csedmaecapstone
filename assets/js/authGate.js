@@ -316,6 +316,20 @@ export async function initAuthGate({
     setMsg("signinMsg", msg, true);
   }
 
+  function showPendingApproval(message) {
+    const msg = message || "Your access request is pending instructor approval. You can sign in again later.";
+
+    // If we are not on the centralized auth page, send them there with a step.
+    if (!isAuthPage()) {
+      window.location.replace(siteUrl("signup_signin.html?step=pending_approval"));
+      return;
+    }
+
+    // Stay on signup_signin.html and show a clear message.
+    showGate("signin");
+    setMsg("signinMsg", msg, false);
+  }
+
   // Default view if signed out
   if (!requireRedirect) showGate("signin");
 
@@ -521,6 +535,16 @@ export async function initAuthGate({
           return;
         }
 
+        if (step === "pending_approval") {
+          showGate("signin");
+          setMsg(
+            "signinMsg",
+            "Your access request is pending instructor approval. Please sign in again later.",
+            false
+          );
+          return;
+        }
+
         if (requireRedirect) {
           redirectToIndex();
           return;
@@ -582,30 +606,30 @@ export async function initAuthGate({
         // After user info exists, enforce membership approval.
         const status = await getMembershipStatus(sb, uid);
 
-        // If explicitly revoked/expired, stop them here.
-        // If pending/accepted/none, allow them to finish registration.
-        // (Membership row may not exist yet until acceptInvites runs.)
-        if (status === "revoked" || status === "expired") {
+        if (status === "revoked" || status === "expired" || status === "none") {
           await blockUnauthorizedAndSignOut(
-            "Your access to this course site has been revoked or expired. Please contact the instructor."
+            "You are not authorized for this course site. Please contact the instructor for access."
           );
           return;
         }
 
-        // If they still need to set a password, do it now.
+        // They can finish registration (set password) even if membership is still pending.
         if (row.password_set === false) {
           showSetPasswordPanel();
           return;
         }
 
-        // If they still need to set a password, do it now.
-        if (row.password_set === false) {
-          showSetPasswordPanel();
-          return;
-        }
-
-        // Already completed; clear step and proceed.
+        // Registration is complete, but do NOT allow access unless membership is accepted.
         clearGateStepFromUrl();
+
+        if (status !== "accepted") {
+          showPendingApproval(
+            "Thanks. Your registration is complete, but access is pending instructor approval. Please check back later."
+          );
+          return;
+        }
+
+        // Accepted -> proceed.
         showAppShellOnce();
         return;
       }
@@ -661,19 +685,25 @@ export async function initAuthGate({
       // Membership approval gate (course/project-level authorization)
       const status = await getMembershipStatus(sb, uid);
 
-      // Allow accepted and pending to load pages.
-      // RLS will prevent pending users from reading/writing project data tables.
-      // Block only revoked/expired/none (none = not enrolled / no membership row).
-      if (status === "revoked" || status === "expired" || status === "none") {
-        authedInitialized = false;
-        await blockUnauthorizedAndSignOut(
-          "You are not enrolled in this course site (or your access was revoked/expired). Please contact the instructor."
-        );
+      // Only ACCEPTED members can access the site pages.
+      if (status === "accepted") {
+        showAppShellOnce();
         return;
       }
 
-      // Authorized and completed
-      showAppShellOnce();
+      // Pending users can sign in, but must stay on signup_signin.html.
+      if (status === "pending") {
+        authedInitialized = false;
+        showPendingApproval();
+        return;
+      }
+
+      // Everything else is not authorized.
+      authedInitialized = false;
+      await blockUnauthorizedAndSignOut(
+        "You are not authorized for this course site (or your access was revoked/expired). Please contact the instructor."
+      );
+      return;
     } catch (e) {
       console.error(e);
       authedInitialized = false;

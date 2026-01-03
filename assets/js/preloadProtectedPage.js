@@ -1,6 +1,6 @@
 // assets/js/preloadProtectedPage.js
 import { configureSupabase, getSupabase } from "./supabaseClient.js";
-import { SUPABASE_CONFIG } from "./config.js";
+import { SUPABASE_CONFIG, EDG6973_PROJECT_ID as PROJECT_ID, siteUrl } from "./config.js";
 import { bootstrapApp } from "./bootstrap.js";
 
 // Small helpers
@@ -56,6 +56,29 @@ export async function preloadProtectedPage({
   if (!session) {
     // Signed out -> redirect to centralized auth page
     window.location.replace(`${urlFromRepoRoot(redirectTo)}?returnTo=${returnToParam()}`);
+    return;
+  }
+
+  // 3.5) Membership check: only ACCEPTED members can view protected pages
+  try {
+    const { data: mem, error: memErr } = await sb
+      .from("project_memberships")
+      .select("member_status")
+      .eq("project_id", PROJECT_ID)
+      .eq("user_id", session.user.id)
+      .maybeSingle();
+
+    if (memErr) throw memErr;
+
+    const status = String(mem?.member_status || "none").toLowerCase();
+    if (status !== "accepted") {
+      const step = status === "pending" ? "pending_approval" : "not_authorized";
+      window.location.replace(siteUrl(`signup_signin.html?step=${step}`));
+      return;
+    }
+  } catch (e) {
+    console.error("Membership check error:", e);
+    window.location.replace(siteUrl("signup_signin.html?step=not_authorized"));
     return;
   }
 
