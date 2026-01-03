@@ -41,18 +41,27 @@ function applyActiveNav(activeKey) {
   });
 }
 
-function hubUrl() {
-  // Always go to the hub inside the same repo base path
-  // Example: /csedmaecapstone/index.html
-  const basePath = window.location.pathname.split("/").slice(0, -1).join("/");
-  return `${window.location.origin}${basePath}/index.html`;
+/**
+ * GitHub Pages project site:
+ * https://username.github.io/<repo>/(pages...)
+ * We want the stable base "/<repo>/".
+ */
+function repoBasePath() {
+  const parts = window.location.pathname.split("/").filter(Boolean);
+  // For a GitHub Pages project site, parts[0] is the repo name (e.g., "csedmaecapstone")
+  const repo = parts[0] || "";
+  return `/${repo}/`;
+}
+
+function urlFromRepoRoot(file) {
+  return `${window.location.origin}${repoBasePath()}${file}`;
 }
 
 export async function loadTopNav() {
   const container = document.getElementById("topnav-container");
   if (!container) return;
 
-  // Keep your known-good partial path (you already debugged the ../ issue)
+  // Keep your known-good partial path
   const partialUrl = new URL("../../partials/topnav.html", import.meta.url);
 
   try {
@@ -65,10 +74,9 @@ export async function loadTopNav() {
     return;
   }
 
-  // Initial highlight
+  // Highlight now and on hash changes
   applyActiveNav(detectActiveTopNavKey());
 
-  // Update highlight on hash changes (index anchors)
   if (!window.__topnavHashListenerBound) {
     window.__topnavHashListenerBound = true;
     window.addEventListener("hashchange", () => {
@@ -76,22 +84,24 @@ export async function loadTopNav() {
     });
   }
 
-  // Sign out behavior (avoid double-binding)
+  // Sign out
   const signOutBtn = document.getElementById("signOutBtn");
   if (signOutBtn && signOutBtn.dataset.bound !== "1") {
     signOutBtn.dataset.bound = "1";
+
     signOutBtn.addEventListener("click", async () => {
       const sb = getSupabase();
-  
+
       try {
-        // IMPORTANT: clear the local session no matter what
         await sb.auth.signOut({ scope: "local" });
       } catch (e) {
-        // Even if signOut errors, still redirect to force re-check
         console.error("Sign out error:", e);
       } finally {
-        // Use replace to avoid “Back” returning to authed page state
-        window.location.replace(hubUrl());
+        // Recommended: send users to your dedicated auth page
+        // If you have not created it yet, temporarily switch to index.html
+        const target = urlFromRepoRoot("signup_signin.html"); // preferred
+        // const target = urlFromRepoRoot("index.html"); // temporary fallback
+        window.location.replace(target);
       }
     });
   }
