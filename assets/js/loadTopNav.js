@@ -14,9 +14,7 @@ function detectActiveTopNavKey() {
   // 1) Hash-based highlighting on index.html
   // If user is on index and jumps to #milestones or #modules, highlight accordingly.
   if (file === "" || file === "index.html") {
-    if (hash.includes("milestones")) return "milestones";
     if (hash.includes("modules")) return "modules";
-    // default on index (no hash): don't force an active state
     return null;
   }
 
