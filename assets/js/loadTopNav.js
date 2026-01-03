@@ -67,6 +67,33 @@ function clearSupabaseTokensBestEffort() {
   }
 }
 
+// adjusted to make sure signout button works
+function bindDelegatedSignOutOnce() {
+  if (document.body.dataset.signOutDelegationBound === "1") return;
+  document.body.dataset.signOutDelegationBound = "1";
+
+  document.addEventListener("click", async (e) => {
+    const btn = e.target.closest("#signOutBtn");
+    if (!btn) return;
+
+    e.preventDefault();
+
+    // Always redirect to the dedicated auth page
+    const redirectUrl = authPageUrl();
+
+    try {
+      const sb = getSupabase();
+      await sb.auth.signOut({ scope: "local" });
+    } catch (err) {
+      console.warn("Sign out: Supabase not ready or signOut failed. Redirecting anyway.", err);
+      clearSupabaseTokensBestEffort();
+    } finally {
+      window.location.replace(redirectUrl);
+    }
+  });
+}
+
+
 export async function loadTopNav() {
   const container = document.getElementById("topnav-container");
   if (!container) return;
@@ -95,27 +122,27 @@ export async function loadTopNav() {
     });
   }
 
-  // Sign out behavior (avoid double-binding)
-  const signOutBtn = document.getElementById("signOutBtn");
-  if (signOutBtn && signOutBtn.dataset.bound !== "1") {
-    signOutBtn.dataset.bound = "1";
+  // remove the old Sign out behavior (avoid double-binding)
+  // const signOutBtn = document.getElementById("signOutBtn");
+  // if (signOutBtn && signOutBtn.dataset.bound !== "1") {
+  //   signOutBtn.dataset.bound = "1";
 
-    signOutBtn.addEventListener("click", async (e) => {
-      e.preventDefault();
+  //   signOutBtn.addEventListener("click", async (e) => {
+  //     e.preventDefault();
 
-      // Always redirect to the dedicated auth page
-      const redirectUrl = authPageUrl();
+  //     // Always redirect to the dedicated auth page
+  //     const redirectUrl = authPageUrl();
 
-      try {
-        // This will throw if Supabase isn't configured on this page
-        const sb = getSupabase();
-        await sb.auth.signOut({ scope: "local" });
-      } catch (err) {
-        console.warn("Sign out: Supabase not ready or signOut failed. Redirecting anyway.", err);
-        clearSupabaseTokensBestEffort();
-      } finally {
-        window.location.replace(redirectUrl);
-      }
-    });
-  }
+  //     try {
+  //       // This will throw if Supabase isn't configured on this page
+  //       const sb = getSupabase();
+  //       await sb.auth.signOut({ scope: "local" });
+  //     } catch (err) {
+  //       console.warn("Sign out: Supabase not ready or signOut failed. Redirecting anyway.", err);
+  //       clearSupabaseTokensBestEffort();
+  //     } finally {
+  //       window.location.replace(redirectUrl);
+  //     }
+  //   });
+  // }
 }
