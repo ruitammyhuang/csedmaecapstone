@@ -36,21 +36,23 @@
   const params = new URLSearchParams(window.location.search);
   const step = (params.get("step") || "").toLowerCase();
 
-  const landingUrl = siteUrl ? siteUrl("index.html") : new URL("index.html", window.location.href).toString();
+  // Always send accepted users to the landing page.
+  // For pending/unapproved users, we keep them on this page and show a message.
+  const landingUrl = typeof siteUrl === "function"
+    ? siteUrl("index.html")
+    : new URL("index.html", window.location.href).toString();
+
+  function shouldStayHere() {
+    return step === "pending_approval" || step === "not_authorized";
+  }
 
   await initAuthGate({
-
-    // authGate.js will only call onAuthed for ACCEPTED members.
-    onAuthed: () => window.location.replace(siteUrl("index.html"))
-
-    //onAuthed: () => {
-      // // If the user got here because they are not authorized, do not bounce them back and forth.
-      // // Stay on this page; authGate should show the appropriate message.
-      // if (step === "not_authorized") return;
-
-      // // Always go to the landing page after successful auth.
-      // window.location.replace(landingUrl);
-    //}
+    onAuthed: () => {
+      // Defensive: if this page was opened explicitly to show a pending/not-authorized state,
+      // do not redirect (prevents flashing loops).
+      if (shouldStayHere()) return;
+      window.location.replace(landingUrl);
+    }
   });
 </script>
 
