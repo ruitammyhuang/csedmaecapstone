@@ -1,7 +1,7 @@
 // assets/js/authGate.js
 // Supports two modes:
 // 1) In-page gate (default): show authGate panel on the current page.
-// 2) Redirect gate: if signed out, redirect to redirectTo (e.g., index.html) with ?returnTo=...
+// 2) Redirect gate: if signed out, redirect to redirectTo with ?returnTo=...
 
 import { getSupabase } from "./supabaseClient.js";
 
@@ -69,9 +69,12 @@ function showGate(tab = "signin") {
   setActiveTab(tab);
 }
 
-function getRedirectToForEmails() {
+function getRedirectToForEmails(mode) {
   // Supabase Auth emailRedirectTo / reset redirectTo
-  return window.location.origin + window.location.pathname;
+  // Keep user on the centralized auth page (or current page) and carry an optional mode.
+  const u = new URL(window.location.origin + window.location.pathname);
+  if (mode) u.searchParams.set("mode", mode);
+  return u.toString();
 }
 
 function getReturnToFromUrl() {
@@ -181,11 +184,16 @@ export async function initAuthGate({
 
       const { error } = await sb.auth.signInWithOtp({
         email,
-        options: { emailRedirectTo: getRedirectToForEmails() }
+        options: {
+          // After the user clicks the verification link, we want to land back here
+          // and immediately start the "complete registration" flow.
+          emailRedirectTo: getRedirectToForEmails("complete"),
+          shouldCreateUser: true
+        }
       });
       if (error) throw error;
 
-      setMsg("signupMsg", "Sign-up link sent. Check your email.", false);
+      setMsg("signupMsg", "Verification email sent. Please check your email.", false);
     } catch (e) {
       console.error(e);
       setMsg("signupMsg", e?.message || "Failed to send sign-up link.", true);
@@ -236,7 +244,7 @@ export async function initAuthGate({
       if (!email) return setMsg("signinMsg", "Enter your email first.", true);
 
       const { error } = await sb.auth.resetPasswordForEmail(email, {
-        redirectTo: getRedirectToForEmails()
+        redirectTo: getRedirectToForEmails("reset")
       });
       if (error) throw error;
 
@@ -269,8 +277,8 @@ export async function initAuthGate({
 
       await upsertUserInfo(sb, session, { full_name, affiliation });
 
-      setMsg("uiMsg", "Saved. Continuing...", false);
-      await applyAuthState();
+      setMsg("uiMsg", "Saved. Now set your password.", false);
+      showSetPasswordPanel();
     } catch (e) {
       console.error(e);
       setMsg("uiMsg", e?.message || "Failed to save your information.", true);
@@ -309,9 +317,18 @@ export async function initAuthGate({
 
       setMsg(
         "setPasswordMsg",
-        "Password saved. You can now sign in with email and password next time.",
+        "Registration complete. Redirecting...",
         false
       );
+
+      // Remove mode so refresh does not re-enter registration completion
+      try {
+        const u = new URL(window.location.href);
+        u.searchParams.delete("mode");
+        window.history.replaceState({}, "", u.toString());
+      } catch (_) {
+        // ignore
+      }
 
       await applyAuthState();
     } catch (e) {
@@ -345,8 +362,12 @@ export async function initAuthGate({
       const uid = session.user.id;
       const row = await getDirectoryRow(sb, uid);
 
-      // Require user info
-      if (!row || row.user_info_completed === false) {
+      const params = new URLSearchParams(window.location.search);
+      const mode = (params.get("mode") || "").toLowerCase();
+      const completingRegistration = mode === "complete";
+
+      // Complete-registration mode (after email verification) OR missing/incomplete user info
+      if (completingRegistration || !row || row.user_info_completed === false) {
         if (requireRedirect && !isIndexPage()) {
           // Keep all onboarding on index.html
           redirectToIndex();
@@ -389,12 +410,8 @@ export async function initAuthGate({
         return;
       }
 
-      // If we are on index.html and there is a returnTo, go there after auth
-      const returnTo = getReturnToFromUrl();
-      if (returnTo && isIndexPage()) {
-        window.location.href = returnTo;
-        return;
-      }
+      // NOTE: We intentionally do not auto-redirect to returnTo here.
+      // After sign-in, users land on the hub (index) by default.
 
       // Authorized and completed
       showAppShellOnce();

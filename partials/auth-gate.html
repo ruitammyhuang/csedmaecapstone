@@ -12,7 +12,7 @@
     <div class="section-body">
 
       <div id="authTabs" style="margin-top:16px; margin-bottom:16px;">
-        <button class="btn ghost" id="tabSignup" type="button">Sign up</button>
+        <button class="btn ghost" id="tabSignup" type="button">Register</button>
         <button class="btn" id="tabSignin" type="button">Sign in</button>
       </div>
   
@@ -21,7 +21,10 @@
       <!-- SIGN UP: magic link -->
       <div id="panelSignup" style="display:none;">
         <p class="muted">
-          If this is the first time you access this website, you should use the email your received invitation to register.
+          You will go through a two-step sign up process. Step 1. Verify your registration email. Step 2. Complete your registration by setting your password and providing additional information.
+        </p>
+        <p class="muted">
+          Now, let's complete Step 1. Please enter your email address below to receive a sign-up link.
         </p>
 
         <label class="field">
@@ -32,10 +35,14 @@
 
         <div class="task-actions" style="align-items:center;">
           <button class="btn" id="signupSendLinkBtn" type="button">
-            Send sign-up link
+            Send verification email
           </button>
           <span class="hint" id="signupMsg"></span>
         </div>
+
+        <p class="hint" style="margin-top:10px;">
+          After you click the verification link in your email, you will be brought back here to complete registration.
+        </p>
       </div>
 
       <!-- SIGN IN -->
