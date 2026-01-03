@@ -182,9 +182,20 @@
 </div>
 
 <script type="module">
+  import { configureSupabase } from "./assets/js/supabaseClient.js";
+  import { SUPABASE_CONFIG } from "./assets/js/config.js";
   import { initAuthGate } from "./assets/js/authGate.js";
   import { bootstrapApp } from "./assets/js/bootstrap.js";
+  import { loadAuthGate } from "./assets/js/loadAuthGate.js";
 
+  // 1) Configure Supabase first (required)
+  configureSupabase(SUPABASE_CONFIG);
+
+  // 2) If you are using the shared auth gate partial on index:
+  //    (If index.html already contains the auth gate markup, you can remove this line.)
+  await loadAuthGate();
+
+  // 3) Run auth gate. Only bootstrap shared UI after authorization.
   let bootstrapped = false;
 
   await initAuthGate({
