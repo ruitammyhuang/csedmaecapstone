@@ -13,3 +13,17 @@ export const SUPABASE_CONFIG = {
 };
 
 export const EDG6973_PROJECT_ID = "9dc0a871-a9fd-4898-bf8e-2d3d8692fe6d";
+
+
+
+export const SITE_BASE_PATH = "/csedmaecapstone/"; // must start and end with "/"
+
+export function siteUrl(page = "index.html") {
+  return new URL(SITE_BASE_PATH + page, window.location.origin).toString();
+}
+
+export function returnToParam() {
+  // keep the path+query inside your project site
+  const full = window.location.pathname + window.location.search;
+  return encodeURIComponent(full);
+}
