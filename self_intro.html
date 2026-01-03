@@ -15,13 +15,6 @@
 </head>
 
 <body>
-<a class="skip-link" href="#main">Skip to content</a>
-
-<!-- ===================================================== -->
-<!-- AUTH GATE (same auth UI ids expected by authGate.js) -->
-<!-- ===================================================== -->
-<div id="auth-gate-container"></div>
-
 <!-- ===================================================== -->
 <!-- SELF-INTRO APP (shown when authenticated/authorized) -->
 <!-- ===================================================== -->
@@ -78,14 +71,14 @@
 <script type="module">
   import { configureSupabase, getSupabase } from "./assets/js/supabaseClient.js";
   import { SUPABASE_CONFIG, EDG6973_PROJECT_ID as PROJECT_ID } from "./assets/js/config.js";
-  import { initAuthGate } from "./assets/js/authGate.js";
   import { bootstrapApp } from "./assets/js/bootstrap.js";
   import { loadAuthGate } from "./assets/js/loadAuthGate.js";
+  import { initAuthGate } from "./assets/js/authGate.js";
 
-  // 1) Configure Supabase ONLY (do not load shared UI yet)
+  // 1) Configure Supabase first
   configureSupabase(SUPABASE_CONFIG);
 
-  // 2) Load the shared auth gate markup so authGate.js can find the expected IDs
+  // 2) Load auth gate markup (needed if we ever show it)
   await loadAuthGate();
 
   const sb = getSupabase();
@@ -121,6 +114,36 @@
     if (vimeo?.[1]) return `https://player.vimeo.com/video/${vimeo[1]}`;
 
     return "";
+  }
+
+  // Build repo-safe URL: /csedmaecapstone/signup_signin.html?returnTo=...
+  function authPageUrl() {
+    const url = new URL("signup_signin.html", window.location.href);
+
+    const returnTo =
+      window.location.pathname +
+      window.location.search +
+      window.location.hash;
+
+    url.searchParams.set("returnTo", returnTo);
+    return url.toString();
+  }
+
+  async function ensureAuthedOrRedirect() {
+    const { data, error } = await sb.auth.getSession();
+    if (error) throw error;
+    if (!data?.session) {
+      window.location.replace(authPageUrl());
+      return null; // stop further execution
+    }
+    return data.session;
+  }
+
+  // IMPORTANT: if user hits self_intro.html while signed out, redirect to signup_signin.html
+  const initialSession = await ensureAuthedOrRedirect();
+  if (!initialSession) {
+    // redirected
+    throw new Error("Redirecting to sign-in.");
   }
 
   function renderCard(row) {
@@ -298,25 +321,41 @@
     });
   }
 
-  // 3) Enforce redirect-to-index behavior when signed out
-  let bootstrapped = false;
+  // 3) Now load shared UI (topnav/footer/modals)
+  await bootstrapApp();
 
+  // 4) OVERRIDE Sign out on this page (capture phase) to stop the old handler
+  //    and always go to signup_signin.html?returnTo=...
+  const signOutBtn = document.getElementById("signOutBtn");
+  if (signOutBtn) {
+    signOutBtn.addEventListener(
+      "click",
+      async (e) => {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        try {
+          await sb.auth.signOut({ scope: "local" });
+        } catch (err) {
+          console.error("Sign out error:", err);
+        } finally {
+          window.location.replace(authPageUrl());
+        }
+      },
+      true // capture: run before the handler added by loadTopNav.js
+    );
+  }
+
+  // 5) At this point user is signed in; run your auth gating logic for activation/password/etc.
+  let started = false;
   await initAuthGate({
-    requireRedirect: true,
-    redirectTo: "index.html",
     onAuthed: async () => {
-      // Only run once per page load
-      if (bootstrapped) return;
-      bootstrapped = true;
+      if (started) return;
+      started = true;
 
-      // Now load shared UI (topnav/modals/footer/year) and bind global handlers
-      await bootstrapApp();
-
-      // Bind self-intro page events and load data
       bindPageEvents();
       await loadIntroductions();
 
-      // Prefill editor with their existing intro (if any)
       try {
         const session = await ensureAuthed();
         const existing = await loadMyIntro(session.user.id);
