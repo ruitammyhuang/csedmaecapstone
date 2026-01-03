@@ -3,7 +3,6 @@
 import { configureSupabase } from "./supabaseClient.js";
 import { SUPABASE_CONFIG } from "./config.js";
 import { loadTopNav } from "./loadTopNav.js";
-import { loadModulesSubNav } from "./loadModulesSubNav.js";
 import { loadSharedModals } from "./loadSharedModals.js";
 
 function setYear() {
