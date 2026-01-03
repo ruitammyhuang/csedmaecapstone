@@ -18,7 +18,7 @@
 <a class="skip-link" href="#main">Skip to content</a>
 
 <!-- ===================================================== -->
-<!-- AUTH GATE (reuses your existing auth UI + flow) -->
+<!-- AUTH GATE (same auth UI ids expected by authGate.js) -->
 <!-- ===================================================== -->
 <main id="authGate" class="container page" style="display:none;">
   <section class="card section" style="max-width:720px; margin:40px auto;">
@@ -27,15 +27,12 @@
       <p class="section-subtitle">Self Introductions</p>
     </header>
 
-    <h2 id="authTitle" class="section-title" style="display:none; margin-bottom:12px;"></h2>
-
-    <div id="authTabs" style="margin-top:16px; margin-bottom:16px;">
-      <button class="btn" id="tabSignin" type="button">Sign in</button>
-    </div>
-
-    <hr />
-
     <div class="section-body">
+      <div id="authTabs" style="margin-top:16px; margin-bottom:16px;">
+        <button class="btn" id="tabSignin" type="button">Sign in</button>
+      </div>
+
+      <hr />
 
       <!-- SIGN UP (magic link) -->
       <div id="panelSignup" style="display:none;">
@@ -118,7 +115,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </section>
 </main>
@@ -127,43 +123,25 @@
 <!-- SELF-INTRO APP (shown when authenticated/authorized) -->
 <!-- ===================================================== -->
 <div id="appShell" style="display:none;">
-  <header class="topbar">
-    <div class="container topbar-inner">
-      <div class="brand">
-        <a href="index.html" style="color: inherit; text-decoration: none; display:flex; gap:12px; align-items:center;">
-          <div class="brand-mark" aria-hidden="true">CSEd</div>
-          <div class="brand-text">
-            <div class="brand-title">EDG 6973</div>
-            <div class="brand-subtitle">Self Introductions</div>
-          </div>
-        </a>
-      </div>
-
-      <nav class="topnav" aria-label="Primary">
-        <a class="topnav-link" href="index.html">Back to course hub</a>
-        <button class="btn ghost" type="button" id="signOutBtn">Sign out</button>
-      </nav>
-    </div>
-  </header>
+  <div id="topnav-container"></div>
 
   <main id="main" class="container page">
-
     <section class="card section" style="max-width: 980px; margin: 18px auto;">
       <header class="section-header">
         <h1 class="section-title">Post your self-introduction</h1>
         <p class="section-subtitle">
-          You can submit text-only, video-only, or both. Your latest submission will appear at the top.
+          You can submit text-only, video-only, or both. If you submit again, your post will be updated (no duplicates).
         </p>
       </header>
 
       <div class="section-body">
         <label class="field">
           <span>Text introduction</span>
-          <textarea id="introText" rows="5" placeholder="Write a short introduction..." style="width:100%;"></textarea>
+          <textarea id="introText" rows="5" placeholder="Write a short introduction..."></textarea>
         </label>
 
         <label class="field">
-          <span>Video link (YouTube or Vimeo recommended)</span>
+          <span>Video link (YouTube recommended; others may show as a link)</span>
           <input id="videoUrl" type="url" placeholder="https://www.youtube.com/watch?v=..." />
           <div class="hint" id="videoHint"></div>
         </label>
@@ -187,29 +165,25 @@
         <div class="hint" id="listMsg" style="margin-top:10px;"></div>
       </div>
     </section>
+
+    <div id="footer-container"></div>
   </main>
+
+  <div id="shared-modals"></div>
 </div>
 
 <script type="module">
-  import { configureSupabase, getSupabase } from "./assets/js/supabaseClient.js";
+  import { bootstrapApp } from "./assets/js/bootstrap.js";
   import { initAuthGate } from "./assets/js/authGate.js";
+  import { getSupabase } from "./assets/js/supabaseClient.js";
+  import { EDG6973_PROJECT_ID as PROJECT_ID } from "./assets/js/config.js";
 
-  // =========================
-  // CONFIG
-  // =========================
-  configureSupabase({
-    url: "https://fzuslwrmhgaveulfewel.supabase.co",
-    anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6dXNsd3JtaGdhdmV1bGZld2VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjczNjM0NTQsImV4cCI6MjA4MjkzOTQ1NH0.SFZJsJ3SejZsNwVtW1CcyINrrPdsRtjoWKsgNK48pbM"
-  });
-
-  // IMPORTANT: set to your EDG6973 project row id
-  const PROJECT_ID = "9dc0a871-a9fd-4898-bf8e-2d3d8692fe6d";
+  // IMPORTANT:
+  // bootstrapApp configures Supabase (so authGate can use getSupabase safely)
+  // and loads shared partials (topnav, modals, footer).
+  await bootstrapApp();
 
   const sb = getSupabase();
-
-  // =========================
-  // UI HELPERS
-  // =========================
   const $ = (id) => document.getElementById(id);
 
   function setMsg(id, msg, isError) {
@@ -220,7 +194,7 @@
   }
 
   function escapeHtml(s) {
-    return String(s || "")
+    return String(s ?? "")
       .replaceAll("&", "&amp;")
       .replaceAll("<", "&lt;")
       .replaceAll(">", "&gt;")
@@ -228,15 +202,15 @@
       .replaceAll("'", "&#039;");
   }
 
-  // Best-effort embed conversion (DB should also normalize)
   function toEmbedUrl(raw) {
     const url = (raw || "").trim();
     if (!url) return "";
 
-    // YouTube
+    // YouTube watch
     const ytWatch = url.match(/youtube\.com\/watch\?v=([A-Za-z0-9_-]{6,})/i);
     if (ytWatch?.[1]) return `https://www.youtube.com/embed/${ytWatch[1]}`;
 
+    // YouTube short
     const ytShort = url.match(/youtu\.be\/([A-Za-z0-9_-]{6,})/i);
     if (ytShort?.[1]) return `https://www.youtube.com/embed/${ytShort[1]}`;
 
@@ -244,7 +218,6 @@
     const vimeo = url.match(/vimeo\.com\/(\d{6,})/i);
     if (vimeo?.[1]) return `https://player.vimeo.com/video/${vimeo[1]}`;
 
-    // If unknown, return empty (we will show link instead of embed)
     return "";
   }
 
@@ -255,7 +228,9 @@
     const videoUrl = row?.video_url || "";
     const embedUrl = row?.embed_url || toEmbedUrl(videoUrl);
 
-    const whoLine = affiliation ? `${escapeHtml(fullName)} · ${escapeHtml(affiliation)}` : escapeHtml(fullName);
+    const whoLine = affiliation
+      ? `${escapeHtml(fullName)} · ${escapeHtml(affiliation)}`
+      : escapeHtml(fullName);
 
     const textHtml = introText
       ? `<div class="muted" style="white-space:pre-wrap; margin-top:8px;">${escapeHtml(introText)}</div>`
@@ -281,15 +256,13 @@
           : "");
 
     const when = row?.updated_at || row?.created_at || "";
-    const whenHtml = when ? `<div class="hint" style="margin-top:10px;">Updated: ${escapeHtml(new Date(when).toLocaleString())}</div>` : "";
+    const whenHtml = when
+      ? `<div class="hint" style="margin-top:10px;">Updated: ${escapeHtml(new Date(when).toLocaleString())}</div>`
+      : "";
 
     return `
       <article class="card" style="padding:16px;">
-        <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start;">
-          <div>
-            <div style="font-weight:700; color:#111827;">${whoLine}</div>
-          </div>
-        </div>
+        <div style="font-weight:700; color:#111827;">${whoLine}</div>
         ${textHtml}
         ${videoHtml}
         ${whenHtml}
@@ -297,9 +270,6 @@
     `;
   }
 
-  // =========================
-  // DATA OPS
-  // =========================
   async function ensureAuthed() {
     const { data, error } = await sb.auth.getSession();
     if (error) throw error;
@@ -308,13 +278,12 @@
     return session;
   }
 
-  async function loadMyExistingIntro(userId) {
-    // Assumes unique per (project_id, user_id)
+  async function loadMyIntro(uid) {
     const { data, error } = await sb
       .from("project_introductions")
-      .select("intro_text, video_url")
+      .select("project_id, user_id, intro_text, video_url, embed_url, created_at, updated_at")
       .eq("project_id", PROJECT_ID)
-      .eq("user_id", userId)
+      .eq("user_id", uid)
       .maybeSingle();
 
     if (error) throw error;
@@ -342,20 +311,17 @@
     btn.textContent = "Saving...";
 
     try {
-      // One row per person per project (latest update stays on top)
-      const payload = {
-        project_id: PROJECT_ID,
-        user_id: uid,
-        intro_text: intro_text || null,
-        video_url: video_url || null,
-        // If your DB has generated embed_url, you can remove this.
-        embed_url: embed_url || null,
-        updated_at: new Date().toISOString()
-      };
-
+      // Composite PK: (project_id, user_id)
       const { error } = await sb
         .from("project_introductions")
-        .upsert(payload, { onConflict: "project_id,user_id" });
+        .upsert({
+          project_id: PROJECT_ID,
+          user_id: uid,
+          intro_text: intro_text || null,
+          video_url: video_url || null,
+          embed_url: embed_url || null,
+          updated_at: new Date().toISOString()
+        });
 
       if (error) throw error;
 
@@ -374,16 +340,17 @@
     setMsg("listMsg", "Loading...", false);
 
     try {
-      // Join to users table for name + affiliation
+      // IMPORTANT: no "id" column exists in your table, so do not select it.
       const { data, error } = await sb
         .from("project_introductions")
         .select(`
-          id,
           project_id,
           user_id,
           intro_text,
           video_url,
+          embed_url,
           created_at,
+          updated_at,
           users (
             user_id,
             full_name,
@@ -391,6 +358,7 @@
           )
         `)
         .eq("project_id", PROJECT_ID)
+        .order("updated_at", { ascending: false })
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -412,29 +380,28 @@
     }
   }
 
-  // =========================
-  // INIT
-  // =========================
+  // UI events
   $("saveIntroBtn")?.addEventListener("click", saveIntro);
   $("refreshBtn")?.addEventListener("click", loadIntroductions);
 
   $("videoUrl")?.addEventListener("input", () => {
     const url = ($("videoUrl")?.value || "").trim();
     const embed = toEmbedUrl(url);
+
     if (!url) return setMsg("videoHint", "", false);
     if (embed) setMsg("videoHint", "Looks good. This link should embed correctly.", false);
     else setMsg("videoHint", "This platform may not embed. We will show it as a clickable link if embedding fails.", false);
   });
 
+  // Auth gate controls visibility of authGate vs appShell.
   await initAuthGate({
     onAuthed: async () => {
-      // Once the user is authorized into the project, show the app UI and load data.
       await loadIntroductions();
 
-      // Optionally prefill the editor with their current saved intro
+      // Prefill editor with their existing intro (if any)
       try {
         const session = await ensureAuthed();
-        const existing = await loadMyExistingIntro(session.user.id);
+        const existing = await loadMyIntro(session.user.id);
         if (existing) {
           if ($("introText")) $("introText").value = existing.intro_text || "";
           if ($("videoUrl")) $("videoUrl").value = existing.video_url || "";
@@ -444,11 +411,7 @@
       }
     }
   });
-
-  document.getElementById("signOutBtn")?.addEventListener("click", async () => {
-    await sb.auth.signOut();
-  });
-
 </script>
+
 </body>
 </html>
