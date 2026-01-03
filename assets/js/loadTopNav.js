@@ -81,12 +81,17 @@ export async function loadTopNav() {
   if (signOutBtn && signOutBtn.dataset.bound !== "1") {
     signOutBtn.dataset.bound = "1";
     signOutBtn.addEventListener("click", async () => {
+      const sb = getSupabase();
+  
       try {
-        const sb = getSupabase();
-        await sb.auth.signOut();
+        // IMPORTANT: clear the local session no matter what
+        await sb.auth.signOut({ scope: "local" });
+      } catch (e) {
+        // Even if signOut errors, still redirect to force re-check
+        console.error("Sign out error:", e);
       } finally {
-        // No returnTo query string. Just go to hub.
-        window.location.href = hubUrl();
+        // Use replace to avoid “Back” returning to authed page state
+        window.location.replace(hubUrl());
       }
     });
   }
