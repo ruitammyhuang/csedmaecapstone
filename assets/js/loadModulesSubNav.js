@@ -43,7 +43,7 @@ export async function loadModulesSubNav({ active } = {}) {
   }
 
   // Robust path to partial from any page
-  const partialUrl = new URL("../partials/modules-subnav.html", import.meta.url);
+const partialUrl = new URL("../../partials/modules-subnav.html", import.meta.url);
 
   try {
     const res = await fetch(partialUrl.toString(), { cache: "no-cache" });
