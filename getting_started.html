@@ -148,11 +148,29 @@
   <div id="shared-modals"></div>
 
   <script type="module">
-    import { loadTopNav } from "./assets/js/loadTopNav.js";
-    import { loadSharedModals } from "./assets/js/loadSharedModals.js";
+    import { configureSupabase, getSupabase } from "./assets/js/supabaseClient.js";
+    import { SUPABASE_CONFIG } from "./assets/js/config.js";
+    import { bootstrapApp } from "./assets/js/bootstrap.js";
   
-    await loadTopNav({ active: "getting_started" });
-    await loadSharedModals();
+    // 1) Configure Supabase first so any shared modules can safely call getSupabase()
+    configureSupabase(SUPABASE_CONFIG);
+  
+    // 2) If not signed in, redirect to the dedicated auth page
+    const sb = getSupabase();
+    const { data, error } = await sb.auth.getSession();
+    if (error) console.warn(error);
+  
+    if (!data?.session) {
+      const url = new URL("signup_signin.html", window.location.href);
+      url.searchParams.set(
+        "returnTo",
+        window.location.pathname + window.location.search + window.location.hash
+      );
+      window.location.replace(url.toString());
+    } else {
+      // 3) Signed in, load shared UI (topnav, modals, footer, year, global bindings)
+      await bootstrapApp();
+    }
   </script>
 
 </body>
