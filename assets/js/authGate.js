@@ -1,9 +1,7 @@
 // assets/js/authGate.js
-// Flow:
-// 1) User signs up via magic link (panelSignup) OR signs in with password (panelSignin)
-// 2) If authenticated but no user record OR user_info_completed=false -> show panelUserInfo
-// 3) Optional: If user_info_completed=true but password_set=false -> show panelSetPassword
-// 4) If user is active + user_info_completed=true (+ password_set=true if you enforce it) -> show appShell
+// Supports two modes:
+// 1) In-page gate (default): show authGate panel on the current page.
+// 2) Redirect gate: if signed out, redirect to redirectTo (e.g., index.html) with ?returnTo=...
 
 import { getSupabase } from "./supabaseClient.js";
 
@@ -33,16 +31,16 @@ function hideAllPanels() {
 function setActiveTab(tab) {
   hideAllPanels();
 
-  // Only show panels that actually exist on this page
+  // Only show panels that exist on this page
   if (tab === "signup") {
     if ($("panelSignup")) show("panelSignup", true);
-    else if ($("panelSignin")) show("panelSignin", true); // fallback
+    else if ($("panelSignin")) show("panelSignin", true);
     return;
   }
 
   if (tab === "signin") {
     if ($("panelSignin")) show("panelSignin", true);
-    else if ($("panelSignup")) show("panelSignup", true); // fallback
+    else if ($("panelSignup")) show("panelSignup", true);
   }
 }
 
@@ -71,9 +69,25 @@ function showGate(tab = "signin") {
   setActiveTab(tab);
 }
 
-function getRedirectTo() {
-  // Works for GitHub Pages too, as long as redirect URLs are allowlisted in Supabase Auth settings.
+function getRedirectToForEmails() {
+  // Supabase Auth emailRedirectTo / reset redirectTo
   return window.location.origin + window.location.pathname;
+}
+
+function getReturnToFromUrl() {
+  const u = new URL(window.location.href);
+  return u.searchParams.get("returnTo");
+}
+
+function buildRedirectUrl(redirectTo, returnTo) {
+  const u = new URL(redirectTo, window.location.origin);
+  if (returnTo) u.searchParams.set("returnTo", returnTo);
+  return u.toString();
+}
+
+function isIndexPage() {
+  const path = (window.location.pathname || "").toLowerCase();
+  return path.endsWith("/") || path.endsWith("/index.html") || path.endsWith("index.html");
 }
 
 async function getSessionOrNull(sb) {
@@ -119,10 +133,14 @@ async function markPasswordSet(sb, uid) {
   if (error) throw error;
 }
 
-export async function initAuthGate({ onAuthed } = {}) {
+export async function initAuthGate({
+  onAuthed,
+  requireRedirect = false,
+  redirectTo = "index.html"
+} = {}) {
   const sb = getSupabase();
 
-  // Guard so onAuthed doesn't run multiple times during repeated applyAuthState calls
+  // Guard so onAuthed doesn't run multiple times
   let authedInitialized = false;
 
   function showAppShellOnce() {
@@ -136,14 +154,19 @@ export async function initAuthGate({ onAuthed } = {}) {
     }
   }
 
-  // Default view if signed out (use signin as default; matches your current UI)
-  showGate("signin");
+  function redirectToIndex() {
+    const returnTo = window.location.pathname + window.location.search + window.location.hash;
+    window.location.href = buildRedirectUrl(redirectTo, returnTo);
+  }
 
-  // Tabs (may not exist on pages that hide signup)
+  // Default view if signed out
+  if (!requireRedirect) showGate("signin");
+
+  // Tabs (may not exist)
   $("tabSignup")?.addEventListener("click", () => showGate("signup"));
   $("tabSignin")?.addEventListener("click", () => showGate("signin"));
 
-  // Sign up (magic link) - only binds if the button exists on the page
+  // Sign up (magic link)
   $("signupSendLinkBtn")?.addEventListener("click", async () => {
     try {
       setMsg("signupMsg", "", false);
@@ -158,7 +181,7 @@ export async function initAuthGate({ onAuthed } = {}) {
 
       const { error } = await sb.auth.signInWithOtp({
         email,
-        options: { emailRedirectTo: getRedirectTo() }
+        options: { emailRedirectTo: getRedirectToForEmails() }
       });
       if (error) throw error;
 
@@ -193,7 +216,6 @@ export async function initAuthGate({ onAuthed } = {}) {
       if (error) throw error;
 
       setMsg("signinMsg", "", false);
-      // UI updates via auth state listener
     } catch (e) {
       console.error(e);
       setMsg("signinMsg", e?.message || "Sign-in failed.", true);
@@ -214,7 +236,7 @@ export async function initAuthGate({ onAuthed } = {}) {
       if (!email) return setMsg("signinMsg", "Enter your email first.", true);
 
       const { error } = await sb.auth.resetPasswordForEmail(email, {
-        redirectTo: getRedirectTo()
+        redirectTo: getRedirectToForEmails()
       });
       if (error) throw error;
 
@@ -225,7 +247,7 @@ export async function initAuthGate({ onAuthed } = {}) {
     }
   });
 
-  // Save user info (first-time completion)
+  // Save user info
   $("uiSaveBtn")?.addEventListener("click", async () => {
     try {
       setMsg("uiMsg", "", false);
@@ -261,7 +283,7 @@ export async function initAuthGate({ onAuthed } = {}) {
     }
   });
 
-  // Set password (optional step after user info completed)
+  // Set password
   $("setPasswordBtn")?.addEventListener("click", async () => {
     try {
       setMsg("setPasswordMsg", "", false);
@@ -285,7 +307,12 @@ export async function initAuthGate({ onAuthed } = {}) {
       await setPassword(sb, p1);
       await markPasswordSet(sb, session.user.id);
 
-      setMsg("setPasswordMsg", "Password saved. You can now sign in with email and password next time.", false);
+      setMsg(
+        "setPasswordMsg",
+        "Password saved. You can now sign in with email and password next time.",
+        false
+      );
+
       await applyAuthState();
     } catch (e) {
       console.error(e);
@@ -304,7 +331,13 @@ export async function initAuthGate({ onAuthed } = {}) {
       const session = await getSessionOrNull(sb);
 
       if (!session) {
-        authedInitialized = false; // allow onAuthed again after a future sign-in
+        authedInitialized = false;
+
+        if (requireRedirect) {
+          redirectToIndex();
+          return;
+        }
+
         showGate("signin");
         return;
       }
@@ -312,8 +345,14 @@ export async function initAuthGate({ onAuthed } = {}) {
       const uid = session.user.id;
       const row = await getDirectoryRow(sb, uid);
 
-      // If no directory row yet OR info not completed -> require user info
+      // Require user info
       if (!row || row.user_info_completed === false) {
+        if (requireRedirect && !isIndexPage()) {
+          // Keep all onboarding on index.html
+          redirectToIndex();
+          return;
+        }
+
         show("authGate", true);
         show("appShell", false);
         showUserInfoPanel(row || null);
@@ -322,6 +361,13 @@ export async function initAuthGate({ onAuthed } = {}) {
 
       // Enforce activation gate
       if (row.is_active === false) {
+        authedInitialized = false;
+
+        if (requireRedirect && !isIndexPage()) {
+          redirectToIndex();
+          return;
+        }
+
         show("authGate", true);
         show("appShell", false);
         hideAllPanels();
@@ -330,11 +376,23 @@ export async function initAuthGate({ onAuthed } = {}) {
         return;
       }
 
-      // Optional: enforce password setup before allowing entry
+      // Enforce password setup gate
       if (row.password_set === false) {
+        if (requireRedirect && !isIndexPage()) {
+          redirectToIndex();
+          return;
+        }
+
         show("authGate", true);
         show("appShell", false);
         showSetPasswordPanel();
+        return;
+      }
+
+      // If we are on index.html and there is a returnTo, go there after auth
+      const returnTo = getReturnToFromUrl();
+      if (returnTo && isIndexPage()) {
+        window.location.href = returnTo;
         return;
       }
 
@@ -343,6 +401,12 @@ export async function initAuthGate({ onAuthed } = {}) {
     } catch (e) {
       console.error(e);
       authedInitialized = false;
+
+      if (requireRedirect && !isIndexPage()) {
+        redirectToIndex();
+        return;
+      }
+
       show("authGate", true);
       show("appShell", false);
       hideAllPanels();
@@ -351,11 +415,9 @@ export async function initAuthGate({ onAuthed } = {}) {
     }
   }
 
-  // React to auth changes
   sb.auth.onAuthStateChange(() => {
     applyAuthState();
   });
 
-  // Initial state
   await applyAuthState();
 }
