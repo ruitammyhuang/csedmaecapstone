@@ -72,8 +72,14 @@ function showGate(tab = "signin") {
 function getRedirectToForEmails(mode) {
   // Supabase Auth emailRedirectTo / reset redirectTo
   // Keep user on the centralized auth page (or current page) and carry an optional mode.
+
   const u = new URL(window.location.origin + window.location.pathname);
-  if (mode) u.searchParams.set("mode", mode);
+
+  // Prefer a stable, explicit step flag for the registration completion flow.
+  // (We still accept the legacy `mode` param elsewhere for backward compatibility.)
+  if (mode === "complete") u.searchParams.set("step", "complete_signup");
+  else if (mode === "reset") u.searchParams.set("step", "reset_password");
+
   return u.toString();
 }
 
@@ -91,6 +97,32 @@ function buildRedirectUrl(redirectTo, returnTo) {
 function isIndexPage() {
   const path = (window.location.pathname || "").toLowerCase();
   return path.endsWith("/") || path.endsWith("/index.html") || path.endsWith("index.html");
+}
+
+function getGateStep() {
+  const params = new URLSearchParams(window.location.search);
+
+  // New preferred param
+  const step = (params.get("step") || "").toLowerCase();
+  if (step) return step;
+
+  // Backward compatible param
+  const mode = (params.get("mode") || "").toLowerCase();
+  if (mode === "complete") return "complete_signup";
+  if (mode === "reset") return "reset_password";
+
+  return "";
+}
+
+function clearGateStepFromUrl() {
+  try {
+    const u = new URL(window.location.href);
+    u.searchParams.delete("step");
+    u.searchParams.delete("mode");
+    window.history.replaceState({}, "", u.toString());
+  } catch (_) {
+    // ignore
+  }
 }
 
 async function getSessionOrNull(sb) {
@@ -158,6 +190,17 @@ export async function initAuthGate({
   }
 
   function redirectToIndex() {
+    // When we redirect to the hub, always land on the hub.
+    // Do NOT carry returnTo when the target is the hub.
+    const target = new URL(redirectTo, window.location.origin);
+    const isHub = target.pathname.toLowerCase().endsWith("/index.html") || target.pathname.toLowerCase().endsWith("index.html");
+
+    if (isHub) {
+      window.location.href = target.toString();
+      return;
+    }
+
+    // If redirecting somewhere else, preserve returnTo.
     const returnTo = window.location.pathname + window.location.search + window.location.hash;
     window.location.href = buildRedirectUrl(redirectTo, returnTo);
   }
@@ -321,14 +364,8 @@ export async function initAuthGate({
         false
       );
 
-      // Remove mode so refresh does not re-enter registration completion
-      try {
-        const u = new URL(window.location.href);
-        u.searchParams.delete("mode");
-        window.history.replaceState({}, "", u.toString());
-      } catch (_) {
-        // ignore
-      }
+      // Remove step/mode so refresh does not re-enter onboarding
+      clearGateStepFromUrl();
 
       await applyAuthState();
     } catch (e) {
@@ -362,12 +399,52 @@ export async function initAuthGate({
       const uid = session.user.id;
       const row = await getDirectoryRow(sb, uid);
 
-      const params = new URLSearchParams(window.location.search);
-      const mode = (params.get("mode") || "").toLowerCase();
-      const completingRegistration = mode === "complete";
+      const step = getGateStep();
+      const completingRegistration = step === "complete_signup";
+      const resettingPassword = step === "reset_password";
 
-      // Complete-registration mode (after email verification) OR missing/incomplete user info
-      if (completingRegistration || !row || row.user_info_completed === false) {
+      // Password reset flow: go straight to password panel (do not force user info)
+      if (resettingPassword) {
+        if (requireRedirect && !isIndexPage()) {
+          redirectToIndex();
+          return;
+        }
+
+        show("authGate", true);
+        show("appShell", false);
+        showSetPasswordPanel();
+        return;
+      }
+
+      // Complete-registration flow after email verification.
+      // IMPORTANT: if user info is already completed, skip directly to password step.
+      if (completingRegistration) {
+        if (requireRedirect && !isIndexPage()) {
+          redirectToIndex();
+          return;
+        }
+
+        show("authGate", true);
+        show("appShell", false);
+
+        if (!row || row.user_info_completed === false) {
+          showUserInfoPanel(row || null);
+          return;
+        }
+
+        if (row.password_set === false) {
+          showSetPasswordPanel();
+          return;
+        }
+
+        // Already completed; clear step and proceed.
+        clearGateStepFromUrl();
+        showAppShellOnce();
+        return;
+      }
+
+      // Missing/incomplete user info (normal path)
+      if (!row || row.user_info_completed === false) {
         if (requireRedirect && !isIndexPage()) {
           // Keep all onboarding on index.html
           redirectToIndex();
@@ -403,6 +480,9 @@ export async function initAuthGate({
           redirectToIndex();
           return;
         }
+
+        // If we got here, we are enforcing the password gate; don't keep any onboarding flags.
+        clearGateStepFromUrl();
 
         show("authGate", true);
         show("appShell", false);
