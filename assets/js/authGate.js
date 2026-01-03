@@ -138,32 +138,53 @@ async function getSessionOrNull(sb) {
   return data?.session || null;
 }
 
-// If the user arrives from a Supabase email link (PKCE flow), the URL may contain a `code`.
-// In that case we must exchange it for a session before normal gating logic runs.
+// Handles both PKCE (?code=) and implicit/magic-link (#access_token=) flows.
 async function getSessionOrExchangeFromUrl(sb) {
-  // First, try the normal session lookup
+  // 1) Normal session lookup
   const { data, error } = await sb.auth.getSession();
   if (error) throw error;
   if (data?.session) return data.session;
 
-  // If no session yet, try exchanging an auth code from the URL (PKCE)
+  // 2) PKCE flow: ?code=...
   try {
     const u = new URL(window.location.href);
     const code = u.searchParams.get("code");
-    if (!code) return null;
 
-    const { data: exData, error: exErr } = await sb.auth.exchangeCodeForSession(window.location.href);
-    if (exErr) throw exErr;
+    if (code) {
+      const { data: exData, error: exErr } = await sb.auth.exchangeCodeForSession(window.location.href);
+      if (exErr) throw exErr;
 
-    // Clean up the URL so refresh/back doesn't re-run the exchange
-    u.searchParams.delete("code");
-    window.history.replaceState({}, "", u.toString());
+      // Remove only the code param; keep step/returnTo, etc.
+      u.searchParams.delete("code");
+      window.history.replaceState({}, "", u.toString());
 
-    return exData?.session || null;
+      return exData?.session || null;
+    }
   } catch (e) {
     console.warn("exchangeCodeForSession failed:", e?.message || e);
-    return null;
+    // fall through to hash-token attempt
   }
+
+  // 3) Implicit/magic-link flow: #access_token=...
+  // Supabase may redirect back with tokens in the URL hash instead of ?code=.
+  try {
+    const hash = window.location.hash || "";
+    if (hash.includes("access_token=") || hash.includes("refresh_token=")) {
+      const { data: urlData, error: urlErr } = await sb.auth.getSessionFromUrl({ storeSession: true });
+      if (urlErr) throw urlErr;
+
+      // Clean up the hash so refresh/back doesn't re-run parsing.
+      // Keep the query string (e.g., ?step=complete_signup).
+      const u2 = new URL(window.location.href);
+      window.history.replaceState({}, "", `${u2.origin}${u2.pathname}${u2.search}`);
+
+      return urlData?.session || null;
+    }
+  } catch (e) {
+    console.warn("getSessionFromUrl failed:", e?.message || e);
+  }
+
+  return null;
 }
 
 async function getDirectoryRow(sb, uid) {
