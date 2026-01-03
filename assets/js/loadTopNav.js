@@ -12,27 +12,21 @@ export async function loadTopNav(activeKey) {
   const container = document.getElementById("topnav-container");
   if (!container) return;
 
-  // Build an absolute URL so this works from any page path (e.g., /, /getting_started.html, /pages/x.html)
-  const partialUrl = new URL("../partials/topnav.html", import.meta.url);
+  // IMPORTANT: go up two levels from /assets/js/ to reach /partials/
+  const partialUrl = new URL("../../partials/topnav.html", import.meta.url);
 
-  let html = "";
   try {
     const res = await fetch(partialUrl.toString(), { cache: "no-cache" });
     if (!res.ok) throw new Error(`Topnav fetch failed (${res.status})`);
-    html = await res.text();
+    container.innerHTML = await res.text();
   } catch (e) {
     console.error(e);
-    // Fail gracefully: don't break the page if nav can't load.
     container.innerHTML = "";
     return;
   }
 
-  container.innerHTML = html;
-
-  // Highlight active nav item
   setActiveNav(activeKey);
 
-  // Sign out behavior (avoid double-binding)
   const signOutBtn = document.getElementById("signOutBtn");
   if (signOutBtn && signOutBtn.dataset.bound !== "1") {
     signOutBtn.dataset.bound = "1";
@@ -41,7 +35,6 @@ export async function loadTopNav(activeKey) {
         const sb = getSupabase();
         await sb.auth.signOut();
       } finally {
-        // Always return to course hub
         window.location.href = "index.html";
       }
     });
