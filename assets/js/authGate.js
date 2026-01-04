@@ -151,17 +151,21 @@ async function getSessionOrExchangeFromUrl(sb) {
     const code = u.searchParams.get("code");
 
     if (code) {
-      const { data: exData, error: exErr } = await sb.auth.exchangeCodeForSession(window.location.href);
+      const { data: exData, error: exErr } = await sb.auth.exchangeCodeForSession(code);
       if (exErr) throw exErr;
 
       // Remove only the code param; keep step/returnTo, etc.
       u.searchParams.delete("code");
+      // Also remove common error params that can cause repeat attempts
+      u.searchParams.delete("error");
+      u.searchParams.delete("error_code");
+      u.searchParams.delete("error_description");
       window.history.replaceState({}, "", u.toString());
 
       return exData?.session || null;
     }
   } catch (e) {
-    console.warn("exchangeCodeForSession failed:", e?.message || e);
+    console.warn("exchangeCodeForSession failed (code present?):", e?.message || e);
     // fall through to hash-token attempt
   }
 
@@ -223,21 +227,34 @@ async function getMembershipStatus(sb, uid) {
 }
 
 async function isInvitedEmail(sb, email) {
-  const { data, error } = await sb
-    .from("project_invites")
-    .select("invite_status, is_active")
-    .eq("project_id", PROJECT_ID)
-    .eq("email", email)
-    .maybeSingle();
+  const clean = String(email || "").trim().toLowerCase();
+  if (!clean) return false;
 
-  if (error) throw error;
-  if (!data) return false;
-  if (data.is_active === false) return false;
+  // Prefer an RPC so anon users can be checked without exposing the invite list.
+  // SQL function name to create in Supabase: is_invited_email(project_id uuid, email text)
+  try {
+    const { data, error } = await sb.rpc("is_invited_email", {
+      p_project_id: PROJECT_ID,
+      p_email: clean
+    });
+    if (error) throw error;
+    return Boolean(data);
+  } catch (e) {
+    // Fallback (legacy) if RPC is not installed yet.
+    const { data, error } = await sb
+      .from("project_invites")
+      .select("invite_status, is_active")
+      .eq("project_id", PROJECT_ID)
+      .eq("email", clean)
+      .maybeSingle();
 
-  // These EXACTLY match the member_status enum values
-  const s = String(data.invite_status || "").toLowerCase();
-  const okStatuses = new Set(["pending", "accepted"]);
-  return okStatuses.has(s);
+    if (error) throw error;
+    if (!data) return false;
+    if (data.is_active === false) return false;
+
+    const s = String(data.invite_status || "").toLowerCase();
+    return s === "pending" || s === "accepted";
+  }
 }
 
 async function acceptInvites(sb) {
@@ -366,7 +383,18 @@ export async function initAuthGate({
       if (!email) return setMsg("signupMsg", "Please enter an email address.", true);
 
       // invite-only gate
-      const invited = await isInvitedEmail(sb, email);
+      let invited = false;
+      try {
+        invited = await isInvitedEmail(sb, email);
+      } catch (err) {
+        console.error(err);
+        return setMsg(
+          "signupMsg",
+          "Invite check failed due to a server policy error. Please contact the instructor.",
+          true
+        );
+      }
+
       if (!invited) {
         return setMsg(
           "signupMsg",
@@ -588,8 +616,17 @@ export async function initAuthGate({
       const uid = session.user.id;
       const row = await getDirectoryRow(sb, uid);
 
-      // Best effort: if there are pending invites for this user, accept them
-      await acceptInvites(sb);
+      // Best effort: accept invites only when we can confirm the email is invited
+      const _emailLower = (session.user.email || "").trim().toLowerCase();
+      if (_emailLower) {
+        try {
+          const _inv = await isInvitedEmail(sb, _emailLower);
+          if (_inv) await acceptInvites(sb);
+        } catch (e) {
+          // Non-fatal; continue with auth state checks
+          console.warn("Invite check/accept failed:", e?.message || e);
+        }
+      }
 
       const step = getGateStep();
       const completingRegistration = step === "complete_signup";
@@ -738,6 +775,21 @@ export async function initAuthGate({
     } catch (e) {
       console.error(e);
       authedInitialized = false;
+
+      // Postgres error 54001: stack depth limit exceeded (often caused by recursive RLS policies)
+      const pgCode = e?.code || e?.details?.code;
+      if (pgCode === "54001" || String(e?.message || "").toLowerCase().includes("stack depth")) {
+        show("authGate", true);
+        show("appShell", false);
+        hideAllPanels();
+        setActiveTab("signin");
+        setMsg(
+          "signinMsg",
+          "Server policy error: stack depth limit exceeded. This usually means a recursive RLS policy or function. Please check RLS policies/functions for project_memberships / project_invites / users and any RPCs called during auth.",
+          true
+        );
+        return;
+      }
 
       if (requireRedirect && !isIndexPage()) {
         redirectToIndex();
