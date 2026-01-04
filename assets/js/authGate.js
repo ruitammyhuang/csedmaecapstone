@@ -541,7 +541,17 @@ export async function initAuthGate({
     }
   });
 
+  // Prevent re-entrant auth state handling (Supabase may fire onAuthStateChange
+  // during getSessionFromUrl/exchangeCodeForSession).
+  let __applyingAuthState = false;
+  let __authStateRerunRequested = false;
+
   async function applyAuthState() {
+    if (__applyingAuthState) {
+      __authStateRerunRequested = true;
+      return;
+    }
+    __applyingAuthState = true;
     try {
       const session = await getSessionOrExchangeFromUrl(sb);
 
@@ -739,11 +749,20 @@ export async function initAuthGate({
       hideAllPanels();
       setActiveTab("signin");
       setMsg("signinMsg", e?.message || "Authorization check failed.", true);
+    } finally {
+      __applyingAuthState = false;
+      if (__authStateRerunRequested) {
+        __authStateRerunRequested = false;
+        // Defer rerun to the next tick to avoid deep call stacks.
+        setTimeout(() => applyAuthState(), 0);
+      }
     }
   }
 
   sb.auth.onAuthStateChange(() => {
-    applyAuthState();
+    // Defer to avoid synchronous recursion when auth events are emitted
+    // while we're still processing a previous auth state.
+    setTimeout(() => applyAuthState(), 0);
   });
 
   await applyAuthState();
