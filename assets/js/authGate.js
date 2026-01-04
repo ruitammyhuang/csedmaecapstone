@@ -259,9 +259,8 @@ async function isInvitedEmail(sb, email) {
 
 async function acceptInvites(sb) {
   try {
-    await sb.rpc("accept_my_project_invites");
+    await sb.rpc("accept_my_project_invites", { p_project_id: PROJECT_ID });
   } catch (e) {
-    // Non-fatal: user can still proceed if already a member, etc.
     console.warn("accept_my_project_invites failed:", e?.message || e);
   }
 }
@@ -428,7 +427,7 @@ export async function initAuthGate({
       const btn = $("signupSendLinkBtn");
       if (btn) {
         btn.disabled = false;
-        btn.textContent = "Send sign-up link";
+        btn.textContent = "Send verification link";
       }
     }
   });
@@ -546,6 +545,8 @@ export async function initAuthGate({
 
       await setPassword(sb, p1);
       await markPasswordSet(sb, session.user.id);
+      await acceptInvites(sb);
+      await applyAuthState();
 
       setMsg(
         "setPasswordMsg",

@@ -25,35 +25,46 @@
   import { loadAuthGate } from "./assets/js/loadAuthGate.js";
   import { initAuthGate } from "./assets/js/authGate.js";
 
-  // Configure Supabase + load shared auth UI markup.
   configureSupabase(SUPABASE_CONFIG);
   await loadAuthGate();
 
-  // Centralized auth page behavior:
-  // - Always redirect to the course landing page after the user is fully authorized.
-  // - Ignore returnTo on purpose (your stated requirement).
-  // - If the page is opened with ?step=not_authorized, keep the user here and let authGate show the message.
-  const params = new URLSearchParams(window.location.search);
-  const step = (params.get("step") || "").toLowerCase();
-
-  // IMPORTANT:
-  // Avoid "sticky" step flags (e.g., step=pending_approval) causing accepted users
-  // to see the wrong message after their status changes.
-  // We read `step` once, then remove it from the address bar.
-  if (step) {
-    const cleanUrl = new URL(window.location.href);
-    cleanUrl.searchParams.delete("step");
-    window.history.replaceState({}, "", cleanUrl.toString());
-  }
-
-  const landingUrl = siteUrl
-    ? siteUrl("index.html")
-    : new URL("index.html", window.location.href).toString();
-
   await initAuthGate({
-    // authGate.js should only call onAuthed for ACCEPTED members.
-    onAuthed: () => window.location.replace(landingUrl)
+    onAuthed: () => window.location.replace(siteUrl("index.html"))
   });
+  // import { configureSupabase } from "./assets/js/supabaseClient.js";
+  // import { SUPABASE_CONFIG, siteUrl } from "./assets/js/config.js";
+  // import { loadAuthGate } from "./assets/js/loadAuthGate.js";
+  // import { initAuthGate } from "./assets/js/authGate.js";
+
+  // // Configure Supabase + load shared auth UI markup.
+  // configureSupabase(SUPABASE_CONFIG);
+  // await loadAuthGate();
+
+  // // Centralized auth page behavior:
+  // // - Always redirect to the course landing page after the user is fully authorized.
+  // // - Ignore returnTo on purpose (your stated requirement).
+  // // - If the page is opened with ?step=not_authorized, keep the user here and let authGate show the message.
+  // const params = new URLSearchParams(window.location.search);
+  // const step = (params.get("step") || "").toLowerCase();
+
+  // // IMPORTANT:
+  // // Avoid "sticky" step flags (e.g., step=pending_approval) causing accepted users
+  // // to see the wrong message after their status changes.
+  // // We read `step` once, then remove it from the address bar.
+  // if (step) {
+  //   const cleanUrl = new URL(window.location.href);
+  //   cleanUrl.searchParams.delete("step");
+  //   window.history.replaceState({}, "", cleanUrl.toString());
+  // }
+
+  // const landingUrl = siteUrl
+  //   ? siteUrl("index.html")
+  //   : new URL("index.html", window.location.href).toString();
+
+  // await initAuthGate({
+  //   // authGate.js should only call onAuthed for ACCEPTED members.
+  //   onAuthed: () => window.location.replace(landingUrl)
+  // });
 </script>
 
 </body>
