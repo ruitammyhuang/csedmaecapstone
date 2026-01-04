@@ -272,7 +272,7 @@ a:hover{ text-decoration:underline; }
   background: #f9fafb;        /* fallback if image fails */
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: left;
 }
 
 .hero-banner img{
