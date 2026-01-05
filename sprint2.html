@@ -1,73 +1,370 @@
-<h1 style="margin: 0px 0px 10px; padding: 0px 10px; width: 100%; color: #ffffff; font-size: 25px; border-top: medium solid #fd7d00; background-color: #003366; text-align: center;"><strong>Sprint 2: Ideation / Data Collection Plan</strong></h1>
-<div id="kl_custom_block_1" class="">
-    <div class="kl_panels_wrapper kl_panels_tabs">
-        <h2 id="kl_panel_0" class="kl_panel_heading kl_panel_0"><span style="font-size: 18pt;">D&amp;D Projects: Ideation</span></h2>
-        <div id="kl_panel_0_content" class="kl_panel_content kl_panel_0">
-            <h3 class="" style="background-color: #fffacd; padding: 10px; border-radius: 5px;">Tasks</h3>
-            <ul>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Brainstorm at least three potential design ideas that address the problem identified in Phase 1.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Consider stakeholder needs, CS education principles, and feasibility when generating ideas.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Engage in informal discussions or consultations with stakeholders to refine ideas.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Select one design idea to move forward with, providing a rationale for the selection.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Create simple sketches or diagrams to visualize the selected idea.</li>
-            </ul>
-            <h3 class="" style="background-color: #fffacd; padding: 10px; border-radius: 5px;">Deliverables</h3>
-            <ul>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">A <strong>Design Idea Brief</strong> including:
-                    <ul>
-                        <li>Three initial design ideas with brief descriptions of how each addresses stakeholder needs and aligns with CS education principles.</li>
-                        <li>A detailed explanation of the selected design idea, including rationale and alignment with the problem identified in Phase 1.</li>
-                        <li>Sketches or diagrams of the selected idea (hand-drawn or digital).</li>
-                    </ul>
-                </li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Supporting documents:
-                    <ul>
-                        <li>Notes from brainstorming sessions or discussions with stakeholders.</li>
-                        <li>References to resources or frameworks that inspired the ideation process.</li>
-                    </ul>
-                </li>
-            </ul>
-            <p><span style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Please combine all required deliverables into one Google doc (add links to supporting documents if applicable), and then submit a sharable link to this discussion board. Make sure your peers can leave comments in your document.</span></p>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="EDG6973 Sprint 2: Ideation / Data Collection Plan." />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="robots" content="noindex,nofollow" />
+
+  <meta property="og:title" content="EDG6973 - Sprint 2" />
+  <meta property="og:description" content="Sprint 2 tasks, deliverables, and peer review requirements for EDG6973." />
+  <meta property="og:type" content="website" />
+
+  <title>EDG6973 - Sprint 2</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Shared shell mounts here (page-shell.html includes #appShell and <main id="main">...) -->
+  <div id="page-shell-container"></div>
+
+  <!-- Page content stays editable as HTML; preload script will move it into #main -->
+  <div id="page-content" style="display:none;">
+
+    <section class="hero card hero-compact">
+      <div class="hero-left">
+        <h1 class="hero-title">Sprint 2: Ideation / Data Collection Plan</h1>
+        <p class="hero-lead">Generate options and plan how you will collect evidence</p>
+        <p class="muted">
+          This sprint focuses on ideation and early planning. Choose the section that matches your project type: Ed Tech Tool D&amp;D, Course D&amp;D, or Teacher Inquiry.
+        </p>
+      </div>
+      <div class="hero-right">
+        <div class="hero-banner" role="img" aria-label="Sprint 2 banner">
+          <img src="images/sprint2_banner.png" alt="Sprint 2 Banner Decoration Image" />
         </div>
-        <h2 id="kl_panel_1" class="kl_panel_heading kl_panel_1"><span style="font-size: 18pt;">Teacher Inquiry Projects: Data Collection Plan</span></h2>
-        <div id="kl_panel_1_content" class="kl_panel_content kl_panel_1">
-            <h3 class="" style="background-color: #fffacd; padding: 10px; border-radius: 5px;">Tasks</h3>
-            <ul>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Identify the types of data needed to explore your wonder effectively.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Select appropriate methods for data collection (e.g., surveys, interviews, observations, or artifacts).</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Develop instruments or tools needed for data collection (e.g., survey questions, interview guides).</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Create a timeline for data collection activities, ensuring feasibility within the sprint.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Address ethical considerations, including how you will anonymize and secure participant data.</li>
-            </ul>
-            <h3 class="" style="background-color: #fffacd; padding: 10px; border-radius: 5px;">Deliverables</h3>
-            <ul>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">A <strong>Data Collection Plan</strong> including:
-                    <ul>
-                        <li>A detailed description of the data to be collected and its relevance to your wonder.</li>
-                        <li>An explanation of the methods chosen for data collection.</li>
-                        <li>A timeline for data collection activities over the next sprint.</li>
-                        <li>A description of ethical considerations and steps for data anonymization and security.</li>
-                    </ul>
-                </li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Supporting documents:
-                    <ul>
-                        <li>Drafts of any instruments or tools (e.g., surveys, interview guides).</li>
-                        <li>References to resources or examples that informed your data collection plan.</li>
-                    </ul>
-                </li>
-            </ul>
-            <p><span style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Please combine all required deliverables into one Google doc (add links to supporting documents if applicable), and then submit a sharable link to this discussion board. Make sure your peers can leave comments in your document.</span></p>
+      </div>
+    </section>
+
+    <section class="card section sprint-picker">
+        <header class="section-header">
+            <h2 class="section-title">Choose your project type</h2>
+            <p class="section-subtitle">Jump to the track you are working on.</p>
+        </header>
+
+        <div class="sprint-picker-actions">
+            <a class="btn ghost" href="#edtech" data-target="edtech">Ed Tech Tool D&amp;D</a>
+            <a class="btn ghost" href="#course" data-target="course">Course D&amp;D</a>
+            <a class="btn ghost" href="#inquiry" data-target="inquiry">Teacher Inquiry</a>
         </div>
-        <h2 id="kl_panel_2" class="kl_panel_heading kl_panel_2"><span style="font-size: 18pt;">Peer Review Requirement</span></h2>
-        <div id="kl_panel_2_content" class="kl_panel_content kl_panel_2">
-            <h3 class="" style="background-color: #fffacd; padding: 10px; border-radius: 5px;">Peer Review Tasks</h3>
-            <p><span style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Review <strong>at least one peer&rsquo;s submission</strong> (Design Idea Brief or Data Collection Plan) before our bi-weekly meeting.</span></p>
-            <ul>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;"><strong>Clarity and Relevance</strong>: Evaluate whether the design ideas or data collection plan aligns with the Phase 1 deliverable.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;"><strong>Creativity and Feasibility</strong>: Provide feedback on the creativity of design ideas or the feasibility of the data collection plan.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;"><strong>Connection to Stakeholders</strong>: Assess whether the submission demonstrates a clear connection to stakeholder needs.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;"><strong>Suggestions for Improvement</strong>: Offer actionable suggestions to strengthen the submission.</li>
+    </section>
+    <!-- ===================================================== -->
+    <!-- Sprint 2: Three project types (expand/collapse) -->
+    <!-- ===================================================== -->
+
+    <details class="card section" id="edtech">
+        <summary class="section-header sprint-summary" aria-label="Toggle Ed Tech Tool D and D section">
+            <div class="sprint-summary-top">
+                <h2 class="section-title">
+                <span>Ed Tech Tool D&amp;D: Ideation</span>
+                <span class="due-badge due-badge--friday">Due Friday (before meeting)</span>
+                </h2>
+                <span class="sprint-caret" aria-hidden="true">▾</span>
+            </div>
+
+            <p class="section-subtitle">
+                Generate and refine multiple ideas for an educational technology tool, then choose one direction to move forward.
+            </p>
+        </summary>
+
+        <div class="section-body">
+            <div class="callout">
+            <div class="callout-title callout-title--subsection">
+                <span>Tasks</span>
+            </div>
+            <p class="callout-subtitle">Complete these tasks early so you can draft a strong deliverable and get feedback on time.</p>
+            <ul class="task-list">
+                <li>
+                <strong>Brainstorm multiple ideas</strong>
+                <div class="muted">Brainstorm at least three potential ideas for an educational technology tool addressing the problem identified in Phase 1.</div>
+                </li>
+                <li>
+                <strong>Evaluate with constraints</strong>
+                <div class="muted">Consider stakeholder needs, usability, and alignment with CS education principles.</div>
+                </li>
+                <li>
+                <strong>Refine with stakeholders</strong>
+                <div class="muted">Engage in informal discussions or consultations with stakeholders to refine ideas.</div>
+                </li>
+                <li>
+                <strong>Select one direction</strong>
+                <div class="muted">Select one idea to move forward with, providing a rationale for the selection.</div>
+                </li>
+                <li>
+                <strong>Visualize the idea</strong>
+                <div class="muted">Create mock-ups or conceptual diagrams to visualize the selected idea.</div>
+                </li>
             </ul>
         </div>
-    </div>
-</div>
+
+        <div class="callout" style="margin-top:14px;">
+          <div class="callout-title callout-title--subsection">
+            <span>Deliverables</span>
+          </div>
+          <p class="callout-subtitle">Submit by Friday so the instructor can review and provide formative feedback before we meet.</p>
+          <ul class="task-list">
+            <li>
+              <strong>Ed Tech Tool Design Brief</strong> including:
+              <ul class="task-list">
+                <li>Three initial ideas with brief descriptions of how each addresses stakeholder needs and aligns with CS education principles</li>
+                <li>A detailed explanation of the selected idea, including rationale and alignment with the problem identified in Phase 1</li>
+                <li>Mock-ups or diagrams of the selected idea</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Supporting documents</strong>:
+              <ul class="task-list">
+                <li>Notes from brainstorming sessions or discussions with stakeholders</li>
+                <li>References to resources or frameworks that inspired the ideation process</li>
+              </ul>
+            </li>
+          </ul>
+          <p class="muted" style="margin-top:10px;">
+            Combine everything into one Google Doc (link supporting documents if needed) and submit a shareable link to this
+            <a href="https://docs.google.com/spreadsheets/d/1jlNlzGVk7UNp5ZT2CZ16AfoE0lZ804DZEY3OXPaRNY4/edit?usp=sharing" target="_blank">Google Spreadsheets file</a>
+            under the corresponding worksheet.
+          </p>
+          <p class="muted" style="margin-top:10px;"><em>Make sure your Google doc allows your peers to leave comments.</em></p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card section" id="course">
+        <summary class="section-header sprint-summary" aria-label="Toggle Course D and D section">
+            <div class="sprint-summary-top">
+                <h2 class="section-title">
+                <span>Course D&amp;D: Ideation</span>
+                <span class="due-badge due-badge--friday">Due Friday (before meeting)</span>
+                </h2>
+                <span class="sprint-caret" aria-hidden="true">▾</span>
+            </div>
+
+            <p class="section-subtitle">
+                Generate and refine multiple high-level course structures, then choose one plan to develop further.
+            </p>
+        </summary>
+
+        <div class="section-body">
+            <div class="callout">
+            <div class="callout-title callout-title--subsection">
+                <span>Tasks</span>
+            </div>
+            <p class="callout-subtitle">Complete these tasks early so you can draft a strong deliverable and get feedback on time.</p>
+            <ul class="task-list">
+                <li>
+                <strong>Draft multiple course structures</strong>
+                <div class="muted">Develop at least three high-level structural plans for a course addressing the problem identified in Phase 1.</div>
+                </li>
+                <li>
+                <strong>Evaluate with constraints</strong>
+                <div class="muted">Consider target audience needs, learning objectives, and alignment with CS education principles.</div>
+                </li>
+                <li>
+                <strong>Refine with stakeholders</strong>
+                <div class="muted">Engage in informal discussions or consultations with stakeholders to refine ideas.</div>
+                </li>
+                <li>
+                <strong>Select one plan</strong>
+                <div class="muted">Select one structural plan to move forward with, providing a rationale for the selection.</div>
+                </li>
+                <li>
+                <strong>Outline the course</strong>
+                <div class="muted">Create a detailed outline for the selected plan, including module-level objectives and key topics.</div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="callout" style="margin-top:14px;">
+          <div class="callout-title callout-title--subsection">
+            <span>Deliverables</span>
+          </div>
+          <p class="callout-subtitle">Submit by Friday so the instructor can review and provide formative feedback before we meet.</p>
+          <ul class="task-list">
+            <li>
+              <strong>Course Design Plan</strong> including:
+              <ul class="task-list">
+                <li>Three initial structural plans with brief descriptions of how each addresses stakeholder needs and aligns with CS education principles</li>
+                <li>A detailed explanation of the selected structural plan, including rationale and alignment with the problem identified in Phase 1</li>
+                <li>A module-level outline with objectives and key topics</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Supporting documents</strong>:
+              <ul class="task-list">
+                <li>Notes from brainstorming sessions or discussions with stakeholders</li>
+                <li>References to resources or frameworks that inspired the ideation process</li>
+              </ul>
+            </li>
+          </ul>
+          <p class="muted" style="margin-top:10px;">
+            Combine everything into one Google Doc (link supporting documents if needed) and submit a shareable link to this
+            <a href="https://docs.google.com/spreadsheets/d/1jlNlzGVk7UNp5ZT2CZ16AfoE0lZ804DZEY3OXPaRNY4/edit?usp=sharing" target="_blank">Google Spreadsheets file</a>
+            under the corresponding worksheet.
+          </p>
+          <p class="muted" style="margin-top:10px;"><em>Make sure your Google doc allows your peers to leave comments.</em></p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card section" id="inquiry">
+        <summary class="section-header sprint-summary" aria-label="Toggle Teacher Inquiry Projects section">
+            <div class="sprint-summary-top">
+                <h2 class="section-title">
+                <span>Teacher Inquiry Projects: Data Collection Plan</span>
+                <span class="due-badge due-badge--friday">Due Friday (before meeting)</span>
+                </h2>
+                <span class="sprint-caret" aria-hidden="true">▾</span>
+            </div>
+
+            <p class="section-subtitle">
+                Plan what evidence you will collect, how you will collect it, and how you will protect participants and data.
+            </p>
+        </summary>
+
+        <div class="section-body">
+            <div class="callout">
+            <div class="callout-title callout-title--subsection">
+                <span>Tasks</span>
+            </div>
+            <p class="callout-subtitle">Complete these tasks early so you can draft a focused plan and get feedback on time.</p>
+            <ul class="task-list">
+                <li>
+                <strong>Identify needed data</strong>
+                <div class="muted">Identify the types of data needed to explore your wonder effectively.</div>
+                </li>
+                <li>
+                <strong>Select methods</strong>
+                <div class="muted">Select appropriate methods for data collection (for example, surveys, interviews, observations, or artifacts).</div>
+                </li>
+                <li>
+                <strong>Draft instruments</strong>
+                <div class="muted">Develop instruments or tools needed for data collection (for example, survey questions, interview guides).</div>
+                </li>
+                <li>
+                <strong>Build a timeline</strong>
+                <div class="muted">Create a timeline for data collection activities, ensuring feasibility within the sprint.</div>
+                </li>
+                <li>
+                <strong>Address ethics and security</strong>
+                <div class="muted">Address ethical considerations, including how you will anonymize and secure participant data.</div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="callout" style="margin-top:14px;">
+          <div class="callout-title callout-title--subsection">
+            <span>Deliverables</span>
+          </div>
+          <p class="callout-subtitle">Submit by Friday so the instructor can review and provide formative feedback before we meet.</p>
+          <ul class="task-list">
+            <li>
+              <strong>Data Collection Plan</strong> including:
+              <ul class="task-list">
+                <li>A detailed description of the data to be collected and its relevance to your wonder</li>
+                <li>An explanation of the methods chosen for data collection</li>
+                <li>A timeline for data collection activities over the next sprint</li>
+                <li>A description of ethical considerations and steps for data anonymization and security</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Supporting documents</strong>:
+              <ul class="task-list">
+                <li>Drafts of any instruments or tools (for example, surveys, interview guides)</li>
+                <li>References to resources or examples that informed your data collection plan</li>
+              </ul>
+            </li>
+          </ul>
+          <p class="muted" style="margin-top:10px;">
+            Combine everything into one Google Doc (link supporting documents if needed) and submit a shareable link to this
+            <a href="https://docs.google.com/spreadsheets/d/1jlNlzGVk7UNp5ZT2CZ16AfoE0lZ804DZEY3OXPaRNY4/edit?usp=sharing" target="_blank">Google Spreadsheets file</a>
+            under the corresponding worksheet.
+          </p>
+          <p class="muted" style="margin-top:10px;"><em>Make sure your Google doc allows your peers to leave comments.</em></p>
+        </div>
+      </div>
+    </details>
+
+    <section class="card section">
+      <header class="section-header">
+        <h2 class="section-title">
+          <span>Peer Review</span>
+          <span class="due-badge due-badge--sunday">DUE SUNDAY (BEFORE MEETING)</span>
+        </h2>
+      </header>
+
+      <div class="section-body">
+        <p class="task-list">Review at least one peer’s submission (Design Idea Brief or Data Collection Plan).</p>
+
+        <div class="callout">
+          <div class="callout-title">Focus areas</div>
+          <ul class="task-list">
+            <li><strong>Clarity and alignment</strong>: Does the submission clearly connect to the Sprint 1 problem/wonder?</li>
+            <li><strong>Creativity and feasibility</strong>: Are the ideas/plans ambitious but doable within the course timeline?</li>
+            <li><strong>Connection to stakeholders</strong>: Does the submission demonstrate attention to stakeholder/learner needs?</li>
+            <li><strong>Actionable suggestions</strong>: Offer specific, practical feedback that the author can implement next sprint.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script type="module">
+    import { preloadProtectedPage } from "./assets/js/preloadProtectedPage.js";
+
+    await preloadProtectedPage({
+      contentSelector: "#page-content",
+      redirectTo: "signup_signin.html"
+    });
+
+    // Sprint picker functionality
+    function openOnly(targetId) {
+        const all = Array.from(document.querySelectorAll("details.card.section"));
+        const target = document.getElementById(targetId);
+        if (!target) return;
+
+        // Close everything else
+        all.forEach((d) => {
+        if (d !== target) d.open = false;
+        });
+
+        // Open target
+        target.open = true;
+
+        // Scroll to it (accounts for sticky nav via scroll-margin-top in CSS)
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    // Button clicks
+    document.querySelectorAll(".sprint-picker-actions [data-target]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const id = btn.getAttribute("data-target");
+        if (id) openOnly(id);
+
+        // Update URL hash for shareability
+        history.replaceState(null, "", `#${id}`);
+        });
+    });
+
+    // Also support direct hash navigation: /sprint2.html#course
+    const initialHash = (window.location.hash || "").replace("#", "");
+    if (initialHash) openOnly(initialHash);
+
+    // Enforce "only one open" even when user clicks the <summary> directly
+    document.querySelectorAll("details.card.section").forEach((d) => {
+        d.addEventListener("toggle", () => {
+        if (!d.open) return;
+        document.querySelectorAll("details.card.section").forEach((other) => {
+            if (other !== d) other.open = false;
+        });
+        });
+    });
+  </script>
+</body>
+</html>

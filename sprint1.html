@@ -20,10 +20,8 @@
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
-  <!-- Shared shell mounts here (page-shell.html includes #appShell and <main id="main">...) -->
   <div id="page-shell-container"></div>
 
-  <!-- Page content stays editable as HTML; preload script will move it into #main -->
   <div id="page-content" style="display:none;">
 
     <section class="hero card hero-compact">
@@ -42,11 +40,38 @@
       </div>
     </section>
 
-    <section class="card section">
+    <section class="card section sprint-picker">
       <header class="section-header">
-        <h2 class="section-title">D&amp;D Projects: Define and Empathize</h2>
-        <p class="section-subtitle">Design and Development (D&amp;D) track includes two types of projects: design and develop tools for computer science education (e.g., AI tools for learning programming language), or design and develop new CS course (e.g., a new introductory programming course for your current or future teaching assignment).</p>
+        <h2 class="section-title">Choose your project type</h2>
+        <p class="section-subtitle">Jump to the track you are working on.</p>
       </header>
+
+      <div class="sprint-picker-actions">
+        <a class="btn ghost" href="#dd" data-target="dd">D&amp;D Projects</a>
+        <a class="btn ghost" href="#inquiry" data-target="inquiry">Teacher Inquiry</a>
+      </div>
+    </section>
+
+    <!-- ===================================================== -->
+    <!-- Sprint 1: Different project tracks (expand/collapse) -->
+    <!-- ===================================================== -->
+
+    <details class="card section" id="dd">
+      <summary class="section-header sprint-summary" aria-label="Toggle D and D Projects section">
+        <div class="sprint-summary-top">
+          <h2 class="section-title">
+            <span>D&amp;D Projects: Define and Empathize</span>
+            <span class="due-badge due-badge--friday">Due Friday (before meeting)</span>
+          </h2>
+          <span class="sprint-caret" aria-hidden="true">▾</span>
+        </div>
+
+        <p class="section-subtitle">
+          Design and Development (D&amp;D) track includes two types of projects: design and develop tools for computer science education
+          (for example, AI tools for learning programming language), or design and develop new CS course
+          (for example, a new introductory programming course for your current or future teaching assignment).
+        </p>
+      </summary>
 
       <div class="section-body">
         <div class="callout">
@@ -81,7 +106,6 @@
         <div class="callout" style="margin-top:14px;">
           <div class="callout-title callout-title--subsection">
             <span>Deliverables</span>
-            <span class="due-badge due-badge--friday">Due Friday (before meeting)</span>
           </div>
           <p class="callout-subtitle">Submit by Friday so the instructor can review and provide formative feedback before we meet.</p>
           <ul class="task-list">
@@ -104,19 +128,29 @@
             </li>
           </ul>
           <p class="muted" style="margin-top:10px;">
-            Combine everything into one Google Doc (link supporting documents if needed) and submit a shareable link to this <a href="https://docs.google.com/spreadsheets/d/1jlNlzGVk7UNp5ZT2CZ16AfoE0lZ804DZEY3OXPaRNY4/edit?usp=sharing" target="_blank">Google Spreadsheets file</a> under the corresponding worksheet.
+            Combine everything into one Google Doc (link supporting documents if needed) and submit a shareable link to this
+            <a href="https://docs.google.com/spreadsheets/d/1jlNlzGVk7UNp5ZT2CZ16AfoE0lZ804DZEY3OXPaRNY4/edit?usp=sharing" target="_blank">Google Spreadsheets file</a>
+            under the corresponding worksheet.
           </p>
-          <p class="muted" style="margin-top:10px;"><em>Make sure your Google doc allows your peers to leave comments.</em>
-          </p>
+          <p class="muted" style="margin-top:10px;"><em>Make sure your Google doc allows your peers to leave comments.</em></p>
         </div>
       </div>
-    </section>
+    </details>
 
-    <section class="card section">
-      <header class="section-header">
-        <h2 class="section-title">Teacher Inquiry Projects: Define a Wonder</h2>
-        <p class="section-subtitle">Teacher Inquiry track aligns with the course "EDE 6325 Guided Teacher Inquiry", and provides you an opportunity to explore a question related to your CS teaching practice.</p>
-      </header>
+    <details class="card section" id="inquiry">
+      <summary class="section-header sprint-summary" aria-label="Toggle Teacher Inquiry Projects section">
+        <div class="sprint-summary-top">
+          <h2 class="section-title">
+            <span>Teacher Inquiry Projects: Define a Wonder</span>
+            <span class="due-badge due-badge--friday">Due Friday (before meeting)</span>
+          </h2>
+          <span class="sprint-caret" aria-hidden="true">▾</span>
+        </div>
+
+        <p class="section-subtitle">
+          Teacher Inquiry track aligns with the course "EDE 6325 Guided Teacher Inquiry", and provides you an opportunity to explore a question related to your CS teaching practice.
+        </p>
+      </summary>
 
       <div class="section-body">
         <div class="callout">
@@ -151,7 +185,6 @@
         <div class="callout" style="margin-top:14px;">
           <div class="callout-title callout-title--subsection">
             <span>Deliverables</span>
-            <span class="due-badge due-badge--friday">Due Friday (before meeting)</span>
           </div>
           <p class="callout-subtitle">Submit by Friday so the instructor can review and provide formative feedback before we meet.</p>
           <ul class="task-list">
@@ -173,19 +206,20 @@
             </li>
           </ul>
           <p class="muted" style="margin-top:10px;">
-            Combine everything into one Google Doc (link supporting documents if needed) and submit a shareable link to this <a href="https://docs.google.com/spreadsheets/d/1jlNlzGVk7UNp5ZT2CZ16AfoE0lZ804DZEY3OXPaRNY4/edit?usp=sharing" target="_blank">Google Spreadsheets file</a> under the corresponding worksheet.
+            Combine everything into one Google Doc (link supporting documents if needed) and submit a shareable link to this
+            <a href="https://docs.google.com/spreadsheets/d/1jlNlzGVk7UNp5ZT2CZ16AfoE0lZ804DZEY3OXPaRNY4/edit?usp=sharing" target="_blank">Google Spreadsheets file</a>
+            under the corresponding worksheet.
           </p>
-          <p class="muted" style="margin-top:10px;"><em>Make sure your Google doc allows your peers to leave comments.</em>
-          </p>
+          <p class="muted" style="margin-top:10px;"><em>Make sure your Google doc allows your peers to leave comments.</em></p>
         </div>
       </div>
-    </section>
+    </details>
 
     <section class="card section">
       <header class="section-header">
         <h2 class="section-title">
-            <span>Peer Review</span>
-            <span class="due-badge due-badge--sunday">DUE SUNDAY (BEFORE MEETING)</span>
+          <span>Peer Review</span>
+          <span class="due-badge due-badge--sunday">DUE SUNDAY (BEFORE MEETING)</span>
         </h2>
       </header>
 
@@ -212,6 +246,41 @@
     await preloadProtectedPage({
       contentSelector: "#page-content",
       redirectTo: "signup_signin.html"
+    });
+
+    // Sprint picker functionality (same behavior as sprint2)
+    function openOnly(targetId) {
+      const all = Array.from(document.querySelectorAll("details.card.section"));
+      const target = document.getElementById(targetId);
+      if (!target) return;
+
+      all.forEach((d) => {
+        if (d !== target) d.open = false;
+      });
+
+      target.open = true;
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    document.querySelectorAll(".sprint-picker-actions [data-target]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const id = btn.getAttribute("data-target");
+        if (id) openOnly(id);
+        history.replaceState(null, "", `#${id}`);
+      });
+    });
+
+    const initialHash = (window.location.hash || "").replace("#", "");
+    if (initialHash) openOnly(initialHash);
+
+    document.querySelectorAll("details.card.section").forEach((d) => {
+      d.addEventListener("toggle", () => {
+        if (!d.open) return;
+        document.querySelectorAll("details.card.section").forEach((other) => {
+          if (other !== d) other.open = false;
+        });
+      });
     });
   </script>
 </body>

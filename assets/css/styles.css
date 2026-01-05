@@ -341,6 +341,20 @@ a:hover{ text-decoration:underline; }
   color: var(--uf-blue);
 }
 
+.due-badge--friday{
+  border-color: rgba(0, 38, 87, 0.35);
+  background: rgba(0, 38, 87, 0.06);
+  color: var(--uf-blue);
+}
+
+.due-badge--sunday{
+  border-color: rgba(185, 28, 28, 0.25);
+  background: rgba(185, 28, 28, 0.06);
+  color: #7f1d1d;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
 /* Optional helper when you want the due badge to sit under a callout title */
 .callout .due-row{
   margin-top: 6px;
@@ -576,29 +590,84 @@ a:hover{ text-decoration:underline; }
   opacity: 0.9;
 }
 
-.due-badge {
-  display: inline-flex;
+/* =========================
+   Sprint style for anchor link scrolling
+   ========================= */
+details.card.section{
+  scroll-margin-top: 90px;
+}
+
+/* Sprint expandable section headers */
+.sprint-summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.sprint-summary .section-title {
+  display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  line-height: 1.2;
-  border: 1px solid rgba(17, 24, 39, 0.12);
-  background: rgba(17, 24, 39, 0.04);
-  white-space: nowrap;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-.due-badge--friday {
-  background: rgba(2, 38, 87, 0.08);
-  border-color: rgba(2, 38, 87, 0.18);
+/* Remove default disclosure marker */
+summary::-webkit-details-marker {
+  display: none;
 }
 
-.due-badge--sunday {
-  background: rgba(185, 28, 28, 0.06);
-  border-color: rgba(185, 28, 28, 0.16);
+/* =========================
+   Sprint: Project type picker + expandable details UX
+   ========================= */
+
+.sprint-picker-actions{
+  padding: 0 18px 18px;   /* matches the section-body padding pattern */
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
+
+.sprint-picker .section-header{
+  padding-bottom: 10px;
+}
+
+.sprint-summary{
+  cursor: pointer;
+  list-style: none;
+}
+
+.sprint-summary::-webkit-details-marker{
+  display: none; /* removes default marker in Safari/Chrome */
+}
+
+.sprint-summary-top{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sprint-caret{
+  font-size: 18px;
+  line-height: 1;
+  color: var(--uf-blue);
+  transition: transform 160ms ease;
+}
+
+/* rotate caret when open */
+details[open] .sprint-caret{
+  transform: rotate(180deg);
+}
+
+/* small hover affordance */
+details.card.section > summary.section-header:hover{
+  opacity: 0.96;
+}
+
+
+
+
+
+
 
 
 .callout.subtle{
