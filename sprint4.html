@@ -1,100 +1,321 @@
-<h1 style="margin: 0px 0px 10px; padding: 0px 10px; width: 100%; color: #ffffff; font-size: 25px; border-top: medium solid #fd7d00; background-color: #003366; text-align: center;"><strong>Sprint 4: Develop MVP / Analyze Data</strong></h1>
-<div id="kl_custom_block_3" class="">
-    <div class="kl_panels_wrapper kl_panels_tabs">
-        <h2 id="kl_panel_0" class="kl_panel_heading kl_panel_0"><span style="font-size: 18pt;">Ed Tech Tool D&amp;D: Develop MVP</span></h2>
-        <div id="kl_panel_0_content" class="kl_panel_content kl_panel_0">
-            <h3 class="" style="background-color: #fffacd; padding: 10px; border-radius: 5px;">Tasks</h3>
-            <ul>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Develop a fully functional MVP (Minimum Viable Product) of the educational technology tool, including core features identified in previous phases.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Utilize a programming language and platform such as HTML, JavaScript, Python, or others as appropriate.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Test the MVP with at least two stakeholders or target users to validate functionality and usability.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Document feedback from testing sessions and identify areas for final refinements.</li>
-            </ul>
-            <h3 class="" style="background-color: #fffacd; padding: 10px; border-radius: 5px;">Deliverables</h3>
-            <ul>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">An <strong>MVP Report</strong> including:
-                    <ul>
-                        <li>A description of the MVP and its core features.</li>
-                        <li>Feedback and key insights from testing sessions.</li>
-                        <li>A summary of final refinements made based on feedback.</li>
-                        <li>A reflection on the MVP development process and lessons learned.</li>
-                    </ul>
-                </li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Supporting documents:
-                    <ul>
-                        <li>Source code and documentation for the MVP.</li>
-                        <li>Images, screenshots, or videos demonstrating the tool in action.</li>
-                        <li>Notes or transcripts from testing sessions.</li>
-                    </ul>
-                </li>
-            </ul>
-            <p><span style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Please combine all required deliverables into one Google doc (add links to supporting documents if applicable), and then submit a sharable link to this discussion board. Make sure your peers can leave comments in your document.</span></p>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="EDG6973 Sprint 4: Develop MVP / Analyze Data." />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="robots" content="noindex,nofollow" />
+
+  <meta property="og:title" content="EDG6973 - Sprint 4" />
+  <meta property="og:description" content="Sprint 4 tasks, deliverables, and peer review requirements for EDG6973." />
+  <meta property="og:type" content="website" />
+
+  <title>EDG6973 - Sprint 4</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Shared shell mounts here (page-shell.html includes #appShell and <main id="main">...) -->
+  <div id="page-shell-container"></div>
+
+  <!-- Page content stays editable as HTML; preload script will move it into #main -->
+  <div id="page-content" style="display:none;">
+
+    <section class="hero card hero-compact">
+      <div class="hero-left">
+        <h1 class="hero-title">Sprint 4: Develop MVP / Analyze Data</h1>
+        <p class="hero-lead">Turn prototypes into an MVP and make sense of your data</p>
+        <p class="muted">
+          This sprint focuses on implementation and evidence. Choose the section that matches your project type:
+          Ed Tech Tool D&amp;D, Course D&amp;D, or Teacher Inquiry.
+        </p>
+      </div>
+      <div class="hero-right">
+        <div class="hero-banner" role="img" aria-label="Sprint 4 banner">
+          <img src="images/sprint4_banner.png" alt="Sprint 4 Banner Decoration Image" />
         </div>
-        <h2 id="kl_panel_1" class="kl_panel_heading kl_panel_1"><span style="font-size: 18pt;">Course D&amp;D: Develop MVP</span></h2>
-        <div id="kl_panel_1_content" class="kl_panel_content kl_panel_1">
-            <h3 class="" style="background-color: #fffacd; padding: 10px; border-radius: 5px;">Tasks</h3>
-            <ul>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Develop two fully implemented lessons for the course based on the module prototype from Sprint 3.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Include all learning activities, assessments, and instructional materials necessary for these lessons.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Conduct a pilot test of the lessons with at least two target learners.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Document feedback from the pilot testing sessions and identify areas for improvement.</li>
-            </ul>
-            <h3 class="" style="background-color: #fffacd; padding: 10px; border-radius: 5px;">Deliverables</h3>
-            <ul>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">A <strong>Lesson Implementation Report</strong> including:
-                    <ul>
-                        <li>A detailed description of the two implemented lessons, including learning objectives, activities, and assessments.</li>
-                        <li>Feedback and key insights from pilot testing sessions.</li>
-                        <li>A summary of final refinements made to the lessons based on feedback.</li>
-                        <li>A reflection on the lesson development process and lessons learned.</li>
-                    </ul>
-                </li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Supporting documents:
-                    <ul>
-                        <li>Lesson plans, slides, or other instructional materials used for the lessons.</li>
-                        <li>Notes or transcripts from pilot testing sessions.</li>
-                    </ul>
-                </li>
-            </ul>
-            <p><span style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Please combine all required deliverables into one Google doc (add links to supporting documents if applicable), and then submit a sharable link to this discussion board. Make sure your peers can leave comments in your document.</span></p>
+      </div>
+    </section>
+
+    <section class="card section sprint-picker">
+      <header class="section-header">
+        <h2 class="section-title">Choose your project type</h2>
+        <p class="section-subtitle">Jump to the track you are working on.</p>
+      </header>
+
+      <div class="sprint-picker-actions">
+        <a class="btn ghost" href="#edtech" data-target="edtech">Ed Tech Tool D&amp;D</a>
+        <a class="btn ghost" href="#course" data-target="course">Course D&amp;D</a>
+        <a class="btn ghost" href="#inquiry" data-target="inquiry">Teacher Inquiry</a>
+      </div>
+    </section>
+
+    <!-- ===================================================== -->
+    <!-- Sprint 4: Three project types (expand/collapse) -->
+    <!-- ===================================================== -->
+
+    <details class="card section" id="edtech">
+      <summary class="section-header sprint-summary" aria-label="Toggle Ed Tech Tool D and D section">
+        <div class="sprint-summary-top">
+          <h2 class="section-title">
+            <span>Ed Tech Tool D&amp;D: Develop MVP</span>
+            <span class="due-badge due-badge--friday">Due Friday (before meeting)</span>
+          </h2>
+          <span class="sprint-caret" aria-hidden="true">▾</span>
         </div>
-        <h2 id="kl_panel_2" class="kl_panel_heading kl_panel_2"><span style="font-size: 18pt;">Teacher Inquiry Projects: Analyze Data</span></h2>
-        <div id="kl_panel_2_content" class="kl_panel_content kl_panel_2">
-            <h3 class="" style="background-color: #fffacd; padding: 10px; border-radius: 5px;">Tasks</h3>
-            <ul>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Organize and clean the collected data from Sprint 3.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Conduct data analysis using appropriate qualitative or quantitative methods.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Identify patterns, themes, or key findings from the data.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Summarize the findings in a clear and concise manner.</li>
-            </ul>
-            <h3 class="" style="background-color: #fffacd; padding: 10px; border-radius: 5px;">Deliverables</h3>
-            <ul>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">An <strong>Analysis Report</strong> including:
-                    <ul>
-                        <li>A description of the data analysis process.</li>
-                        <li>Key findings, patterns, or themes identified in the data.</li>
-                        <li>A discussion of how the findings address the wonder defined in Sprint 1.</li>
-                        <li>A reflection on the data analysis process and lessons learned.</li>
-                    </ul>
-                </li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Supporting documents:
-                    <ul>
-                        <li>Data sets, charts, or visualizations created during the analysis process.</li>
-                        <li>Notes or transcripts used in the analysis.</li>
-                    </ul>
-                </li>
-            </ul>
-            <p><span style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Please combine all required deliverables into one Google doc (add links to supporting documents if applicable), and then submit a sharable link to this discussion board. Make sure your peers can leave comments in your document.</span></p>
+
+        <p class="section-subtitle">
+          Build a fully functional MVP with core features, test it with users, and refine based on feedback.
+        </p>
+      </summary>
+
+      <div class="section-body">
+        <div class="callout">
+          <div class="callout-title callout-title--subsection">
+            <span>Tasks</span>
+          </div>
+          <p class="callout-subtitle">Complete these tasks early so you have time to validate and refine your MVP.</p>
+          <ul class="task-list">
+            <li>
+              <strong>Develop a functional MVP</strong>
+              <div class="muted">Develop a fully functional MVP (Minimum Viable Product) of the educational technology tool, including core features identified in previous phases.</div>
+            </li>
+            <li>
+              <strong>Implement using an appropriate platform</strong>
+              <div class="muted">Utilize a programming language and platform such as HTML, JavaScript, Python, or others as appropriate.</div>
+            </li>
+            <li>
+              <strong>Test with users</strong>
+              <div class="muted">Test the MVP with at least two stakeholders or target users to validate functionality and usability.</div>
+            </li>
+            <li>
+              <strong>Document and refine</strong>
+              <div class="muted">Document feedback from testing sessions and identify areas for final refinements.</div>
+            </li>
+          </ul>
         </div>
-        <h2 id="kl_panel_3" class="kl_panel_heading kl_panel_3"><span style="font-size: 18pt;">Peer Review Requirement</span></h2>
-        <div id="kl_panel_3_content" class="kl_panel_content kl_panel_3">
-            <h3 class="" style="background-color: #fffacd; padding: 10px; border-radius: 5px;">Peer Review Tasks</h3>
-            <p><span style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Review <strong>at least one peer&rsquo;s submission</strong> and provide constructive feedback before our by-weekly meeting.:</span></p>
-            <ul>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Identify strengths of the submission.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Provide two suggestions for improvement or refinement.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Highlight any additional resources or ideas that could strengthen the submission.</li>
-            </ul>
+
+        <div class="callout" style="margin-top:14px;">
+          <div class="callout-title callout-title--subsection">
+            <span>Deliverables</span>
+          </div>
+          <p class="callout-subtitle">Submit by Friday so the instructor can review and provide formative feedback before we meet.</p>
+          <ul class="task-list">
+            <li>
+              <strong>MVP Report</strong> including:
+              <ul class="task-list">
+                <li>A description of the MVP and its core features</li>
+                <li>Feedback and key insights from testing sessions</li>
+                <li>A summary of final refinements made based on feedback</li>
+                <li>A reflection on the MVP development process and lessons learned</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Supporting documents</strong>:
+              <ul class="task-list">
+                <li>Source code and documentation for the MVP</li>
+                <li>Images, screenshots, or videos demonstrating the tool in action</li>
+                <li>Notes or transcripts from testing sessions</li>
+              </ul>
+            </li>
+          </ul>
+
+          <p class="muted" style="margin-top:10px;">
+            Combine everything into one Google Doc (link supporting documents if needed) and submit a shareable link to this
+            <a href="https://docs.google.com/spreadsheets/d/1jlNlzGVk7UNp5ZT2CZ16AfoE0lZ804DZEY3OXPaRNY4/edit?usp=sharing" target="_blank">Google Spreadsheets file</a>
+            under the corresponding worksheet.
+          </p>
+          <p class="muted" style="margin-top:10px;"><em>Make sure your Google doc allows your peers to leave comments.</em></p>
         </div>
-    </div>
-</div>
+      </div>
+    </details>
+
+    <details class="card section" id="course">
+      <summary class="section-header sprint-summary" aria-label="Toggle Course D and D section">
+        <div class="sprint-summary-top">
+          <h2 class="section-title">
+            <span>Course D&amp;D: Develop MVP</span>
+            <span class="due-badge due-badge--friday">Due Friday (before meeting)</span>
+          </h2>
+          <span class="sprint-caret" aria-hidden="true">▾</span>
+        </div>
+
+        <p class="section-subtitle">
+          Fully implement two lessons, pilot test with learners, and refine based on evidence.
+        </p>
+      </summary>
+
+      <div class="section-body">
+        <div class="callout">
+          <div class="callout-title callout-title--subsection">
+            <span>Tasks</span>
+          </div>
+          <p class="callout-subtitle">Complete these tasks early so you can pilot test and polish your lesson implementation.</p>
+          <ul class="task-list">
+            <li>
+              <strong>Implement two lessons</strong>
+              <div class="muted">Develop two fully implemented lessons for the course based on the module prototype from Sprint 3.</div>
+            </li>
+            <li>
+              <strong>Include full lesson components</strong>
+              <div class="muted">Include all learning activities, assessments, and instructional materials necessary for these lessons.</div>
+            </li>
+            <li>
+              <strong>Pilot test</strong>
+              <div class="muted">Conduct a pilot test of the lessons with at least two target learners.</div>
+            </li>
+            <li>
+              <strong>Document and improve</strong>
+              <div class="muted">Document feedback from the pilot testing sessions and identify areas for improvement.</div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="callout" style="margin-top:14px;">
+          <div class="callout-title callout-title--subsection">
+            <span>Deliverables</span>
+          </div>
+          <p class="callout-subtitle">Submit by Friday so the instructor can review and provide formative feedback before we meet.</p>
+          <ul class="task-list">
+            <li>
+              <strong>Lesson Implementation Report</strong> including:
+              <ul class="task-list">
+                <li>A detailed description of the two implemented lessons, including learning objectives, activities, and assessments</li>
+                <li>Feedback and key insights from pilot testing sessions</li>
+                <li>A summary of final refinements made to the lessons based on feedback</li>
+                <li>A reflection on the lesson development process and lessons learned</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Supporting documents</strong>:
+              <ul class="task-list">
+                <li>Lesson plans, slides, or other instructional materials used for the lessons</li>
+                <li>Notes or transcripts from pilot testing sessions</li>
+              </ul>
+            </li>
+          </ul>
+
+          <p class="muted" style="margin-top:10px;">
+            Combine everything into one Google Doc (link supporting documents if needed) and submit a shareable link to this
+            <a href="https://docs.google.com/spreadsheets/d/1jlNlzGVk7UNp5ZT2CZ16AfoE0lZ804DZEY3OXPaRNY4/edit?usp=sharing" target="_blank">Google Spreadsheets file</a>
+            under the corresponding worksheet.
+          </p>
+          <p class="muted" style="margin-top:10px;"><em>Make sure your Google doc allows your peers to leave comments.</em></p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card section" id="inquiry">
+      <summary class="section-header sprint-summary" aria-label="Toggle Teacher Inquiry Projects section">
+        <div class="sprint-summary-top">
+          <h2 class="section-title">
+            <span>Teacher Inquiry Project: Analyze Data</span>
+            <span class="due-badge due-badge--friday">Due Friday (before meeting)</span>
+          </h2>
+          <span class="sprint-caret" aria-hidden="true">▾</span>
+        </div>
+
+        <p class="section-subtitle">
+          Clean and analyze your collected data, identify findings, and connect results back to your wonder.
+        </p>
+      </summary>
+
+      <div class="section-body">
+        <div class="callout">
+          <div class="callout-title callout-title--subsection">
+            <span>Tasks</span>
+          </div>
+          <p class="callout-subtitle">Complete these tasks early so you have time to make your analysis clear and defensible.</p>
+          <ul class="task-list">
+            <li>
+              <strong>Clean and organize data</strong>
+              <div class="muted">Organize and clean the collected data from Sprint 3.</div>
+            </li>
+            <li>
+              <strong>Conduct analysis</strong>
+              <div class="muted">Conduct data analysis using appropriate qualitative or quantitative methods.</div>
+            </li>
+            <li>
+              <strong>Identify findings</strong>
+              <div class="muted">Identify patterns, themes, or key findings from the data.</div>
+            </li>
+            <li>
+              <strong>Summarize clearly</strong>
+              <div class="muted">Summarize the findings in a clear and concise manner.</div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="callout" style="margin-top:14px;">
+          <div class="callout-title callout-title--subsection">
+            <span>Deliverables</span>
+          </div>
+          <p class="callout-subtitle">Submit by Friday so the instructor can review and provide formative feedback before we meet.</p>
+          <ul class="task-list">
+            <li>
+              <strong>Analysis Report</strong> including:
+              <ul class="task-list">
+                <li>A description of the data analysis process</li>
+                <li>Key findings, patterns, or themes identified in the data</li>
+                <li>A discussion of how the findings address the wonder defined in Sprint 1</li>
+                <li>A reflection on the data analysis process and lessons learned</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Supporting documents</strong>:
+              <ul class="task-list">
+                <li>Data sets, charts, or visualizations created during the analysis process</li>
+                <li>Notes or transcripts used in the analysis</li>
+              </ul>
+            </li>
+          </ul>
+
+          <p class="muted" style="margin-top:10px;">
+            Combine everything into one Google Doc (link supporting documents if needed) and submit a shareable link to this
+            <a href="https://docs.google.com/spreadsheets/d/1jlNlzGVk7UNp5ZT2CZ16AfoE0lZ804DZEY3OXPaRNY4/edit?usp=sharing" target="_blank">Google Spreadsheets file</a>
+            under the corresponding worksheet.
+          </p>
+          <p class="muted" style="margin-top:10px;"><em>Make sure your Google doc allows your peers to leave comments.</em></p>
+        </div>
+      </div>
+    </details>
+
+    <section class="card section">
+      <header class="section-header">
+        <h2 class="section-title">
+          <span>Peer Review Requirement</span>
+          <span class="due-badge due-badge--sunday">DUE SUNDAY (BEFORE MEETING)</span>
+        </h2>
+        <p class="section-subtitle">Review at least one peer’s submission and provide constructive feedback before our bi-weekly meeting.</p>
+      </header>
+
+      <div class="section-body">
+        <div class="callout">
+          <div class="callout-title">Peer Review Tasks</div>
+          <ul class="task-list">
+            <li><strong>Review</strong> at least one peer’s submission (MVP Report, Lesson Implementation Report, or Analysis Report).</li>
+            <li><strong>Provide feedback</strong> that includes:
+                <ul class="task-list" style="margin-top:8px;">
+                    <li>Identify strengths of the submission</li>
+                    <li>Provide two suggestions for improvement or refinement</li>
+                    <li>Highlight any additional resources or ideas that could strengthen the submission</li>
+                </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script type="module">
+    import { initProtectedSprintPage } from "./assets/js/pageBootstrap.js";
+    await initProtectedSprintPage();
+  </script>
+</body>
+</html>
