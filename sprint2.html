@@ -314,57 +314,9 @@
 
   </div>
 
-  <script type="module">
-    import { preloadProtectedPage } from "./assets/js/preloadProtectedPage.js";
-
-    await preloadProtectedPage({
-      contentSelector: "#page-content",
-      redirectTo: "signup_signin.html"
-    });
-
-    // Sprint picker functionality
-    function openOnly(targetId) {
-        const all = Array.from(document.querySelectorAll("details.card.section"));
-        const target = document.getElementById(targetId);
-        if (!target) return;
-
-        // Close everything else
-        all.forEach((d) => {
-        if (d !== target) d.open = false;
-        });
-
-        // Open target
-        target.open = true;
-
-        // Scroll to it (accounts for sticky nav via scroll-margin-top in CSS)
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
-    // Button clicks
-    document.querySelectorAll(".sprint-picker-actions [data-target]").forEach((btn) => {
-        btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        const id = btn.getAttribute("data-target");
-        if (id) openOnly(id);
-
-        // Update URL hash for shareability
-        history.replaceState(null, "", `#${id}`);
-        });
-    });
-
-    // Also support direct hash navigation: /sprint2.html#course
-    const initialHash = (window.location.hash || "").replace("#", "");
-    if (initialHash) openOnly(initialHash);
-
-    // Enforce "only one open" even when user clicks the <summary> directly
-    document.querySelectorAll("details.card.section").forEach((d) => {
-        d.addEventListener("toggle", () => {
-        if (!d.open) return;
-        document.querySelectorAll("details.card.section").forEach((other) => {
-            if (other !== d) other.open = false;
-        });
-        });
-    });
-  </script>
+    <script type="module">
+        import { initProtectedSprintPage } from "./assets/js/pageBootstrap.js";
+        await initProtectedSprintPage();
+    </script>
 </body>
 </html>

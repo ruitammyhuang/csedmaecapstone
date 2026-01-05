@@ -1,99 +1,321 @@
-<h1 style="margin: 0px 0px 10px; padding: 0px 10px; width: 100%; color: #ffffff; font-size: 25px; border-top: medium solid #fd7d00; background-color: #003366; text-align: center;"><strong>Sprint 3: Prototyping / Collect Data</strong></h1>
-<div id="kl_custom_block_2" class="">
-    <div class="kl_panels_wrapper kl_panels_tabs">
-        <h2 id="kl_panel_0" class="kl_panel_heading kl_panel_0"><span style="font-size: 18pt;">Ed Tech Tool D&amp;D: Prototyping</span></h2>
-        <div id="kl_panel_0_content" class="kl_panel_content kl_panel_0">
-            <h3 class="" style="background-color: #fffacd; padding: 10px; border-radius: 5px;">Tasks</h3>
-            <ul>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Develop a functional prototype of the selected educational technology tool from Sprint 2.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Conduct usability and learner experience testing with at least two stakeholders or target users.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Document feedback from the testing sessions, highlighting key insights and areas for improvement.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Iterate on the prototype based on the feedback collected.</li>
-            </ul>
-            <h3 class="" style="background-color: #fffacd; padding: 10px; border-radius: 5px;">Deliverables</h3>
-            <ul>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">A <strong>Prototype Report</strong> including:
-                    <ul>
-                        <li>A description of the prototype and its functionality.</li>
-                        <li>Key insights from usability and learner experience testing.</li>
-                        <li>A summary of changes made to the prototype based on feedback.</li>
-                        <li>A reflection on the testing process and lessons learned.</li>
-                    </ul>
-                </li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Supporting documents:
-                    <ul>
-                        <li>Images, screenshots, or videos of the prototype.</li>
-                        <li>Notes or transcripts from testing sessions.</li>
-                    </ul>
-                </li>
-            </ul>
-            <p><span style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Please combine all required deliverables into one Google doc (add links to supporting documents if applicable), and then submit a sharable link to this discussion board. Make sure your peers can leave comments in your document.</span></p>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="EDG6973 Sprint 3: Prototyping / Collect Data." />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="robots" content="noindex,nofollow" />
+
+  <meta property="og:title" content="EDG6973 - Sprint 3" />
+  <meta property="og:description" content="Sprint 3 tasks, deliverables, and peer review requirements for EDG6973." />
+  <meta property="og:type" content="website" />
+
+  <title>EDG6973 - Sprint 3</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Shared shell mounts here (page-shell.html includes #appShell and <main id="main">...) -->
+  <div id="page-shell-container"></div>
+
+  <!-- Page content stays editable as HTML; preload script will move it into #main -->
+  <div id="page-content" style="display:none;">
+
+    <section class="hero card hero-compact">
+      <div class="hero-left">
+        <h1 class="hero-title">Sprint 3: Prototyping / Collect Data</h1>
+        <p class="hero-lead">Build, test, and iterate based on evidence</p>
+        <p class="muted">
+          This sprint focuses on making your work tangible and learnable through testing. Choose the section that matches your project type:
+          Ed Tech Tool D&amp;D, Course D&amp;D, or Teacher Inquiry.
+        </p>
+      </div>
+      <div class="hero-right">
+        <div class="hero-banner" role="img" aria-label="Sprint 3 banner">
+          <img src="images/sprint3_banner.png" alt="Sprint 3 Banner Decoration Image" />
         </div>
-        <h2 id="kl_panel_1" class="kl_panel_heading kl_panel_1"><span style="font-size: 18pt;">Course D&amp;D: Prototyping</span></h2>
-        <div id="kl_panel_1_content" class="kl_panel_content kl_panel_1">
-            <h3 class="" style="background-color: #fffacd; padding: 10px; border-radius: 5px;">Tasks</h3>
-            <ul>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Develop a prototype for one module of the course based on the structural plan from Sprint 2.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Implement learning activities, assessments, and materials for the module.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Conduct a small-scale test of the module with at least two target learners.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Document feedback from the testing sessions, highlighting key insights and areas for improvement.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Revise the module prototype based on the feedback collected.</li>
-            </ul>
-            <h3 class="" style="background-color: #fffacd; padding: 10px; border-radius: 5px;">Deliverables</h3>
-            <ul>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">A <strong>Module Prototype Report</strong> including:
-                    <ul>
-                        <li>A description of the module prototype, including learning objectives, activities, and assessments.</li>
-                        <li>Key insights from the testing sessions with target learners.</li>
-                        <li>A summary of changes made to the module based on feedback.</li>
-                        <li>A reflection on the testing process and lessons learned.</li>
-                    </ul>
-                </li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Supporting documents:
-                    <ul>
-                        <li>Links to or examples of module materials (e.g., lesson plans, slides, or assessments).</li>
-                        <li>Notes or transcripts from testing sessions.</li>
-                    </ul>
-                </li>
-            </ul>
-            <p><span style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Please combine all required deliverables into one Google doc (add links to supporting documents if applicable), and then submit a sharable link to this discussion board. Make sure your peers can leave comments in your document.</span></p>
+      </div>
+    </section>
+
+    <section class="card section sprint-picker">
+      <header class="section-header">
+        <h2 class="section-title">Choose your project type</h2>
+        <p class="section-subtitle">Jump to the track you are working on.</p>
+      </header>
+
+      <div class="sprint-picker-actions">
+        <a class="btn ghost" href="#edtech" data-target="edtech">Ed Tech Tool D&amp;D</a>
+        <a class="btn ghost" href="#course" data-target="course">Course D&amp;D</a>
+        <a class="btn ghost" href="#inquiry" data-target="inquiry">Teacher Inquiry</a>
+      </div>
+    </section>
+
+    <!-- ===================================================== -->
+    <!-- Sprint 3: Three project types (expand/collapse) -->
+    <!-- ===================================================== -->
+
+    <details class="card section" id="edtech">
+      <summary class="section-header sprint-summary" aria-label="Toggle Ed Tech Tool D and D section">
+        <div class="sprint-summary-top">
+          <h2 class="section-title">
+            <span>Ed Tech Tool D&amp;D: Prototyping</span>
+            <span class="due-badge due-badge--friday">Due Friday (before meeting)</span>
+          </h2>
+          <span class="sprint-caret" aria-hidden="true">▾</span>
         </div>
-        <h2 id="kl_panel_2" class="kl_panel_heading kl_panel_2"><span style="font-size: 18pt;">Teacher Inquiry Projects: Collect Data</span></h2>
-        <div id="kl_panel_2_content" class="kl_panel_content kl_panel_2">
-            <h3 class="" style="background-color: #fffacd; padding: 10px; border-radius: 5px;">Tasks</h3>
-            <ul>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Implement your data collection plan developed in Sprint 2.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Collect data using the selected methods (e.g., surveys, interviews, observations).</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Ensure ethical practices are followed, including anonymizing and securing participant data.</li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Document the data collection process, including challenges faced and how they were addressed.</li>
-            </ul>
-            <h3 class="" style="background-color: #fffacd; padding: 10px; border-radius: 5px;">Deliverables</h3>
-            <ul>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">A <strong>Data Collection Summary</strong> including:
-                    <ul>
-                        <li>A description of the data collection process and methods used.</li>
-                        <li>A summary of data collected, including key observations or preliminary findings.</li>
-                        <li>A reflection on the data collection process, including challenges and lessons learned.</li>
-                    </ul>
-                </li>
-                <li style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Supporting documents:
-                    <ul>
-                        <li>Completed surveys, interview transcripts, or observation notes (de-identified if applicable).</li>
-                        <li>References to tools or instruments used for data collection.</li>
-                    </ul>
-                </li>
-            </ul>
-            <p><span style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Please combine all required deliverables into one Google doc (add links to supporting documents if applicable), and then submit a sharable link to this discussion board. Make sure your peers can leave comments in your document.</span></p>
+
+        <p class="section-subtitle">
+          Build a functional prototype, test with stakeholders/target users, and iterate based on usability and learner experience feedback.
+        </p>
+      </summary>
+
+      <div class="section-body">
+        <div class="callout">
+          <div class="callout-title callout-title--subsection">
+            <span>Tasks</span>
+          </div>
+          <p class="callout-subtitle">Complete these tasks early so you can improve your prototype with time to spare.</p>
+          <ul class="task-list">
+            <li>
+              <strong>Develop a functional prototype</strong>
+              <div class="muted">Develop a functional prototype of the selected educational technology tool from Sprint 2.</div>
+            </li>
+            <li>
+              <strong>Run usability and learner experience testing</strong>
+              <div class="muted">Conduct usability and learner experience testing with at least two stakeholders or target users.</div>
+            </li>
+            <li>
+              <strong>Document feedback</strong>
+              <div class="muted">Document feedback from the testing sessions, highlighting key insights and areas for improvement.</div>
+            </li>
+            <li>
+              <strong>Iterate on the prototype</strong>
+              <div class="muted">Iterate on the prototype based on the feedback collected.</div>
+            </li>
+          </ul>
         </div>
-        <h2 id="kl_panel_3" class="kl_panel_heading kl_panel_3"><span style="font-size: 18pt;">Peer Review Requirement</span></h2>
-        <div id="kl_panel_3_content" class="kl_panel_content kl_panel_3">
-            <h3 class="" style="background-color: #fffacd; padding: 10px; border-radius: 5px;">Peer Review Tasks</h3>
-            <p><span style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Review <strong>at least one peer&rsquo;s</strong> <strong>submission </strong>before our by-weekly meeting.</span></p>
-            <p><span style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Provide feedback include:</span></p>
-            <ul>
-                <li><span style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">At least one thing you like most</span></li>
-                <li><span style="font-size: 14pt; font-family: 'trebuchet ms', geneva;">Two improvement suggestions or points to consider moving forward</span></li>
-            </ul>
+
+        <div class="callout" style="margin-top:14px;">
+          <div class="callout-title callout-title--subsection">
+            <span>Deliverables</span>
+          </div>
+          <p class="callout-subtitle">Submit by Friday so the instructor can review and provide formative feedback before we meet.</p>
+          <ul class="task-list">
+            <li>
+              <strong>Prototype Report</strong> including:
+              <ul class="task-list">
+                <li>A description of the prototype and its functionality</li>
+                <li>Key insights from usability and learner experience testing</li>
+                <li>A summary of changes made to the prototype based on feedback</li>
+                <li>A reflection on the testing process and lessons learned</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Supporting documents</strong>:
+              <ul class="task-list">
+                <li>Images, screenshots, or videos of the prototype</li>
+                <li>Notes or transcripts from testing sessions</li>
+              </ul>
+            </li>
+          </ul>
+
+          <p class="muted" style="margin-top:10px;">
+            Combine everything into one Google Doc (link supporting documents if needed) and submit a shareable link to this
+            <a href="https://docs.google.com/spreadsheets/d/1jlNlzGVk7UNp5ZT2CZ16AfoE0lZ804DZEY3OXPaRNY4/edit?usp=sharing" target="_blank">Google Spreadsheets file</a>
+            under the corresponding worksheet.
+          </p>
+          <p class="muted" style="margin-top:10px;"><em>Make sure your Google doc allows your peers to leave comments.</em></p>
         </div>
-    </div>
-</div>
+      </div>
+    </details>
+
+    <details class="card section" id="course">
+      <summary class="section-header sprint-summary" aria-label="Toggle Course D and D section">
+        <div class="sprint-summary-top">
+          <h2 class="section-title">
+            <span>Course D&amp;D: Prototyping</span>
+            <span class="due-badge due-badge--friday">Due Friday (before meeting)</span>
+          </h2>
+          <span class="sprint-caret" aria-hidden="true">▾</span>
+        </div>
+
+        <p class="section-subtitle">
+          Prototype one course module, test with learners, and revise based on evidence from a small-scale trial.
+        </p>
+      </summary>
+
+      <div class="section-body">
+        <div class="callout">
+          <div class="callout-title callout-title--subsection">
+            <span>Tasks</span>
+          </div>
+          <p class="callout-subtitle">Complete these tasks early so you can revise your module prototype before submission.</p>
+          <ul class="task-list">
+            <li>
+              <strong>Develop a module prototype</strong>
+              <div class="muted">Develop a prototype for one module of the course based on the structural plan from Sprint 2.</div>
+            </li>
+            <li>
+              <strong>Build learning components</strong>
+              <div class="muted">Implement learning activities, assessments, and materials for the module.</div>
+            </li>
+            <li>
+              <strong>Test with learners</strong>
+              <div class="muted">Conduct a small-scale test of the module with at least two target learners.</div>
+            </li>
+            <li>
+              <strong>Document feedback</strong>
+              <div class="muted">Document feedback from the testing sessions, highlighting key insights and areas for improvement.</div>
+            </li>
+            <li>
+              <strong>Revise based on evidence</strong>
+              <div class="muted">Revise the module prototype based on the feedback collected.</div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="callout" style="margin-top:14px;">
+          <div class="callout-title callout-title--subsection">
+            <span>Deliverables</span>
+          </div>
+          <p class="callout-subtitle">Submit by Friday so the instructor can review and provide formative feedback before we meet.</p>
+          <ul class="task-list">
+            <li>
+              <strong>Module Prototype Report</strong> including:
+              <ul class="task-list">
+                <li>A description of the module prototype, including learning objectives, activities, and assessments</li>
+                <li>Key insights from the testing sessions with target learners</li>
+                <li>A summary of changes made to the module based on feedback</li>
+                <li>A reflection on the testing process and lessons learned</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Supporting documents</strong>:
+              <ul class="task-list">
+                <li>Links to or examples of module materials (for example, lesson plans, slides, or assessments)</li>
+                <li>Notes or transcripts from testing sessions</li>
+              </ul>
+            </li>
+          </ul>
+
+          <p class="muted" style="margin-top:10px;">
+            Combine everything into one Google Doc (link supporting documents if needed) and submit a shareable link to this
+            <a href="https://docs.google.com/spreadsheets/d/1jlNlzGVk7UNp5ZT2CZ16AfoE0lZ804DZEY3OXPaRNY4/edit?usp=sharing" target="_blank">Google Spreadsheets file</a>
+            under the corresponding worksheet.
+          </p>
+          <p class="muted" style="margin-top:10px;"><em>Make sure your Google doc allows your peers to leave comments.</em></p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card section" id="inquiry">
+      <summary class="section-header sprint-summary" aria-label="Toggle Teacher Inquiry Projects section">
+        <div class="sprint-summary-top">
+          <h2 class="section-title">
+            <span>Teacher Inquiry Project: Collect Data</span>
+            <span class="due-badge due-badge--friday">Due Friday (before meeting)</span>
+          </h2>
+          <span class="sprint-caret" aria-hidden="true">▾</span>
+        </div>
+
+        <p class="section-subtitle">
+          Implement your data collection plan, document the process, and summarize what you collected so far.
+        </p>
+      </summary>
+
+      <div class="section-body">
+        <div class="callout">
+          <div class="callout-title callout-title--subsection">
+            <span>Tasks</span>
+          </div>
+          <p class="callout-subtitle">Complete these tasks early so you have time to clean, organize, and reflect on your data.</p>
+          <ul class="task-list">
+            <li>
+              <strong>Implement your plan</strong>
+              <div class="muted">Implement your data collection plan developed in Sprint 2.</div>
+            </li>
+            <li>
+              <strong>Collect data</strong>
+              <div class="muted">Collect data using the selected methods (for example, surveys, interviews, observations).</div>
+            </li>
+            <li>
+              <strong>Follow ethical practices</strong>
+              <div class="muted">Ensure ethical practices are followed, including anonymizing and securing participant data.</div>
+            </li>
+            <li>
+              <strong>Document the process</strong>
+              <div class="muted">Document the data collection process, including challenges faced and how they were addressed.</div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="callout" style="margin-top:14px;">
+          <div class="callout-title callout-title--subsection">
+            <span>Deliverables</span>
+          </div>
+          <p class="callout-subtitle">Submit by Friday so the instructor can review and provide formative feedback before we meet.</p>
+          <ul class="task-list">
+            <li>
+              <strong>Data Collection Summary</strong> including:
+              <ul class="task-list">
+                <li>A description of the data collection process and methods used</li>
+                <li>A summary of data collected, including key observations or preliminary findings</li>
+                <li>A reflection on the data collection process, including challenges and lessons learned</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Supporting documents</strong>:
+              <ul class="task-list">
+                <li>Completed surveys, interview transcripts, or observation notes (de-identified if applicable)</li>
+                <li>References to tools or instruments used for data collection</li>
+              </ul>
+            </li>
+          </ul>
+
+          <p class="muted" style="margin-top:10px;">
+            Combine everything into one Google Doc (link supporting documents if needed) and submit a shareable link to this
+            <a href="https://docs.google.com/spreadsheets/d/1jlNlzGVk7UNp5ZT2CZ16AfoE0lZ804DZEY3OXPaRNY4/edit?usp=sharing" target="_blank">Google Spreadsheets file</a>
+            under the corresponding worksheet.
+          </p>
+          <p class="muted" style="margin-top:10px;"><em>Make sure your Google doc allows your peers to leave comments.</em></p>
+        </div>
+      </div>
+    </details>
+
+    <section class="card section">
+      <header class="section-header">
+        <h2 class="section-title">
+          <span>Peer Review Requirement</span>
+          <span class="due-badge due-badge--sunday">DUE SUNDAY (BEFORE MEETING)</span>
+        </h2>
+        <p class="section-subtitle">Review at least one peer’s submission before our bi-weekly meeting.</p>
+      </header>
+
+      <div class="section-body">
+        <div class="callout">
+          <div class="callout-title">Peer Review Tasks</div>
+          <ul class="task-list">
+            <li><strong>Review</strong> at least one peer’s submission (Prototype Report, Module Prototype Report, or Data Collection Summary).</li>
+            <li><strong>Provide feedback</strong> that includes:</li>
+          </ul>
+          <ul class="task-list" style="margin-top:8px;">
+            <li>At least one thing you like most</li>
+            <li>Two improvement suggestions or points to consider moving forward</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+    <script type="module">
+        import { initProtectedSprintPage } from "./assets/js/pageBootstrap.js";
+        await initProtectedSprintPage();
+    </script>
+</body>
+</html>

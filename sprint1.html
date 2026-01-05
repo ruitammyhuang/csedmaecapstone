@@ -240,48 +240,9 @@
 
   </div>
 
-  <script type="module">
-    import { preloadProtectedPage } from "./assets/js/preloadProtectedPage.js";
-
-    await preloadProtectedPage({
-      contentSelector: "#page-content",
-      redirectTo: "signup_signin.html"
-    });
-
-    // Sprint picker functionality (same behavior as sprint2)
-    function openOnly(targetId) {
-      const all = Array.from(document.querySelectorAll("details.card.section"));
-      const target = document.getElementById(targetId);
-      if (!target) return;
-
-      all.forEach((d) => {
-        if (d !== target) d.open = false;
-      });
-
-      target.open = true;
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
-    document.querySelectorAll(".sprint-picker-actions [data-target]").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        const id = btn.getAttribute("data-target");
-        if (id) openOnly(id);
-        history.replaceState(null, "", `#${id}`);
-      });
-    });
-
-    const initialHash = (window.location.hash || "").replace("#", "");
-    if (initialHash) openOnly(initialHash);
-
-    document.querySelectorAll("details.card.section").forEach((d) => {
-      d.addEventListener("toggle", () => {
-        if (!d.open) return;
-        document.querySelectorAll("details.card.section").forEach((other) => {
-          if (other !== d) other.open = false;
-        });
-      });
-    });
-  </script>
+    <script type="module">
+      import { initProtectedSprintPage } from "./assets/js/pageBootstrap.js";
+      await initProtectedSprintPage();
+    </script>
 </body>
 </html>
